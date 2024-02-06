@@ -1,16 +1,12 @@
-import jwt from "jsonwebtoken";
+import { FastifyRequest, FastifyReply } from "fastify";
+import { $Enums } from "@acme/db";
 
-export type JwtPayload = {
-  sub: string;
-  name: string;
+export type Payload = {
+  id: string;
+  name: string | null;
+  role: $Enums.UserRole;
 };
 
-export const verifyAuthorization = (token: string) => {
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  return decoded;
-};
-
-export const signAuthorizationToken = (payload: JwtPayload) => {
-  const token = jwt.sign(payload, "secret", { expiresIn: 60 * 60 });
-  return token;
+export const getSession = async (req: FastifyRequest, reply: FastifyReply) => {
+  return req.jwtVerify() as Promise<Payload>;
 };

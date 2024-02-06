@@ -18,7 +18,7 @@ import { EVENT_KEYS } from "@/constants/event-keys";
 import { STORAGE_KEYS } from "@/constants/storage-keys";
 import { useColors } from "@/hooks/useColors";
 import { Bookmark } from "@/types/bookmark";
-import { nanoid } from "@/utils/nanoid";
+import { nanoid } from "@/utils";
 
 export type BookmarkContextType = {
   bookmarks: Bookmark[];
@@ -33,7 +33,7 @@ export const BookmarkContext = createContext<BookmarkContextType | null>(null);
 const saveBookmarksToStorage = async (bookmarks: Bookmark[]) => {
   return AsyncStorage.setItem(
     STORAGE_KEYS.BOOKMARKED_ITEMS,
-    JSON.stringify(bookmarks),
+    JSON.stringify(bookmarks)
   );
 };
 
@@ -83,7 +83,7 @@ export default function BookmarkProvider({
         setIsBusey(false);
       }
     },
-    [bookmarks, colors.primary, isBusey, isLoaded, translate],
+    [bookmarks, colors.primary, isBusey, isLoaded, translate]
   );
 
   const deleteBookmark: BookmarkContextType["deleteBookmark"] = useCallback(
@@ -113,14 +113,14 @@ export default function BookmarkProvider({
         setIsBusey(false);
       }
     },
-    [bookmarks, isBusey, isLoaded, translate],
+    [bookmarks, isBusey, isLoaded, translate]
   );
 
   useEffect(() => {
     const loadBookmarks = async () => {
       try {
         const bookmarkedItemsStr = await AsyncStorage.getItem(
-          STORAGE_KEYS.BOOKMARKED_ITEMS,
+          STORAGE_KEYS.BOOKMARKED_ITEMS
         );
         if (bookmarkedItemsStr) {
           const bookmarks = JSON.parse(bookmarkedItemsStr);

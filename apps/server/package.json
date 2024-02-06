@@ -17,6 +17,7 @@
     "./trpc": "./src/trpc/index.ts"
   },
   "dependencies": {
+    "@acme/auth": "workspace:*",
     "@acme/db": "workspace:*",
     "@acme/trpc": "workspace:*",
     "@fastify/cookie": "^9.3.1",

@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@acme/auth": "workspace:*",
     "@acme/db": "workspace:*",
     "@trpc/server": "^11.0.0-next-beta.251",
     "superjson": "^2.2.1",

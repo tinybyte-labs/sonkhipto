@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const apiRouter = router({
   version: publicProcedure.query(() => {
@@ -10,4 +10,7 @@ export const apiRouter = router({
     .query(async ({ input }) => {
       return `Hello, ${input?.username ?? "world"}!`;
     }),
+  protected: protectedProcedure.query(({ ctx }) => {
+    return { session: ctx.session, message: "Hello" };
+  }),
 });
