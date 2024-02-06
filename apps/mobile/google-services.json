@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "262858286271",
+    "project_id": "sonkhipto",
+    "storage_bucket": "sonkhipto.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262858286271:android:4be25b99154928a944d20a",
+        "android_client_info": {
+          "package_name": "com.tinybytelabs.sonkhipto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "262858286271-iu231jd82bqvue9f1m5akb8rlkmpsbk3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACChDMxQG7OwE6si8ZE6uZNgP3syX41tE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "262858286271-iu231jd82bqvue9f1m5akb8rlkmpsbk3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "262858286271-5m4i195ghqbp00a4n7asvbrndog01b86.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tinybytelabs.sonkhipto"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -13,6 +13,7 @@
     "test-start": "pnpm with-env start-server-and-test 'node dist'",
     "db:migrate": "pnpm with-env prisma migrate dev",
     "db:studio": "pnpm with-env prisma studio",
+    "db:generate": "pnpm with-env prisma generate",
     "with-env": "dotenv -e ../../.env --"
   },
   "exports": {

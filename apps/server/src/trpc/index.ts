@@ -1,10 +1,10 @@
 import { apiRouter } from "./routers/api";
-import { feedRouter } from "./routers/feed";
+import { postRouter } from "./routers/post";
 import { router } from "./trpc";
 
 export const appRouter = router({
   api: apiRouter,
-  feed: feedRouter,
+  post: postRouter,
 });
 
 export type AppRouter = typeof appRouter;

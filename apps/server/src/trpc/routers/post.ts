@@ -1,16 +1,16 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 
-const paginationSchema = z.object({
-  language: z.enum(["bn", "en"]).optional(),
-  countryCode: z.enum(["BN"]).optional(),
-  limit: z.number().min(0).default(10),
-  cursor: z.string().uuid().optional(),
-});
-
-export const feedRouter = router({
-  myFeed: publicProcedure
-    .input(paginationSchema)
+export const postRouter = router({
+  findMany: publicProcedure
+    .input(
+      z.object({
+        language: z.enum(["bn", "en"]).optional(),
+        countryCode: z.enum(["BN"]).optional(),
+        limit: z.number().min(0).default(10),
+        cursor: z.string().uuid().optional(),
+      })
+    )
     .query(async ({ ctx, input: { cursor, limit, countryCode, language } }) => {
       const posts = await ctx.db.post.findMany({
         where: {
