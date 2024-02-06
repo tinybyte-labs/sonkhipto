@@ -32,6 +32,12 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+enum UserRole {
+  ADMIN
+  WRITER
+  USER
+}
+
 model User {
   id            String    @id @default(uuid()) @db.Uuid
   createdAt     DateTime  @default(now())
@@ -40,8 +46,18 @@ model User {
   name          String?
   emailVerified DateTime?
   image         String?
-  accounts      Account[]
-  posts         Post[]
+  isAnonymous   Boolean   @default(false)
+
+  role UserRole @default(USER)
+
+  accounts  Account[]
+  posts     Post[]
+  bookmarks PostBookmark[]
+  reactions PostReaction[]
+}
+
+enum PostType {
+  NEWS
 }
 
 model Post {
@@ -56,6 +72,37 @@ model Post {
   sourceUrl   String   @unique
   language    String   @db.VarChar(6)
   countryCode String   @db.VarChar(6)
+  type        PostType @default(NEWS)
 
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author    User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  bookmarks PostBookmark[]
+  reactions PostReaction[]
+}
+
+model PostBookmark {
+  userId    String   @db.Uuid
+  postId    String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+enum PostReactionType {
+  LIKE
+}
+
+model PostReaction {
+  userId    String           @db.Uuid
+  postId    String           @db.Uuid
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  reaction  PostReactionType
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
 }
