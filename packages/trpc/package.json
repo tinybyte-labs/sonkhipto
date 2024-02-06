@@ -1,26 +1,22 @@
 {
-  "name": "@acme/db",
+  "name": "@acme/trpc",
   "version": "1.0.0",
   "description": "",
   "type": "module",
   "private": true,
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "scripts": {
-    "studio": "pnpm with-env prisma studio",
-    "migrate": "pnpm with-env prisma migrate dev",
-    "generate": "pnpm with-env prisma generate",
-    "with-env": "dotenv -e ../../.env --"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^5.9.1"
+    "@acme/db": "workspace:*",
+    "@trpc/server": "^11.0.0-next-beta.251",
+    "superjson": "^2.2.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@acme/typescript-config": "workspace:*",
-    "prisma": "^5.9.1",
     "@types/node": "^20.11.13",
     "dotenv-cli": "^7.3.0",
     "esbuild": "^0.20.0",

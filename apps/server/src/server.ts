@@ -1,8 +1,7 @@
 import "dotenv/config";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import fastify from "fastify";
-import { appRouter } from "./trpc";
-import { createContext } from "./trpc/context";
+import { appRouter, createContext } from "@acme/trpc";
 import cors from "@fastify/cors";
 import fastifyEnv from "@fastify/env";
 import { envOptions } from "./constants/env-options";
