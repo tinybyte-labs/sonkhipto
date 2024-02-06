@@ -1,0 +1,24 @@
+{
+  "name": "@acme/auth",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@acme/db": "workspace:*"
+  },
+  "devDependencies": {
+    "@acme/typescript-config": "workspace:*",
+    "@types/node": "^20.11.13",
+    "dotenv-cli": "^7.3.0",
+    "esbuild": "^0.20.0",
+    "eslint": "^8.56.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
