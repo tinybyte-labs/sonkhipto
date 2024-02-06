@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  postgres:
+    container_name: sonkhipto
+    image: ankane/pgvector
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: "sonkhipto"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"

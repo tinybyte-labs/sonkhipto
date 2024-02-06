@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                       String   @id @default(uuid()) @db.Uuid
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+  userId                   String   @db.Uuid
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?  @db.Text
+  access_token             String?  @db.Text
+  refresh_token_expires_in Int?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?  @db.Text
+  session_state            String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  email         String?   @unique
+  name          String?
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  posts         Post[]
+}
+
+model Post {
+  id          String   @id @default(uuid()) @db.Uuid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String   @db.VarChar(100)
+  content     String   @db.VarChar(500)
+  authorId    String   @db.Uuid
+  imageUrl    String?
+  sourceName  String   @db.VarChar(50)
+  sourceUrl   String   @unique
+  language    String   @db.VarChar(6)
+  countryCode String   @db.VarChar(6)
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
