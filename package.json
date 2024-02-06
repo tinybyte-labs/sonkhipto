@@ -6,9 +6,10 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "db:studio": "pnpm -F @acme/server db:studio",
-    "db:migrate": "pnpm -F @acme/server db:migrate",
-    "db:generate": "pnpm -F @acme/server db:generate",
+    "studio": "pnpm -F @acme/db studio",
+    "prisma:studio": "pnpm -F @acme/db studio",
+    "prisma:migrate": "pnpm -F @acme/db migrate",
+    "prisma:generate": "pnpm -F @acme/db generate",
     "ios": "pnpm -F @acme/mobile ios",
     "android": "pnpm -F @acme/mobile android"
   },

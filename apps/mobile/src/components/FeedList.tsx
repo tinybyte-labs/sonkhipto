@@ -40,7 +40,7 @@ const FeedList = forwardRef<FlatList, FeedListProps>(
           case "post":
             return (
               <FeedNewsItemView
-                newsItem={item.data}
+                post={item.data}
                 height={height}
                 useBottomInsets={useBottomInset}
               />
@@ -61,7 +61,7 @@ const FeedList = forwardRef<FlatList, FeedListProps>(
             return <View style={{ height }} />;
         }
       },
-      [colors.secondaryForeground, height, useBottomInset],
+      [colors.secondaryForeground, height, useBottomInset]
     );
 
     return (
@@ -78,7 +78,7 @@ const FeedList = forwardRef<FlatList, FeedListProps>(
         {...props}
       />
     );
-  },
+  }
 );
 
 export default FeedList;

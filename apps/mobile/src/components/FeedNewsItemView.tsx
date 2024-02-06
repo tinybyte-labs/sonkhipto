@@ -28,12 +28,12 @@ import {
 import type { Post } from "@acme/db";
 
 export default function FeedNewsItemView({
-  newsItem,
+  post,
   height,
   isViewable,
   useBottomInsets,
 }: {
-  newsItem: Post;
+  post: Post & { author: { name: string } };
   height: number;
   isViewable?: boolean;
   useBottomInsets?: boolean;
@@ -43,36 +43,35 @@ export default function FeedNewsItemView({
   const { translate, language } = useLanguage();
   const { bookmarks, createBookmark, deleteBookmark } = useBookmark();
   const bookmark = useMemo(
-    () =>
-      bookmarks.find((bm) => bm.type === "news" && bm.data.id === newsItem.id),
-    [bookmarks, newsItem.id]
+    () => bookmarks.find((bm) => bm.type === "news" && bm.data.id === post.id),
+    [bookmarks, post.id]
   );
   const insets = useSafeAreaInsets();
 
   const onReadMore = useCallback(async () => {
     analytics().logEvent(EVENT_KEYS.READ_MORE, {
-      news_item_id: newsItem.id,
-      news_item_url: newsItem.sourceUrl,
+      news_item_id: post.id,
+      news_item_url: post.sourceUrl,
     });
-    await WebBrowser.openBrowserAsync(newsItem.sourceUrl, {
+    await WebBrowser.openBrowserAsync(post.sourceUrl, {
       presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
     });
-  }, [newsItem.id, newsItem.sourceUrl]);
+  }, [post.id, post.sourceUrl]);
 
   const onShare = useCallback(async () => {
     try {
       await Share.share({
-        title: newsItem.title,
-        message: newsItem.sourceUrl,
+        title: post.title,
+        message: post.sourceUrl,
       });
       analytics().logEvent(EVENT_KEYS.NEWS_ITEM_SHARE, {
-        news_item_id: newsItem.id,
-        news_item_url: newsItem.sourceUrl,
+        news_item_id: post.id,
+        news_item_url: post.sourceUrl,
       });
     } catch (error: any) {
       Alert.alert("Faild to share", error.message);
     }
-  }, [newsItem.id, newsItem.title, newsItem.sourceUrl]);
+  }, [post.id, post.title, post.sourceUrl]);
 
   const onBookmarkPress = useCallback(() => {
     if (bookmark) {
@@ -92,9 +91,9 @@ export default function FeedNewsItemView({
         ]
       );
     } else {
-      createBookmark({ type: "news", data: newsItem });
+      createBookmark({ type: "news", data: post });
     }
-  }, [bookmark, createBookmark, deleteBookmark, newsItem, translate]);
+  }, [bookmark, createBookmark, deleteBookmark, post, translate]);
 
   return (
     <View
@@ -106,7 +105,7 @@ export default function FeedNewsItemView({
       <View style={{ aspectRatio: 16 / 9 }}>
         <Pressable onPress={() => setShowImage(!showImage)}>
           <Image
-            source={newsItem.imageUrl}
+            source={post.imageUrl}
             style={{
               width: "100%",
               height: "100%",
@@ -155,7 +154,7 @@ export default function FeedNewsItemView({
             color: colors.foreground,
           }}
         >
-          {newsItem.title}
+          {post.title}
         </Text>
       </View>
       <View style={{ flex: 1 }}>
@@ -175,7 +174,7 @@ export default function FeedNewsItemView({
               color: colors.foreground,
             }}
           >
-            {newsItem.content}
+            {post.content}
           </Text>
           <Text
             style={{
@@ -186,10 +185,10 @@ export default function FeedNewsItemView({
             }}
           >
             {translate("byPublisher", {
-              name: newsItem.authorId ?? newsItem.sourceName,
+              name: post.author.name,
             })}{" "}
             •{" "}
-            {dayjs(newsItem.createdAt, {
+            {dayjs(post.createdAt, {
               locale: language === "bangla" ? "bn-bd" : "en",
             }).fromNow()}
           </Text>
@@ -232,7 +231,7 @@ export default function FeedNewsItemView({
             ]}
             numberOfLines={1}
           >
-            {translate("readMoreAt", { name: newsItem.sourceName })}
+            {translate("readMoreAt", { name: post.sourceName })}
           </Text>
           <ChevronRightIcon size={22} color={colors.tintColor} />
         </Pressable>

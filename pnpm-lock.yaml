@@ -165,6 +165,9 @@ importers:
         specifier: 2.2.1
         version: 2.2.1
     devDependencies:
+      '@acme/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@acme/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
@@ -210,6 +213,9 @@ importers:
 
   apps/server:
     dependencies:
+      '@acme/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@fastify/cors':
         specifier: ^9.0.0
         version: 9.0.1
@@ -219,9 +225,6 @@ importers:
       '@fastify/mongodb':
         specifier: ^8.0.0
         version: 8.0.0
-      '@prisma/client':
-        specifier: ^5.9.1
-        version: 5.9.1(prisma@5.9.1)
       '@trpc/server':
         specifier: ^11.0.0-next-beta.251
         version: 11.0.0-next-beta.285
@@ -250,15 +253,28 @@ importers:
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
-      prisma:
-        specifier: ^5.9.1
-        version: 5.9.1
       tsx:
         specifier: ^4.7.0
         version: 4.7.0
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
+
+  packages/db:
+    dependencies:
+      '@prisma/client':
+        specifier: ^5.9.1
+        version: 5.9.1(prisma@5.9.1)
+    devDependencies:
+      '@acme/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      dotenv-cli:
+        specifier: ^7.3.0
+        version: 7.3.0
+      prisma:
+        specifier: ^5.9.1
+        version: 5.9.1
 
   packages/eslint-config:
     devDependencies:

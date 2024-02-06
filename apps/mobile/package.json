@@ -66,6 +66,7 @@
     "superjson": "2.2.1"
   },
   "devDependencies": {
+    "@acme/db": "workspace:*",
     "@acme/typescript-config": "workspace:*",
     "@babel/core": "^7.23.9",
     "@babel/preset-env": "^7.23.9",

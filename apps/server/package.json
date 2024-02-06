@@ -11,19 +11,16 @@
     "start": "pnpm with-env node dist/server.js",
     "test-dev": "pnpm with-env start-server-and-test 'tsx src'",
     "test-start": "pnpm with-env start-server-and-test 'node dist'",
-    "db:migrate": "pnpm with-env prisma migrate dev",
-    "db:studio": "pnpm with-env prisma studio",
-    "db:generate": "pnpm with-env prisma generate",
     "with-env": "dotenv -e ../../.env --"
   },
   "exports": {
     "./trpc": "./src/trpc/index.ts"
   },
   "dependencies": {
+    "@acme/db": "workspace:*",
     "@fastify/cors": "^9.0.0",
     "@fastify/env": "^4.3.0",
     "@fastify/mongodb": "^8.0.0",
-    "@prisma/client": "^5.9.1",
     "@trpc/server": "^11.0.0-next-beta.251",
     "dotenv": "^16.4.1",
     "fastify": "^4.26.0",
@@ -35,7 +32,6 @@
     "dotenv-cli": "^7.3.0",
     "esbuild": "^0.20.0",
     "eslint": "^8.56.0",
-    "prisma": "^5.9.1",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   }
