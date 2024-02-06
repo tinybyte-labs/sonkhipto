@@ -5,7 +5,9 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:studio": "pnpm -F @acme/server db:studio",
+    "db:migrate": "pnpm -F @acme/server db:migrate"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
