@@ -33,7 +33,7 @@ export default function FeedNewsItemView({
   isViewable,
   useBottomInsets,
 }: {
-  post: Post & { author: { name: string } };
+  post: Post & { author?: { name?: string | null } };
   height: number;
   isViewable?: boolean;
   useBottomInsets?: boolean;
@@ -41,9 +41,9 @@ export default function FeedNewsItemView({
   const colors = useColors();
   const [showImage, setShowImage] = useState(false);
   const { translate, language } = useLanguage();
-  const { bookmarks, createBookmark, deleteBookmark } = useBookmark();
+  const { bookmarks, addBookmark, removeBookmark } = useBookmark();
   const bookmark = useMemo(
-    () => bookmarks.find((bm) => bm.type === "news" && bm.data.id === post.id),
+    () => bookmarks.find((bm) => bm.postId === post.id),
     [bookmarks, post.id]
   );
   const insets = useSafeAreaInsets();
@@ -86,14 +86,14 @@ export default function FeedNewsItemView({
           {
             style: "destructive",
             text: translate("remove"),
-            onPress: () => deleteBookmark(bookmark.id),
+            onPress: () => removeBookmark(post.id),
           },
         ]
       );
     } else {
-      createBookmark({ type: "news", data: post });
+      addBookmark(post.id);
     }
-  }, [bookmark, createBookmark, deleteBookmark, post, translate]);
+  }, [bookmark, addBookmark, removeBookmark, post, translate]);
 
   return (
     <View
@@ -184,10 +184,11 @@ export default function FeedNewsItemView({
               color: colors.secondaryForeground,
             }}
           >
-            {translate("byPublisher", {
-              name: post.author.name,
-            })}{" "}
-            •{" "}
+            {post.author?.name
+              ? `${translate("byPublisher", {
+                  name: post.author.name,
+                })} • `
+              : ``}
             {dayjs(post.createdAt, {
               locale: language === "bangla" ? "bn-bd" : "en",
             }).fromNow()}

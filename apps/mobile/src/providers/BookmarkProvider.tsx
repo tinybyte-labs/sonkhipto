@@ -1,12 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import analytics from "@react-native-firebase/analytics";
 import { router } from "expo-router";
 import {
   ReactNode,
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useState,
 } from "react";
 import { Alert } from "react-native";
@@ -14,16 +12,17 @@ import SnackBar from "react-native-snackbar";
 
 import { useLanguage } from "./LanguageProvider";
 
-import { EVENT_KEYS } from "@/constants/event-keys";
 import { STORAGE_KEYS } from "@/constants/storage-keys";
 import { useColors } from "@/hooks/useColors";
 import { Bookmark } from "@/types/bookmark";
-import { nanoid } from "@/utils";
+import { trpc } from "@/utils/trpc";
+import { useAuth } from "./AuthProvider";
+import { PostBookmark } from "@acme/db";
 
 export type BookmarkContextType = {
-  bookmarks: Bookmark[];
-  createBookmark: (dto: Omit<Bookmark, "id" | "createdAt">) => Promise<void>;
-  deleteBookmark: (bookmarkId: string) => Promise<void>;
+  bookmarks: PostBookmark[];
+  addBookmark: (postId: string) => Promise<void>;
+  removeBookmark: (postId: string) => Promise<void>;
   isLoaded: boolean;
   isBusey: boolean;
 };
@@ -42,32 +41,32 @@ export default function BookmarkProvider({
 }: {
   children: ReactNode;
 }) {
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { user } = useAuth();
+  const utils = trpc.useUtils();
+  const bookmarksQuery = trpc.post.getBookmarks.useQuery();
+
   const [isBusey, setIsBusey] = useState(false);
   const { translate } = useLanguage();
   const colors = useColors();
 
-  const createBookmark: BookmarkContextType["createBookmark"] = useCallback(
-    async (dto) => {
-      if (isBusey || !isLoaded) return;
+  const addBookmarkMut = trpc.post.addBookmark.useMutation();
+  const removeBookmarkMut = trpc.post.removeBookmark.useMutation();
 
-      const id = nanoid();
-      const bookmark: Bookmark = {
-        ...dto,
-        id,
-        createdAt: new Date().toISOString(),
-      };
+  const addBookmark: BookmarkContextType["addBookmark"] = useCallback(
+    async (postId) => {
+      if (isBusey) return;
+      if (!user) {
+        Alert.alert("Unauthorized");
+        return;
+      }
 
-      const newList = [...bookmarks, bookmark];
-      setBookmarks(newList);
       try {
         setIsBusey(true);
-        await saveBookmarksToStorage(newList);
-        analytics().logEvent(EVENT_KEYS.ADD_BOOKMARK, {
-          bookmark_type: dto.type,
-          news_item_id: dto.type === "news" ? dto.data.id : undefined,
-        });
+        utils.post.getBookmarks.setData(undefined, (bookmarks) => [
+          ...(bookmarks ?? []),
+          { postId, userId: user.id, createdAt: new Date() },
+        ]);
+        await addBookmarkMut.mutateAsync({ id: postId });
         SnackBar.show({
           text: translate("bookmarked"),
           action: {
@@ -78,65 +77,52 @@ export default function BookmarkProvider({
         });
       } catch (error: any) {
         Alert.alert("Failed to create bookmark", error.message);
-        setBookmarks(newList.filter((bm) => bm.id !== id));
       } finally {
+        utils.post.getBookmarks.invalidate();
+        utils.post.getBookmarksWithPost.invalidate();
         setIsBusey(false);
       }
     },
-    [bookmarks, colors.primary, isBusey, isLoaded, translate]
+    [colors.primary, isBusey, translate]
   );
 
-  const deleteBookmark: BookmarkContextType["deleteBookmark"] = useCallback(
-    async (bookmarkId) => {
-      if (isBusey || !isLoaded) return;
-
-      const bookmark = bookmarks.find((bookmark) => bookmark.id === bookmarkId);
-      if (!bookmark) {
+  const removeBookmark: BookmarkContextType["removeBookmark"] = useCallback(
+    async (postId) => {
+      if (isBusey) return;
+      if (!user) {
+        Alert.alert("Unauthorized");
         return;
       }
 
-      const newList = bookmarks.filter((bm) => bm.id !== bookmarkId);
-      setBookmarks(newList);
-
       try {
         setIsBusey(true);
-        await saveBookmarksToStorage(newList);
-        analytics().logEvent(EVENT_KEYS.REMOVE_BOOKMARK, {
-          bookmark_type: bookmark.type,
-          news_item_id: bookmark.type === "news" ? bookmark.data.id : undefined,
-        });
+        utils.post.getBookmarks.setData(
+          undefined,
+          (bookmarks) =>
+            bookmarks?.filter((bookmark) => bookmark.postId !== postId)
+        );
+        await removeBookmarkMut.mutateAsync({ id: postId });
         SnackBar.show({ text: translate("bookmarkRemoved") });
       } catch (error: any) {
         Alert.alert("Failed to delete bookmark", error.message);
-        setBookmarks([...newList, bookmark]);
       } finally {
+        utils.post.getBookmarks.invalidate();
+        utils.post.getBookmarksWithPost.invalidate();
         setIsBusey(false);
       }
     },
-    [bookmarks, isBusey, isLoaded, translate]
+    [isBusey, translate]
   );
-
-  useEffect(() => {
-    const loadBookmarks = async () => {
-      try {
-        const bookmarkedItemsStr = await AsyncStorage.getItem(
-          STORAGE_KEYS.BOOKMARKED_ITEMS
-        );
-        if (bookmarkedItemsStr) {
-          const bookmarks = JSON.parse(bookmarkedItemsStr);
-          setBookmarks(bookmarks);
-        }
-      } catch (error: any) {
-        console.log(error);
-      }
-      setIsLoaded(true);
-    };
-    loadBookmarks();
-  }, []);
 
   return (
     <BookmarkContext.Provider
-      value={{ bookmarks, isLoaded, createBookmark, deleteBookmark, isBusey }}
+      value={{
+        bookmarks: bookmarksQuery.data ?? [],
+        isLoaded: !bookmarksQuery.isPending,
+        addBookmark,
+        removeBookmark,
+        isBusey,
+      }}
     >
       {children}
     </BookmarkContext.Provider>

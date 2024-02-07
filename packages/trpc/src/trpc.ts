@@ -16,7 +16,11 @@ const isAuthenticated = t.middleware(async ({ ctx, next }) => {
   if (!ctx.session) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  return next();
+  const user = await ctx.db.user.findUnique({ where: { id: ctx.session.id } });
+  if (!user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({ ctx: { session: ctx.session, user } });
 });
 
 export const protectedProcedure = t.procedure.use(isAuthenticated);
