@@ -3,12 +3,14 @@ import { HomeIcon, SettingsIcon } from "lucide-react-native";
 
 import TabBar from "@/components/TabBar";
 import { useLanguage } from "@/providers/LanguageProvider";
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function TabLayout() {
-  const { translate, hasSelectedLanguage } = useLanguage();
+  const { translate } = useLanguage();
+  const { user } = useAuth();
 
-  if (!hasSelectedLanguage) {
-    return <Redirect href="/language-selector" />;
+  if (!user) {
+    return <Redirect href="/onboarding" />;
   }
 
   return (

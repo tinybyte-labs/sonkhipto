@@ -21,6 +21,7 @@ import LanguageProvider, { useLanguage } from "@/providers/LanguageProvider";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { ArrowLeftIcon } from "lucide-react-native";
 import TRPcProvider from "@/providers/TRPcProvider";
+import AuthProvider from "@/providers/AuthProvider";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -76,14 +77,16 @@ export default function RootLayout() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ActionSheetProvider>
           <ThemeProvider value={theme}>
-            <LanguageProvider>
-              <BookmarkProvider>
-                <Analytics>
-                  <StatusBar style={theme.dark ? "light" : "dark"} />
-                  <RootLayoutNav />
-                </Analytics>
-              </BookmarkProvider>
-            </LanguageProvider>
+            <AuthProvider>
+              <LanguageProvider>
+                <BookmarkProvider>
+                  <Analytics>
+                    <StatusBar style={theme.dark ? "light" : "dark"} />
+                    <RootLayoutNav />
+                  </Analytics>
+                </BookmarkProvider>
+              </LanguageProvider>
+            </AuthProvider>
           </ThemeProvider>
         </ActionSheetProvider>
       </GestureHandlerRootView>
@@ -111,13 +114,12 @@ function RootLayoutNav() {
       <Stack screenOptions={{ navigationBarColor: colors.transparent }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
-          name="language-selector"
+          name="onboarding"
           options={{
             headerShown: false,
             animation: "fade",
           }}
         />
-
         <Stack.Screen
           name="bookmarks/index"
           options={{

@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import React, { useCallback, useState } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import PrimaryButton from "@/components/PrimaryButton";
@@ -8,15 +8,27 @@ import { languageTranslations } from "@/constants/translations";
 import { useColors } from "@/hooks/useColors";
 import { useLanguage } from "@/providers/LanguageProvider";
 import { Language } from "@/types/language";
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function LanguageSelector() {
   const colors = useColors();
   const [lang, setLang] = useState<Language>("english");
   const { changeLanguage } = useLanguage();
+  const { signInAnonymously } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const onContinue = useCallback(async () => {
-    changeLanguage(lang);
-    router.replace("/");
+    try {
+      setIsLoading(true);
+      await changeLanguage(lang);
+      await signInAnonymously();
+      router.replace("/");
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   }, [changeLanguage, lang]);
 
   return (
@@ -87,6 +99,8 @@ export default function LanguageSelector() {
       <PrimaryButton
         title={languageTranslations[lang].continue}
         onPress={onContinue}
+        isLoading={isLoading}
+        disabled={isLoading}
       />
     </SafeAreaView>
   );

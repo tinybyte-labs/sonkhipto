@@ -2,6 +2,8 @@ import * as Application from "expo-application";
 
 export const APP_NAME = "Sonkhipto";
 
+export const API_URL = "http://localhost:8080";
+
 export const ITUNE_ITEM_ID = 6477333889;
 export const ANDROID_PACKAGE_NAME = "com.tinybytelabs.sonkhipto";
 export const IOS_BUNDLE_IDENTIFIER = "com.tinybytelabs.sonkhipto";

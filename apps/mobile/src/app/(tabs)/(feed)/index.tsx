@@ -12,6 +12,7 @@ import analytics from "@react-native-firebase/analytics";
 import { useScrollToTop } from "@react-navigation/native";
 import { ArrowUpIcon, RefreshCwIcon } from "lucide-react-native";
 import { trpc } from "@/utils/trpc";
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function FeedTabScreen() {
   const { translate, language } = useLanguage();

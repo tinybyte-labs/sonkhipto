@@ -31,6 +31,9 @@ const defineConfig = (): ExpoConfig => ({
         backgroundColor: "#09090b",
       },
     },
+    config: {
+      usesNonExemptEncryption: false,
+    },
   },
   android: {
     adaptiveIcon: {
@@ -64,6 +67,13 @@ const defineConfig = (): ExpoConfig => ({
         ios: {
           useFrameworks: "static",
         },
+      },
+    ],
+    [
+      "expo-secure-store",
+      {
+        faceIDPermission:
+          "Allow $(PRODUCT_NAME) to access your Face ID biometric data.",
       },
     ],
   ],

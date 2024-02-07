@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { $Enums } from "@acme/db";
+import { $Enums, User } from "@acme/db";
+import jwt from "jsonwebtoken";
 
 export type Payload = {
   id: string;
@@ -8,5 +9,20 @@ export type Payload = {
 };
 
 export const getSession = async (req: FastifyRequest, reply: FastifyReply) => {
-  return req.jwtVerify() as Promise<Payload>;
+  const accessToken = req.headers.authorization?.replace("Bearer ", "");
+  if (!accessToken) {
+    throw new Error("Unauthorized");
+  }
+  const payload = await jwt.verify(accessToken, process.env.JWT_SECRET!);
+  return payload as Payload;
+};
+
+export const signJwt = async (user: User) => {
+  const payload: Payload = {
+    id: user.id,
+    name: user.name,
+    role: user.role,
+  };
+  const token = await jwt.sign(payload, process.env.JWT_SECRET!);
+  return token;
 };

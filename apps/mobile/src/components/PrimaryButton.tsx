@@ -27,17 +27,20 @@ export default function PrimaryButton({
       disabled={disabled || isLoading}
       onPress={onPress}
     >
-      {isLoading && <ActivityIndicator color={colors.primaryForeground} />}
-      <Text
-        style={[
-          styles.label,
-          {
-            color: colors.primaryForeground,
-          },
-        ]}
-      >
-        {title}
-      </Text>
+      {isLoading ? (
+        <ActivityIndicator color={colors.primaryForeground} />
+      ) : (
+        <Text
+          style={[
+            styles.label,
+            {
+              color: colors.primaryForeground,
+            },
+          ]}
+        >
+          {title}
+        </Text>
+      )}
     </Pressable>
   );
 }
