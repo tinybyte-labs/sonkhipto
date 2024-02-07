@@ -83,7 +83,9 @@ fastify.register(fastifyTRPCPlugin, {
 const start = async () => {
   try {
     const port = process.env.PORT ? Number(process.env.PORT) : 8080;
-    await fastify.listen({ port });
+    const host = "RENDER" in process.env ? `0.0.0.0` : `localhost`;
+
+    await fastify.listen({ port, host });
     console.log("listening on port", port);
     fastify.cron.startAllJobs();
   } catch (err) {
