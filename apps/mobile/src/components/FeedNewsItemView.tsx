@@ -19,9 +19,9 @@ import { useLanguage } from "@/providers/LanguageProvider";
 import analytics from "@react-native-firebase/analytics";
 import dayjs from "dayjs";
 import {
+  ArrowUpRightIcon,
   BookmarkCheckIcon,
   BookmarkIcon,
-  ChevronRightIcon,
   ShareIcon,
 } from "lucide-react-native";
 
@@ -228,13 +228,14 @@ export default function FeedNewsItemView({
               styles.wideButtonTitle,
               {
                 color: colors.tintColor,
+                flex: 1,
               },
             ]}
             numberOfLines={1}
           >
             {translate("readMoreAt", { name: post.sourceName })}
           </Text>
-          <ChevronRightIcon size={22} color={colors.tintColor} />
+          <ArrowUpRightIcon size={22} color={colors.tintColor} />
         </Pressable>
         <Pressable
           style={({ pressed }) => [
@@ -281,13 +282,12 @@ const styles = StyleSheet.create({
   wideButton: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 8,
-    paddingRight: 12,
+    gap: 4,
+    paddingRight: 16,
     paddingLeft: 16,
     height: 48,
     borderRadius: 48,
     flex: 1,
-    justifyContent: "space-between",
   },
   wideButtonTitle: {
     fontWeight: "600",

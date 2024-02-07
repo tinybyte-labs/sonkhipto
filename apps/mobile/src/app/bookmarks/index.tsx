@@ -1,17 +1,29 @@
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
 
 import FeedList, { FeedItem } from "@/components/FeedList";
 import { useColors } from "@/hooks/useColors";
 import { useLanguage } from "@/providers/LanguageProvider";
 import { trpc } from "@/utils/trpc";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function BookmarksScreen() {
-  const [height, setHeight] = useState(0);
+  const dimensions = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const colors = useColors();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { translate } = useLanguage();
+  const height = useMemo(
+    () => dimensions.height - (insets.top + 62),
+    [insets.top, insets.bottom, dimensions.height]
+  );
+
   const bookmarksQuery = trpc.post.getBookmarksWithPost.useInfiniteQuery(
     {},
     {
@@ -44,12 +56,7 @@ export default function BookmarksScreen() {
   }, [bookmarksQuery]);
 
   return (
-    <View
-      style={{ flex: 1 }}
-      onLayout={(ev) => {
-        setHeight(ev.nativeEvent.layout.height);
-      }}
-    >
+    <View style={{ flex: 1 }}>
       {bookmarksQuery.isPending || height == 0 ? (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}

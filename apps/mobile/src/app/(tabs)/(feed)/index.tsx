@@ -1,7 +1,12 @@
 import type { FeedItem } from "@/components/FeedList";
 import type { FlatList, ViewToken } from "react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { Stack } from "expo-router";
 import { AppBar, AppBarIconButton, AppBarTitle } from "@/components/AppBar";
 import FeedList from "@/components/FeedList";
@@ -12,15 +17,22 @@ import analytics from "@react-native-firebase/analytics";
 import { useScrollToTop } from "@react-navigation/native";
 import { ArrowUpIcon, RefreshCwIcon } from "lucide-react-native";
 import { trpc } from "@/utils/trpc";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function FeedTabScreen() {
   const { translate, language } = useLanguage();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const colors = useColors();
   const listRef = useRef<FlatList<FeedItem>>(null);
-  const [height, setHeight] = useState(0);
+  const insets = useSafeAreaInsets();
   const [activeIndex, setActiveIndex] = useState(0);
   useScrollToTop(listRef);
+  const dimensions = useWindowDimensions();
+
+  const height = useMemo(
+    () => dimensions.height - (insets.top + insets.bottom + 64 + 62),
+    []
+  );
 
   const myFeedQuery = trpc.post.findMany.useInfiniteQuery(
     {
@@ -96,12 +108,7 @@ export default function FeedTabScreen() {
   }, [language]);
 
   return (
-    <View
-      style={{ flex: 1 }}
-      onLayout={(ev) => {
-        setHeight(ev.nativeEvent.layout.height);
-      }}
-    >
+    <View style={{ flex: 1 }}>
       <Stack.Screen
         options={{
           header: () => (
@@ -134,7 +141,7 @@ export default function FeedTabScreen() {
           title: translate("myFeed"),
         }}
       />
-      {myFeedQuery.isPending || height <= 0 ? (
+      {myFeedQuery.isPending ? (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >

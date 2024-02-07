@@ -7,7 +7,6 @@ export const API_URL =
   Device.isDevice || !__DEV__
     ? "https://willing-monitor-locally.ngrok-free.app"
     : "http://localhost:8080";
-console.log({ API_URL });
 
 export const ITUNE_ITEM_ID = 6477333889;
 export const ANDROID_PACKAGE_NAME = "com.tinybytelabs.sonkhipto";

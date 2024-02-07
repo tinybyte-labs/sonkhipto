@@ -45,7 +45,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           STORAGE_KEYS.SECURE_ACCESS_TOKEN
         );
         if (accessToken) {
-          console.log("GOT ACCESS TOKEN");
           setToken(accessToken);
           await userQuery.refetch();
         }

@@ -16,7 +16,7 @@ export type Colors = {
 const darkColors: Colors = {
   primary: "#FF5D61",
   primaryActive: "#ffffff",
-  tintColor: "#FF5D61",
+  tintColor: "#ffffff",
   primaryForeground: "#151839",
   background: "#09090b",
   foreground: "#fafafa",
