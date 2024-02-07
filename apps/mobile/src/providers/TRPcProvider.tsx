@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { trpc } from "@/utils/trpc";
 import { httpBatchLink } from "@trpc/react-query";
 import superjson from "superjson";
+import { API_URL } from "@/constants";
 
 export let token: string | undefined = undefined;
 
@@ -16,7 +17,7 @@ export default function TRPcProvider({ children }: { children: ReactNode }) {
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: "http://localhost:8080/trpc",
+          url: `${API_URL}/trpc`,
           transformer: superjson,
           headers(opts) {
             return {

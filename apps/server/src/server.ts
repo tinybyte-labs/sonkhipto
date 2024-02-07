@@ -6,6 +6,11 @@ import fastifyCors from "@fastify/cors";
 import fastifyEnv from "@fastify/env";
 import fastifyJwt from "@fastify/jwt";
 import fastifyCookie from "@fastify/cookie";
+import fastifyCron from "fastify-cron";
+import {
+  SCRAPE_NEWS_FEEDS_JOB_NAME,
+  scrapeNewsFeedsJob,
+} from "./jobs/scrape-news-feeds";
 
 const fastify = Fastify({ logger: true });
 
@@ -31,7 +36,7 @@ fastify.register(fastifyEnv, {
   confKey: "config",
   schema: {
     type: "object",
-    required: ["PORT", "JWT_SECRET", "DATABASE_URL"],
+    required: ["PORT", "JWT_SECRET", "DATABASE_URL", "AUTHOR_ID"],
     properties: {
       PORT: {
         type: "string",
@@ -56,6 +61,19 @@ fastify.register(fastifyJwt, {
     signed: false,
   },
 });
+fastify.register(fastifyCron, {
+  jobs: [scrapeNewsFeedsJob],
+});
+
+fastify.get("/scrape-news-feeds", async (res, reply) => {
+  const job = fastify.cron.getJobByName(SCRAPE_NEWS_FEEDS_JOB_NAME);
+  if (job) {
+    job.fireOnTick();
+    reply.send("Scraping started");
+  } else {
+    reply.code(404).send("Job not found!");
+  }
+});
 
 fastify.register(fastifyTRPCPlugin, {
   prefix: "/trpc",
@@ -67,6 +85,7 @@ const start = async () => {
     const port = process.env.PORT ? Number(process.env.PORT) : 8080;
     await fastify.listen({ port });
     console.log("listening on port", port);
+    fastify.cron.startAllJobs();
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
