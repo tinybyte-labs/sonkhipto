@@ -1,13 +1,11 @@
 import "dotenv/config";
+import Fastify from "fastify";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
-import Fastify, { FastifyReply, FastifyRequest } from "fastify";
 import { appRouter, createContext } from "@acme/trpc";
-import cors, { type FastifyCorsOptions } from "@fastify/cors";
+import fastifyCors from "@fastify/cors";
 import fastifyEnv from "@fastify/env";
-import fastifyJwt, { FastifyJWTOptions } from "@fastify/jwt";
-import fastifyCookie, { type FastifyCookieOptions } from "@fastify/cookie";
-import { envOptions } from "./constants/env-options";
-import { authRoutes } from "./routes/auth";
+import fastifyJwt from "@fastify/jwt";
+import fastifyCookie from "@fastify/cookie";
 
 const fastify = Fastify({ logger: true });
 
@@ -19,7 +17,7 @@ listeners.forEach((signal) => {
   });
 });
 
-const corsOptions: FastifyCorsOptions = {
+fastify.register(fastifyCors, {
   origin: (origin, cb) => {
     const allowedOrigins = ["http://localhost:3000"];
     if (origin && !allowedOrigins.includes(origin)) {
@@ -28,33 +26,36 @@ const corsOptions: FastifyCorsOptions = {
     }
     cb(null, true);
   },
-};
-const cookieOptions: FastifyCookieOptions = {};
-const jwtOptions: FastifyJWTOptions = {
+});
+fastify.register(fastifyEnv, {
+  confKey: "config",
+  schema: {
+    type: "object",
+    required: ["PORT", "JWT_SECRET", "DATABASE_URL"],
+    properties: {
+      PORT: {
+        type: "string",
+        default: 8080,
+      },
+      DATABASE_URL: {
+        type: "string",
+      },
+      JWT_SECRET: {
+        type: "string",
+      },
+    },
+  },
+  dotenv: true,
+  data: process.env,
+});
+fastify.register(fastifyCookie);
+fastify.register(fastifyJwt, {
   secret: process.env.JWT_SECRET!,
   cookie: {
     cookieName: "access_token",
     signed: false,
   },
-};
-
-fastify.register(fastifyEnv, envOptions);
-fastify.register(cors, corsOptions);
-fastify.register(fastifyCookie, cookieOptions);
-fastify.register(fastifyJwt, jwtOptions);
-
-fastify.decorate(
-  "authenticate",
-  async function (request: FastifyRequest, reply: FastifyReply) {
-    try {
-      await request.jwtVerify();
-    } catch (err) {
-      reply.send(err);
-    }
-  }
-);
-
-fastify.register(authRoutes);
+});
 
 fastify.register(fastifyTRPCPlugin, {
   prefix: "/trpc",
