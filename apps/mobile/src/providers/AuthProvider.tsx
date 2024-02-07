@@ -22,7 +22,7 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const utils = trpc.useUtils();
-  const userQuery = trpc.auth.currentUser.useQuery();
+  const userQuery = trpc.auth.currentUser.useQuery(undefined, { retry: false });
 
   const signInAnonymouslyMut = trpc.auth.signInAnonymously.useMutation();
 

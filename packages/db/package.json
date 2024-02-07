@@ -4,11 +4,14 @@
   "description": "",
   "type": "module",
   "private": true,
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "pnpm build -- --watch",
     "studio": "pnpm with-env prisma studio",
     "migrate": "pnpm with-env prisma migrate dev",
+    "push": "pnpm with-env prisma db push",
     "generate": "pnpm with-env prisma generate",
     "with-env": "dotenv -e ../../.env --"
   },

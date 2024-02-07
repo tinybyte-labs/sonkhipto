@@ -2,21 +2,27 @@
   "name": "sonkhipto",
   "private": true,
   "scripts": {
-    "build": "turbo build",
+    "build": "pnpm db:push && turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "studio": "pnpm -F @acme/db studio",
-    "prisma:studio": "pnpm -F @acme/db studio",
-    "prisma:migrate": "pnpm -F @acme/db migrate",
-    "prisma:generate": "pnpm -F @acme/db generate",
+    "db:studio": "pnpm -F @acme/db studio",
+    "db:migrate": "pnpm -F @acme/db migrate",
+    "db:generate": "pnpm -F @acme/db generate",
+    "db:push": "pnpm -F @acme/db push",
+    "server:build": "pnpm db:generate && pnpm db:push && pnpm -F @acme/server build",
+    "server:start": "pnpm -F @acme/server start",
     "ios": "pnpm -F @acme/mobile ios",
-    "android": "pnpm -F @acme/mobile android"
+    "android": "pnpm -F @acme/mobile android",
+    "db:up": "docker-compose up -d",
+    "db:down": "docker-compose down"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@acme/typescript-config": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
     "prettier": "^3.1.1",
+    "tsup": "^8.0.1",
     "turbo": "latest"
   },
   "packageManager": "pnpm@8.9.0",
