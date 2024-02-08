@@ -115,4 +115,28 @@ export const postRouter = router({
         bookmarks,
       };
     }),
+  addView: protectedProcedure
+    .input(z.object({ postId: z.string() }))
+    .mutation(async (opts) => {
+      try {
+        await opts.ctx.db.postView.create({
+          data: {
+            postId: opts.input.postId,
+            userId: opts.ctx.user.id,
+          },
+        });
+      } catch (error: any) {}
+    }),
+  addImpression: protectedProcedure
+    .input(z.object({ postId: z.string() }))
+    .mutation(async (opts) => {
+      try {
+        await opts.ctx.db.postImpression.create({
+          data: {
+            postId: opts.input.postId,
+            userId: opts.ctx.user.id,
+          },
+        });
+      } catch (error: any) {}
+    }),
 });

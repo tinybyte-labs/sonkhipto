@@ -42,6 +42,7 @@ export const englishTranslations = {
   byPublisher: "By {name}",
   noBookmarks: "You haven't bookmarked any news yet!",
   readMoreAt: "Read more at {name}",
+  youHaveCompletelyCaughtUp: "You've completely caught up!",
 };
 
 export type TranslationKey = keyof typeof englishTranslations;
@@ -88,6 +89,7 @@ export const banglaTranslations: Record<TranslationKey, string> = {
   byPublisher: "{name} এর পক্ষ থেকে",
   noBookmarks: "আপনি এখনও কোনো পোস্ট বুকমার্ক করেননি!",
   readMoreAt: "{name} এ আরো পড়ুন",
+  youHaveCompletelyCaughtUp: "আপনি সম্পূর্ণভাবে আপডেট হয়ে গেছেন!",
 };
 
 export const languageTranslations: Record<

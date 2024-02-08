@@ -21,7 +21,6 @@ export default function TRPcProvider({ children }: { children: ReactNode }) {
         defaultOptions: {
           queries: {
             gcTime: 1000 * 60 * 60 * 24, // 24 hours
-            staleTime: 1000 * 60 * 5, // 1 hour
           },
         },
       })

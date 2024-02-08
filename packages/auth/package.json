@@ -8,7 +8,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "pnpm build -- --watch"
+    "dev": "pnpm build --watch"
   },
   "keywords": [],
   "author": "",

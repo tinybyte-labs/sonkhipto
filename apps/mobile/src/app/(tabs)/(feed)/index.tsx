@@ -30,11 +30,11 @@ export default function FeedTabScreen() {
   const dimensions = useWindowDimensions();
 
   const height = useMemo(
-    () => dimensions.height - (insets.top + insets.bottom + 64 + 62),
-    []
+    () => dimensions.height - (insets.top + insets.bottom + 65 + 62),
+    [dimensions.height, insets.top, insets.bottom]
   );
 
-  const myFeedQuery = trpc.post.findMany.useInfiniteQuery(
+  const myFeedQuery = trpc.feed.myFeed.useInfiniteQuery(
     {
       language: language === "bangla" ? "bn" : "en",
     },
@@ -42,6 +42,8 @@ export default function FeedTabScreen() {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
+  const addView = trpc.post.addView.useMutation();
+  const addImpression = trpc.post.addImpression.useMutation();
 
   const feed = useMemo(
     () =>
@@ -66,8 +68,10 @@ export default function FeedTabScreen() {
       const changedItem = info.changed[0];
       if (changedItem && changedItem.isViewable) {
         const item = changedItem.item as FeedItem;
+        console.log(item);
         setActiveIndex(changedItem.index ?? 0);
         if (item && item.type === "post") {
+          addImpression.mutate({ postId: item.data.id });
           void analytics().logEvent(EVENT_KEYS.NEWS_ITEM_IMPRESSION, {
             news_item_id: item.data.id,
             news_item_title: item.data.title,
@@ -95,6 +99,8 @@ export default function FeedTabScreen() {
           news_item_title: item.data.title,
           news_item_url: item.data.sourceUrl,
         });
+        addView.mutate({ postId: item.data.id });
+        console.log("ADD POST VIEW", item.data.id);
       }
     }, 2000);
 
@@ -168,7 +174,7 @@ export default function FeedTabScreen() {
               style={{ height, alignItems: "center", justifyContent: "center" }}
             >
               <Text style={{ color: colors.secondaryForeground }}>
-                {translate("noDataToShow")}
+                {translate("youHaveCompletelyCaughtUp")}
               </Text>
             </View>
           )}

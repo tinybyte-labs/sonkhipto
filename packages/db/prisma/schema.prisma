@@ -47,14 +47,15 @@ model User {
   emailVerified DateTime?
   image         String?
   isAnonymous   Boolean   @default(false)
+  role          UserRole  @default(USER)
 
-  role UserRole @default(USER)
-
-  accounts            Account[]
-  posts               Post[]
-  bookmarks           PostBookmark[]
-  reactions           PostReaction[]
-  followingCategories CategoryFollow[]
+  Account        Account[]
+  Post           Post[]
+  PostBookmark   PostBookmark[]
+  PostReaction   PostReaction[]
+  CategoryFollow CategoryFollow[]
+  PostView       PostView[]
+  PostImpression PostImpression[]
 }
 
 enum PostType {
@@ -75,10 +76,13 @@ model Post {
   countryCode String   @db.VarChar(6)
   type        PostType @default(NEWS)
 
-  author     User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  bookmarks  PostBookmark[]
-  reactions  PostReaction[]
-  categories PostCategory[]
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  PostBookmark   PostBookmark[]
+  PostReaction   PostReaction[]
+  PostCategory   PostCategory[]
+  PostView       PostView[]
+  PostImpression PostImpression[]
 }
 
 model PostBookmark {
@@ -116,8 +120,8 @@ model Category {
   name        String   @db.VarChar(32)
   description String?  @db.VarChar(300)
 
-  posts     PostCategory[]
-  followers CategoryFollow[]
+  PostCategory   PostCategory[]
+  CategoryFollow CategoryFollow[]
 }
 
 model PostCategory {
@@ -139,4 +143,24 @@ model CategoryFollow {
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, categoryId])
+}
+
+model PostImpression {
+  userId String @db.Uuid
+  postId String @db.Uuid
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model PostView {
+  userId String @db.Uuid
+  postId String @db.Uuid
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
 }

@@ -1,5 +1,3 @@
-import type { NewsItem } from "@/types/news-item";
-import type { WithId } from "@/types/with-id";
 import { forwardRef, useCallback } from "react";
 import {
   FlatList,
@@ -73,7 +71,7 @@ const FeedList = forwardRef<FlatList, FeedListProps>(
         pagingEnabled
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
-        viewabilityConfig={{ itemVisiblePercentThreshold: 100 }}
+        viewabilityConfig={{ itemVisiblePercentThreshold: 95 }}
         renderItem={renderItem}
         {...props}
       />
