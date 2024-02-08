@@ -96,6 +96,6 @@ export const SCRAPE_NEWS_FEEDS_JOB_NAME = "scrape-news-feeds";
 
 export const scrapeNewsFeedsJob: Params = {
   name: SCRAPE_NEWS_FEEDS_JOB_NAME,
-  cronTime: "0 * * * *",
+  cronTime: "0 */6 * * *",
   onTick: startScrapingNewsFeeds,
 };
