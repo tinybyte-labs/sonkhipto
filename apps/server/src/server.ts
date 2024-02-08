@@ -40,7 +40,7 @@ fastify.register(fastifyEnv, {
     properties: {
       PORT: {
         type: "string",
-        default: 8080,
+        default: 8000,
       },
       DATABASE_URL: {
         type: "string",
@@ -82,7 +82,7 @@ fastify.register(fastifyTRPCPlugin, {
 
 const start = async () => {
   try {
-    const port = process.env.PORT ? Number(process.env.PORT) : 8080;
+    const port = process.env.PORT ? Number(process.env.PORT) : 8000;
     const host = "RENDER" in process.env ? `0.0.0.0` : `localhost`;
 
     await fastify.listen({ port, host });
