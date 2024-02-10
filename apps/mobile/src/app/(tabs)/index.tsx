@@ -80,7 +80,6 @@ export default function FeedTabScreen() {
           const index = viewedPostIds.findIndex((id) => id === item.data.id);
           if (index === -1) {
             addView.mutate({ postId: item.data.id });
-            console.log("ADD POST VIEW", item.data.id);
             setViewedPostIds([...viewedPostIds, item.data.id]);
           }
         }
@@ -90,7 +89,6 @@ export default function FeedTabScreen() {
   );
 
   const handleRefresh = useCallback(async () => {
-    console.log("Refresh");
     setIsRefreshing(true);
     await feedQuery.refetch();
     setIsRefreshing(false);

@@ -58,7 +58,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           setUser(user);
         }
       } catch (error: unknown) {
-        console.log(error);
+        /* empty */
       } finally {
         setIsLoaded(true);
       }

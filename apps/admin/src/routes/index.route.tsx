@@ -6,7 +6,6 @@ import { flushSync } from "react-dom";
 
 export const Route = createFileRoute("/")({
   beforeLoad: ({ context, location }) => {
-    console.log(context.auth);
     if (!context.auth.isAuthenticated) {
       throw redirect({
         to: "/signin",

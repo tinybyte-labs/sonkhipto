@@ -45,7 +45,6 @@ export default function BookmarksScreen() {
   }, [bookmarksQuery]);
 
   const handleRefresh = useCallback(async () => {
-    console.log("Refresh");
     setIsRefreshing(true);
     await bookmarksQuery.refetch();
     setIsRefreshing(false);
@@ -53,7 +52,6 @@ export default function BookmarksScreen() {
 
   const handleEndReached = useCallback(() => {
     if (!bookmarksQuery.isFetchingNextPage) {
-      console.log("Fetching next page...");
       bookmarksQuery.fetchNextPage();
     }
   }, [bookmarksQuery]);

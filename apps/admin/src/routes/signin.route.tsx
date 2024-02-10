@@ -37,7 +37,6 @@ function SignIn() {
 
   const signInWithGoogleMut = trpc.auth.signInWithGoogle.useMutation({
     onSuccess: (data) => {
-      console.log(data);
       if (!allowedRoles.includes(data.user.role)) {
         toast({ title: "You don't have access to admin panel" });
         return;
@@ -49,7 +48,6 @@ function SignIn() {
       navigate({ to: search.redirect });
     },
     onError: (error) => {
-      console.log(error);
       toast({
         title: "Failed to sign in with Google",
         description: error.message,

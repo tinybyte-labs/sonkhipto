@@ -102,9 +102,8 @@ function RootLayoutNav() {
     const hideSplashScreen = async () => {
       try {
         await SplashScreen.hideAsync();
-      } catch (error: any) {
-        console.log(error);
-      }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error: any) {}
     };
     hideSplashScreen();
   }, []);

@@ -73,10 +73,12 @@ export default function LanguageProvider({
           setHasSelectedLanguage(true);
           setLanguage(languageStr as Language);
         }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error: any) {
-        console.log(error);
+        /* empty */
+      } finally {
+        setIsLoaded(true);
       }
-      setIsLoaded(true);
     };
     load();
   }, []);

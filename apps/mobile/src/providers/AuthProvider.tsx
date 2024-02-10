@@ -69,8 +69,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           const user = await getCurrentUserMut.mutateAsync();
           setUser(user);
         }
-      } catch (error: any) {
-        console.log(error);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error: unknown) {
+        /* empty */
       } finally {
         setIsLoaded(true);
       }
