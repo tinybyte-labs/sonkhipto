@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@trpc/client": "11.0.0-next-beta.264",
+    "@trpc/react-query": "11.0.0-next-beta.264",
     "@radix-ui/react-slot": "^1.0.2",
     "@tanstack/react-query": "^5.17.7",
     "@tanstack/react-router": "^1.16.0",
@@ -22,6 +24,9 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@acme/db": "workspace:*",
+    "@acme/trpc": "workspace:*",
+    "@acme/typescript-config": "workspace:*",
     "@tanstack/router-devtools": "^1.16.0",
     "@tanstack/router-vite-plugin": "^1.16.1",
     "@types/node": "^20.11.17",
