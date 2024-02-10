@@ -3,8 +3,11 @@ import { Language } from "@/types/language";
 export const englishTranslations = {
   chooseLanguage: "Choose Language",
   english: "English",
+  en: "English",
   bangla: "Bangla",
-  myFeed: "My Feed",
+  bn: "Bangla",
+  "my-feed": "My Feed",
+  "all-posts": "All Posts",
   feed: "Feed",
   discover: "Discover",
   profile: "Profile",
@@ -43,6 +46,9 @@ export const englishTranslations = {
   noBookmarks: "You haven't bookmarked any news yet!",
   readMoreAt: "Read more at {name}",
   youHaveCompletelyCaughtUp: "You've completely caught up!",
+  trending: "Trending",
+  recentBookmarks: "Recent Bookmarks",
+  seeAll: "See all",
 };
 
 export type TranslationKey = keyof typeof englishTranslations;
@@ -50,8 +56,11 @@ export type TranslationKey = keyof typeof englishTranslations;
 export const banglaTranslations: Record<TranslationKey, string> = {
   chooseLanguage: "ভাষা নির্বাচন করুন",
   english: "ইংরেজি",
+  en: "ইংরেজি",
   bangla: "বাংলা",
-  myFeed: "আমার ফিড",
+  bn: "বাংলা",
+  "my-feed": "আমার ফিড",
+  "all-posts": "সমস্ত পোস্ট",
   feed: "ফিড",
   discover: "আবিষ্কার",
   profile: "প্রোফাইল",
@@ -90,12 +99,15 @@ export const banglaTranslations: Record<TranslationKey, string> = {
   noBookmarks: "আপনি এখনও কোনো পোস্ট বুকমার্ক করেননি!",
   readMoreAt: "{name} এ আরো পড়ুন",
   youHaveCompletelyCaughtUp: "আপনি সম্পূর্ণভাবে আপডেট হয়ে গেছেন!",
+  trending: "চলমান",
+  recentBookmarks: "সাম্প্রতিক বুকমার্কগুলি",
+  seeAll: "সবগুলো দেখুন",
 };
 
 export const languageTranslations: Record<
   Language,
   Record<TranslationKey, string>
 > = {
-  english: englishTranslations,
-  bangla: banglaTranslations,
+  en: englishTranslations,
+  bn: banglaTranslations,
 };

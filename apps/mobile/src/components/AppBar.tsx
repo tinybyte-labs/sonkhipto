@@ -1,5 +1,12 @@
 import { ReactNode } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Pressable,
+  StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
@@ -24,10 +31,16 @@ export const AppBar = ({ children, hideInset }: CustomHeaderProps) => {
   );
 };
 
-export const AppBarTitle = ({ title }: { title: string }) => {
+export const AppBarTitle = ({
+  title,
+  style,
+}: {
+  title: string;
+  style?: StyleProp<ViewStyle>;
+}) => {
   const colors = useColors();
   return (
-    <View style={styles.titleContainer}>
+    <View style={[styles.titleContainer, style]}>
       <Text
         numberOfLines={1}
         style={[styles.title, { color: colors.foreground }]}
@@ -68,7 +81,7 @@ export const AppBarIconButton = ({
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingBottom: 4,
     paddingTop: 12,
     flexDirection: "row",
     alignItems: "center",

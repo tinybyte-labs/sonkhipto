@@ -1,27 +1,25 @@
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { DarkTheme, Theme, ThemeProvider } from "@react-navigation/native";
 import dayjs from "dayjs";
-
-import "dayjs/locale/en";
-import "dayjs/locale/bn-bd";
-
-import { useEffect, useMemo } from "react";
-import { useColorScheme, View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { useFonts } from "expo-font";
 import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+import { Provider as JotaiProvider } from "jotai";
+import { ArrowLeftIcon } from "lucide-react-native";
+import { useEffect, useMemo } from "react";
+import { useColorScheme, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 import Analytics from "@/components/Analytics";
 import { AppBar, AppBarIconButton, AppBarTitle } from "@/components/AppBar";
 import { colors } from "@/constants/colors";
 import { useColors } from "@/hooks/useColors";
-import BookmarkProvider from "@/providers/BookmarkProvider";
-import LanguageProvider, { useLanguage } from "@/providers/LanguageProvider";
-import relativeTime from "dayjs/plugin/relativeTime";
-import { ArrowLeftIcon } from "lucide-react-native";
-import TRPcProvider from "@/providers/TRPcProvider";
 import AuthProvider from "@/providers/AuthProvider";
+import FeedProvider from "@/providers/FeedProvider";
+import LanguageProvider, { useLanguage } from "@/providers/LanguageProvider";
+import TRPcProvider from "@/providers/TRPcProvider";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -38,7 +36,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const themedColors = useMemo(
     () => colors[colorScheme === "dark" ? "dark" : "light"],
-    [colorScheme]
+    [colorScheme],
   );
   const theme = useMemo(
     (): Theme => ({
@@ -59,7 +57,7 @@ export default function RootLayout() {
       themedColors.card,
       themedColors.foreground,
       themedColors.primary,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -73,24 +71,26 @@ export default function RootLayout() {
   }
 
   return (
-    <TRPcProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <ActionSheetProvider>
-          <ThemeProvider value={theme}>
-            <AuthProvider>
-              <LanguageProvider>
-                <BookmarkProvider>
+    <JotaiProvider>
+      <TRPcProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <ActionSheetProvider>
+            <ThemeProvider value={theme}>
+              <AuthProvider>
+                <LanguageProvider>
                   <Analytics>
-                    <StatusBar style={theme.dark ? "light" : "dark"} />
-                    <RootLayoutNav />
+                    <FeedProvider>
+                      <StatusBar style={theme.dark ? "light" : "dark"} />
+                      <RootLayoutNav />
+                    </FeedProvider>
                   </Analytics>
-                </BookmarkProvider>
-              </LanguageProvider>
-            </AuthProvider>
-          </ThemeProvider>
-        </ActionSheetProvider>
-      </GestureHandlerRootView>
-    </TRPcProvider>
+                </LanguageProvider>
+              </AuthProvider>
+            </ThemeProvider>
+          </ActionSheetProvider>
+        </GestureHandlerRootView>
+      </TRPcProvider>
+    </JotaiProvider>
   );
 }
 

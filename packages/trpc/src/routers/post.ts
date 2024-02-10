@@ -10,7 +10,7 @@ export const postRouter = router({
         countryCode: z.enum(["BN"]).optional(),
         limit: z.number().min(0).max(50).default(10),
         cursor: z.string().uuid().optional(),
-      })
+      }),
     )
     .query(async ({ ctx, input: { cursor, limit, countryCode, language } }) => {
       const posts = await ctx.db.post.findMany({
@@ -78,6 +78,39 @@ export const postRouter = router({
       });
       return deletedBookmark;
     }),
+
+  addReaction: protectedProcedure
+    .input(z.object({ id: z.string().uuid(), reaction: z.enum(["LIKE"]) }))
+    .mutation(async ({ ctx, input }) => {
+      const post = await ctx.db.post.findUnique({ where: { id: input.id } });
+      if (!post) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Post not found!" });
+      }
+
+      const reaction = await ctx.db.postReaction.upsert({
+        where: { userId_postId: { userId: ctx.user.id, postId: post.id } },
+        create: {
+          reaction: input.reaction,
+          userId: ctx.user.id,
+          postId: post.id,
+        },
+        update: { reaction: input.reaction },
+      });
+      return reaction;
+    }),
+  removeReaction: protectedProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const post = await ctx.db.post.findUnique({ where: { id: input.id } });
+      if (!post) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Post not found!" });
+      }
+
+      const deletedReaction = await ctx.db.postReaction.delete({
+        where: { userId_postId: { userId: ctx.user.id, postId: post.id } },
+      });
+      return deletedReaction;
+    }),
   getBookmarks: protectedProcedure.query(async ({ ctx }) => {
     const bookmarks = await ctx.db.postBookmark.findMany({
       where: { userId: ctx.user.id },
@@ -89,12 +122,24 @@ export const postRouter = router({
       z.object({
         limit: z.number().min(0).max(50).default(10),
         cursor: z.string().uuid().optional(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const bookmarks = await ctx.db.postBookmark.findMany({
         where: { userId: ctx.user.id },
-        include: { post: { include: { author: { select: { name: true } } } } },
+        include: {
+          post: {
+            include: {
+              author: { select: { name: true } },
+              PostReaction: {
+                where: { userId: ctx.user.id },
+              },
+              PostBookmark: {
+                where: { userId: ctx.user.id },
+              },
+            },
+          },
+        },
         orderBy: [{ createdAt: "desc" }, { postId: "asc" }],
         cursor: input.cursor
           ? {
@@ -120,18 +165,6 @@ export const postRouter = router({
     .mutation(async (opts) => {
       try {
         await opts.ctx.db.postView.create({
-          data: {
-            postId: opts.input.postId,
-            userId: opts.ctx.user.id,
-          },
-        });
-      } catch (error: any) {}
-    }),
-  addImpression: protectedProcedure
-    .input(z.object({ postId: z.string() }))
-    .mutation(async (opts) => {
-      try {
-        await opts.ctx.db.postImpression.create({
           data: {
             postId: opts.input.postId,
             userId: opts.ctx.user.id,

@@ -1,3 +1,10 @@
+import analytics from "@react-native-firebase/analytics";
+import dayjs from "dayjs";
+import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
+import * as WebBrowser from "expo-web-browser";
+import { useAtom } from "jotai";
+import { ArrowUpRightIcon } from "lucide-react-native";
 import { useCallback, useMemo, useState } from "react";
 import {
   Alert,
@@ -9,44 +16,88 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
-import * as WebBrowser from "expo-web-browser";
+
+import { FeedNewsItem } from "./FeedList";
+
 import { EVENT_KEYS } from "@/constants/event-keys";
 import { useColors } from "@/hooks/useColors";
-import { useBookmark } from "@/providers/BookmarkProvider";
 import { useLanguage } from "@/providers/LanguageProvider";
-import analytics from "@react-native-firebase/analytics";
-import dayjs from "dayjs";
-import {
-  ArrowUpRightIcon,
-  BookmarkCheckIcon,
-  BookmarkIcon,
-  ShareIcon,
-} from "lucide-react-native";
+import { postBookmarksAtom } from "@/stores/post-bookmark-atom";
+import { postReactionsAtom } from "@/stores/post-reactions-atom";
+import { trpc } from "@/utils/trpc";
 
-import type { Post } from "@acme/db";
-
-export default function FeedNewsItemView({
+export default function FeedPostItemView({
   post,
   height,
   isViewable,
   useBottomInsets,
 }: {
-  post: Post & { author?: { name?: string | null } };
+  post: FeedNewsItem["data"];
   height: number;
   isViewable?: boolean;
   useBottomInsets?: boolean;
 }) {
-  const colors = useColors();
+  const [postReactions, setPostReactions] = useAtom(postReactionsAtom);
+  const [postBookmarks, setPostBookmarks] = useAtom(postBookmarksAtom);
   const [showImage, setShowImage] = useState(false);
   const { translate, language } = useLanguage();
-  const { bookmarks, addBookmark, removeBookmark } = useBookmark();
-  const bookmark = useMemo(
-    () => bookmarks.find((bm) => bm.postId === post.id),
-    [bookmarks, post.id]
-  );
+  const colors = useColors();
   const insets = useSafeAreaInsets();
+  const utils = trpc.useUtils();
+
+  const isBookmarked = useMemo(() => {
+    const _bookmark = postBookmarks[post.id];
+    if (typeof _bookmark !== "undefined") {
+      return _bookmark;
+    }
+    return !!post.PostBookmark?.[0];
+  }, [post.PostBookmark, post.id, postBookmarks]);
+
+  const reaction = useMemo(() => {
+    const _reaction = postReactions[post.id];
+    if (typeof _reaction !== "undefined") {
+      return _reaction;
+    }
+    return post.PostReaction?.[0]?.reaction ?? null;
+  }, [postReactions, post.PostReaction, post.id]);
+
+  const addReaction = trpc.post.addReaction.useMutation({
+    onMutate: (data) => {
+      const _reactions = { ...postReactions };
+      _reactions[data.id] = data.reaction;
+      setPostReactions(_reactions);
+    },
+  });
+
+  const removeReaction = trpc.post.removeReaction.useMutation({
+    onMutate: (data) => {
+      const _reactions = { ...postReactions };
+      _reactions[data.id] = null;
+      setPostReactions(_reactions);
+    },
+  });
+
+  const addBookmark = trpc.post.addBookmark.useMutation({
+    onMutate: (data) => {
+      const _reactions = { ...postBookmarks };
+      _reactions[data.id] = true;
+      setPostBookmarks(_reactions);
+    },
+    onSuccess: () => {
+      utils.post.getBookmarksWithPost.invalidate();
+    },
+  });
+
+  const removeBookmark = trpc.post.removeBookmark.useMutation({
+    onMutate: (data) => {
+      const _reactions = { ...postBookmarks };
+      _reactions[data.id] = false;
+      setPostBookmarks(_reactions);
+    },
+    onSuccess: () => {
+      utils.post.getBookmarksWithPost.invalidate();
+    },
+  });
 
   const onReadMore = useCallback(async () => {
     analytics().logEvent(EVENT_KEYS.READ_MORE, {
@@ -74,7 +125,7 @@ export default function FeedNewsItemView({
   }, [post.id, post.title, post.sourceUrl]);
 
   const onBookmarkPress = useCallback(() => {
-    if (bookmark) {
+    if (isBookmarked) {
       Alert.alert(
         translate("removeBookmark"),
         translate("removeBookmarkWarningMsg"),
@@ -86,14 +137,22 @@ export default function FeedNewsItemView({
           {
             style: "destructive",
             text: translate("remove"),
-            onPress: () => removeBookmark(post.id),
+            onPress: () => removeBookmark.mutate({ id: post.id }),
           },
-        ]
+        ],
       );
     } else {
-      addBookmark(post.id);
+      addBookmark.mutate({ id: post.id });
     }
-  }, [bookmark, addBookmark, removeBookmark, post, translate]);
+  }, [isBookmarked, addBookmark, removeBookmark, post, translate]);
+
+  const onReactionPress = useCallback(() => {
+    if (reaction) {
+      removeReaction.mutate({ id: post.id });
+    } else {
+      addReaction.mutate({ id: post.id, reaction: "LIKE" });
+    }
+  }, [addReaction, post.id, reaction, removeReaction]);
 
   return (
     <View
@@ -186,11 +245,11 @@ export default function FeedNewsItemView({
           >
             {post.author?.name
               ? `${translate("byPublisher", {
-                  name: post.author.name,
+                  name: post.sourceName,
                 })} • `
               : ``}
             {dayjs(post.createdAt, {
-              locale: language === "bangla" ? "bn-bd" : "en",
+              locale: language === "bn" ? "bn-bd" : "en",
             }).fromNow()}
           </Text>
         </ScrollView>
@@ -233,7 +292,7 @@ export default function FeedNewsItemView({
             ]}
             numberOfLines={1}
           >
-            {translate("readMoreAt", { name: post.sourceName })}
+            {translate("readMore")}
           </Text>
           <ArrowUpRightIcon size={22} color={colors.tintColor} />
         </Pressable>
@@ -242,12 +301,18 @@ export default function FeedNewsItemView({
             styles.iconButton,
             { backgroundColor: pressed ? colors.card : colors.secondary },
           ]}
-          onPress={onBookmarkPress}
+          onPress={onReactionPress}
         >
-          {bookmark ? (
-            <BookmarkCheckIcon size={22} color={colors.tintColor} />
+          {reaction === "LIKE" ? (
+            <Image
+              source={require("@/assets/icons/like-fill.png")}
+              style={{ width: 24, height: 24, tintColor: colors.tintColor }}
+            />
           ) : (
-            <BookmarkIcon size={22} color={colors.tintColor} />
+            <Image
+              source={require("@/assets/icons/like-outline.png")}
+              style={{ width: 24, height: 24, tintColor: colors.tintColor }}
+            />
           )}
         </Pressable>
         <Pressable
@@ -257,7 +322,29 @@ export default function FeedNewsItemView({
           ]}
           onPress={onShare}
         >
-          <ShareIcon size={22} color={colors.tintColor} />
+          <Image
+            source={require("@/assets/icons/share.png")}
+            style={{ width: 24, height: 24, tintColor: colors.tintColor }}
+          />
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            styles.iconButton,
+            { backgroundColor: pressed ? colors.card : colors.secondary },
+          ]}
+          onPress={onBookmarkPress}
+        >
+          {isBookmarked ? (
+            <Image
+              source={require("@/assets/icons/bookmark-fill.png")}
+              style={{ width: 24, height: 24, tintColor: colors.tintColor }}
+            />
+          ) : (
+            <Image
+              source={require("@/assets/icons/bookmark-outline.png")}
+              style={{ width: 24, height: 24, tintColor: colors.tintColor }}
+            />
+          )}
         </Pressable>
       </View>
     </View>

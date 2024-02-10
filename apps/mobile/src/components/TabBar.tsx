@@ -71,7 +71,7 @@ export default function TabBar({
               onLongPress={onLongPress}
               style={styles.tab}
             >
-              {icon?.({ focused: isFocused, color, size: 24 })}
+              {icon?.({ focused: isFocused, color, size: 26 })}
               <Text style={[styles.tabLabel, { color }]}>{label}</Text>
             </Pressable>
           );
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontSize: 13,
-    marginTop: 8,
+    marginTop: 6,
     fontWeight: "500",
   },
 });
