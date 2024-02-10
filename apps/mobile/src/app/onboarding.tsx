@@ -6,13 +6,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import PrimaryButton from "@/components/PrimaryButton";
 import { languageTranslations } from "@/constants/translations";
 import { useColors } from "@/hooks/useColors";
-import { useLanguage } from "@/providers/LanguageProvider";
-import { Language } from "@/types/language";
 import { useAuth } from "@/providers/AuthProvider";
+import { availableLanguages, useLanguage } from "@/providers/LanguageProvider";
+import { Language } from "@/types/language";
 
 export default function LanguageSelector() {
   const colors = useColors();
-  const [lang, setLang] = useState<Language>("english");
+  const [selectedLanguage, setLang] = useState<Language>("en");
   const { changeLanguage } = useLanguage();
   const { signInAnonymously } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +20,7 @@ export default function LanguageSelector() {
   const onContinue = useCallback(async () => {
     try {
       setIsLoading(true);
-      await changeLanguage(lang);
+      await changeLanguage(selectedLanguage);
       await signInAnonymously();
       router.replace("/");
     } catch (error: any) {
@@ -29,7 +29,7 @@ export default function LanguageSelector() {
     } finally {
       setIsLoading(false);
     }
-  }, [changeLanguage, lang]);
+  }, [changeLanguage, selectedLanguage, signInAnonymously]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -54,50 +54,37 @@ export default function LanguageSelector() {
         আপনার ভাষা নির্বাচন করুন
       </Text>
       <View style={styles.langButtonsWrapper}>
-        <Pressable
-          style={[
-            styles.langButton,
-            {
-              borderColor: lang === "english" ? colors.primary : colors.border,
-            },
-          ]}
-          onPress={() => setLang("english")}
-        >
-          <Text
+        {availableLanguages.map((lang) => (
+          <Pressable
+            key={lang}
             style={[
-              styles.langButtonTitle,
+              styles.langButton,
               {
-                color: lang === "english" ? colors.primary : colors.foreground,
+                borderColor:
+                  lang === selectedLanguage ? colors.primary : colors.border,
               },
             ]}
+            onPress={() => setLang(lang)}
           >
-            English
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[
-            styles.langButton,
-            {
-              borderColor: lang === "bangla" ? colors.primary : colors.border,
-            },
-          ]}
-          onPress={() => setLang("bangla")}
-        >
-          <Text
-            style={[
-              styles.langButtonTitle,
-              {
-                color: lang === "bangla" ? colors.primary : colors.foreground,
-              },
-            ]}
-          >
-            বাংলা
-          </Text>
-        </Pressable>
+            <Text
+              style={[
+                styles.langButtonTitle,
+                {
+                  color:
+                    lang === selectedLanguage
+                      ? colors.primary
+                      : colors.foreground,
+                },
+              ]}
+            >
+              {languageTranslations[lang][lang]}
+            </Text>
+          </Pressable>
+        ))}
       </View>
       <View style={{ flex: 1 }} />
       <PrimaryButton
-        title={languageTranslations[lang].continue}
+        title={languageTranslations[selectedLanguage].continue}
         onPress={onContinue}
         isLoading={isLoading}
         disabled={isLoading}

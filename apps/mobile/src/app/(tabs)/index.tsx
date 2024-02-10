@@ -1,23 +1,26 @@
-import type { FeedItem } from "@/components/FeedList";
-import type { FlatList, ViewToken } from "react-native";
+import { useActionSheet } from "@expo/react-native-action-sheet";
+import { useScrollToTop } from "@react-navigation/native";
+import { Image } from "expo-image";
+import { Stack } from "expo-router";
+import { ChevronDownIcon } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { FlatList, ViewToken } from "react-native";
 import {
   ActivityIndicator,
   Text,
+  TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
-import { Stack } from "expo-router";
-import { AppBar, AppBarIconButton, AppBarTitle } from "@/components/AppBar";
-import FeedList from "@/components/FeedList";
-import { EVENT_KEYS } from "@/constants/event-keys";
-import { useColors } from "@/hooks/useColors";
-import { useLanguage } from "@/providers/LanguageProvider";
-import analytics from "@react-native-firebase/analytics";
-import { useScrollToTop } from "@react-navigation/native";
-import { ArrowUpIcon, RefreshCwIcon } from "lucide-react-native";
-import { trpc } from "@/utils/trpc";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { AppBar, AppBarIconButton, AppBarTitle } from "@/components/AppBar";
+import type { FeedItem } from "@/components/FeedList";
+import FeedList from "@/components/FeedList";
+import { useColors } from "@/hooks/useColors";
+import { feedItems, useFeed } from "@/providers/FeedProvider";
+import { useLanguage } from "@/providers/LanguageProvider";
+import { trpc } from "@/utils/trpc";
 
 export default function FeedTabScreen() {
   const { translate, language } = useLanguage();
@@ -25,93 +28,96 @@ export default function FeedTabScreen() {
   const colors = useColors();
   const listRef = useRef<FlatList<FeedItem>>(null);
   const insets = useSafeAreaInsets();
-  const [activeIndex, setActiveIndex] = useState(0);
-  useScrollToTop(listRef);
   const dimensions = useWindowDimensions();
+  const { feedType, changeFeedType } = useFeed();
+  const { showActionSheetWithOptions } = useActionSheet();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [viewedPostIds, setViewedPostIds] = useState<string[]>([]);
+
+  useScrollToTop(listRef);
 
   const height = useMemo(
-    () => dimensions.height - (insets.top + insets.bottom + 65 + 62),
-    [dimensions.height, insets.top, insets.bottom]
+    () => dimensions.height - (insets.top + insets.bottom + 65 + 58),
+    [dimensions.height, insets.top, insets.bottom],
   );
 
-  const myFeedQuery = trpc.feed.myFeed.useInfiniteQuery(
+  const feedQuery = trpc.feed.myFeed.useInfiniteQuery(
     {
-      language: language === "bangla" ? "bn" : "en",
+      language,
+      feedType,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-    }
+    },
   );
+
   const addView = trpc.post.addView.useMutation();
-  const addImpression = trpc.post.addImpression.useMutation();
 
   const feed = useMemo(
     () =>
-      myFeedQuery.data?.pages
+      feedQuery.data?.pages
         .flatMap((page) => page.posts)
         .map(
           (post) =>
-            ({ type: "post", data: post, key: post.id }) satisfies FeedItem
+            ({ type: "post", data: post, key: post.id }) satisfies FeedItem,
         ) ?? [],
-    [myFeedQuery.data?.pages]
+    [feedQuery.data?.pages],
   );
 
   const handleEndReached = useCallback(() => {
-    if (!myFeedQuery.isFetchingNextPage) {
-      console.log("Fetching next page...");
-      void myFeedQuery.fetchNextPage();
+    if (!feedQuery.isFetchingNextPage) {
+      feedQuery.fetchNextPage();
     }
-  }, [myFeedQuery]);
+  }, [feedQuery]);
 
   const onViewableItemsChanged = useCallback(
-    (info: { viewableItems: ViewToken[]; changed: ViewToken[] }) => {
+    async (info: { viewableItems: ViewToken[]; changed: ViewToken[] }) => {
       const changedItem = info.changed[0];
       if (changedItem && changedItem.isViewable) {
         const item = changedItem.item as FeedItem;
-        console.log(item);
         setActiveIndex(changedItem.index ?? 0);
         if (item && item.type === "post") {
-          addImpression.mutate({ postId: item.data.id });
-          void analytics().logEvent(EVENT_KEYS.NEWS_ITEM_IMPRESSION, {
-            news_item_id: item.data.id,
-            news_item_title: item.data.title,
-            news_item_url: item.data.sourceUrl,
-          });
+          const index = viewedPostIds.findIndex((id) => id === item.data.id);
+          if (index === -1) {
+            addView.mutate({ postId: item.data.id });
+            console.log("ADD POST VIEW", item.data.id);
+            setViewedPostIds([...viewedPostIds, item.data.id]);
+          }
         }
       }
     },
-    []
+    [addView, viewedPostIds],
   );
 
   const handleRefresh = useCallback(async () => {
     console.log("Refresh");
     setIsRefreshing(true);
-    await myFeedQuery.refetch();
+    await feedQuery.refetch();
     setIsRefreshing(false);
-  }, [myFeedQuery]);
+  }, [feedQuery]);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const item = feed[activeIndex];
-      if (item) {
-        void analytics().logEvent(EVENT_KEYS.NEWS_ITEM_VIEW, {
-          news_item_id: item.data.id,
-          news_item_title: item.data.title,
-          news_item_url: item.data.sourceUrl,
-        });
-        addView.mutate({ postId: item.data.id });
-        console.log("ADD POST VIEW", item.data.id);
-      }
-    }, 2000);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [activeIndex, feed]);
+  const showFeedTypePicker = useCallback(() => {
+    showActionSheetWithOptions(
+      {
+        options: [
+          ...feedItems.map((item) => translate(item.id)),
+          translate("cancel"),
+        ],
+        cancelButtonIndex: feedItems.length,
+        title: "Select Feed",
+      },
+      (index) => {
+        const item = feedItems[index ?? -1];
+        if (item) {
+          changeFeedType(item.id);
+        }
+      },
+    );
+  }, [changeFeedType, showActionSheetWithOptions, translate]);
 
   useEffect(() => {
     listRef.current?.scrollToOffset({ offset: 0, animated: false });
-  }, [language]);
+  }, [language, feedType]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -119,10 +125,26 @@ export default function FeedTabScreen() {
         options={{
           header: () => (
             <AppBar>
-              <AppBarTitle title={translate("myFeed")} />
+              <TouchableOpacity
+                onPress={showFeedTypePicker}
+                style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+              >
+                <AppBarTitle title={translate(feedType)} style={{ flex: 0 }} />
+                <ChevronDownIcon color={colors.foreground} size={24} />
+              </TouchableOpacity>
+              <View style={{ flex: 1 }} />
               {activeIndex > 0 ? (
                 <AppBarIconButton
-                  icon={<ArrowUpIcon size={22} color={colors.tintColor} />}
+                  icon={
+                    <Image
+                      source={require("@/assets/icons/arrow-up.png")}
+                      style={{
+                        width: 24,
+                        height: 24,
+                        tintColor: colors.foreground,
+                      }}
+                    />
+                  }
                   onPress={() =>
                     listRef.current?.scrollToOffset({
                       offset: 0,
@@ -133,30 +155,37 @@ export default function FeedTabScreen() {
               ) : (
                 <AppBarIconButton
                   icon={
-                    myFeedQuery.isRefetching ? (
-                      <ActivityIndicator size={22} color={colors.tintColor} />
+                    feedQuery.isRefetching ? (
+                      <ActivityIndicator size={24} color={colors.tintColor} />
                     ) : (
-                      <RefreshCwIcon size={22} color={colors.tintColor} />
+                      <Image
+                        source={require("@/assets/icons/refresh.png")}
+                        style={{
+                          width: 24,
+                          height: 24,
+                          tintColor: colors.foreground,
+                        }}
+                      />
                     )
                   }
-                  onPress={() => myFeedQuery.refetch()}
+                  onPress={() => feedQuery.refetch()}
                 />
               )}
             </AppBar>
           ),
-          title: translate("myFeed"),
+          title: translate(feedType),
         }}
       />
-      {myFeedQuery.isPending ? (
+      {feedQuery.isPending ? (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
           <ActivityIndicator color={colors.foreground} />
         </View>
-      ) : myFeedQuery.isError ? (
+      ) : feedQuery.isError ? (
         <View>
           <Text style={{ color: colors.foreground }}>
-            Error: {myFeedQuery.error.message}
+            Error: {feedQuery.error.message}
           </Text>
         </View>
       ) : (
@@ -179,7 +208,7 @@ export default function FeedTabScreen() {
             </View>
           )}
           ListFooterComponent={() =>
-            feed.length === 0 ? null : myFeedQuery.isFetchingNextPage ? (
+            feed.length === 0 ? null : feedQuery.isFetchingNextPage ? (
               <View
                 style={{
                   height,

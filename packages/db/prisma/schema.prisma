@@ -55,7 +55,6 @@ model User {
   PostReaction   PostReaction[]
   CategoryFollow CategoryFollow[]
   PostView       PostView[]
-  PostImpression PostImpression[]
 }
 
 enum PostType {
@@ -78,11 +77,10 @@ model Post {
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  PostBookmark   PostBookmark[]
-  PostReaction   PostReaction[]
-  PostCategory   PostCategory[]
-  PostView       PostView[]
-  PostImpression PostImpression[]
+  PostBookmark PostBookmark[]
+  PostReaction PostReaction[]
+  PostCategory PostCategory[]
+  PostView     PostView[]
 }
 
 model PostBookmark {
@@ -143,16 +141,6 @@ model CategoryFollow {
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, categoryId])
-}
-
-model PostImpression {
-  userId String @db.Uuid
-  postId String @db.Uuid
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, postId])
 }
 
 model PostView {

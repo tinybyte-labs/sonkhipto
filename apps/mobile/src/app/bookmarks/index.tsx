@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -6,12 +6,12 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import FeedList, { FeedItem } from "@/components/FeedList";
 import { useColors } from "@/hooks/useColors";
 import { useLanguage } from "@/providers/LanguageProvider";
 import { trpc } from "@/utils/trpc";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function BookmarksScreen() {
   const dimensions = useWindowDimensions();
@@ -19,16 +19,17 @@ export default function BookmarksScreen() {
   const colors = useColors();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { translate } = useLanguage();
+  const { index } = useLocalSearchParams();
   const height = useMemo(
-    () => dimensions.height - (insets.top + 62),
-    [insets.top, insets.bottom, dimensions.height]
+    () => dimensions.height - (insets.top + 58),
+    [insets.top, dimensions.height],
   );
 
   const bookmarksQuery = trpc.post.getBookmarksWithPost.useInfiniteQuery(
     {},
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-    }
+    },
   );
 
   const feedItems = useMemo(() => {
@@ -51,13 +52,13 @@ export default function BookmarksScreen() {
   const handleEndReached = useCallback(() => {
     if (!bookmarksQuery.isFetchingNextPage) {
       console.log("Fetching next page...");
-      void bookmarksQuery.fetchNextPage();
+      bookmarksQuery.fetchNextPage();
     }
   }, [bookmarksQuery]);
 
   return (
     <View style={{ flex: 1 }}>
-      {bookmarksQuery.isPending || height == 0 ? (
+      {bookmarksQuery.isPending || height === 0 ? (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
@@ -74,6 +75,12 @@ export default function BookmarksScreen() {
           onRefresh={handleRefresh}
           onEndReached={handleEndReached}
           onEndReachedThreshold={3}
+          initialScrollIndex={index ? Number(index) : 0}
+          getItemLayout={(_, index) => ({
+            index,
+            length: height,
+            offset: height * index,
+          })}
           ListEmptyComponent={() => (
             <View
               style={{ height, alignItems: "center", justifyContent: "center" }}

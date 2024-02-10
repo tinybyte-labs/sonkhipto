@@ -1,14 +1,11 @@
-import { CheckIcon } from "lucide-react-native";
+import { Image } from "expo-image";
 import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ListItem, ListSection } from "@/components/List";
-import {
-  banglaTranslations,
-  englishTranslations,
-} from "@/constants/translations";
+import { languageTranslations } from "@/constants/translations";
 import { useColors } from "@/hooks/useColors";
-import { useLanguage } from "@/providers/LanguageProvider";
+import { availableLanguages, useLanguage } from "@/providers/LanguageProvider";
 
 export default function LanguageScreen() {
   const { translate, changeLanguage, language } = useLanguage();
@@ -26,24 +23,25 @@ export default function LanguageScreen() {
       }}
     >
       <ListSection title={translate("chooseLanguage")}>
-        <ListItem
-          title={englishTranslations.english}
-          leading={
-            language === "english" ? (
-              <CheckIcon size={22} color={colors.tintColor} />
-            ) : null
-          }
-          onPress={() => changeLanguage("english")}
-        />
-        <ListItem
-          title={banglaTranslations.bangla}
-          leading={
-            language === "bangla" ? (
-              <CheckIcon size={22} color={colors.tintColor} />
-            ) : null
-          }
-          onPress={() => changeLanguage("bangla")}
-        />
+        {availableLanguages.map((lang) => (
+          <ListItem
+            key={lang}
+            title={languageTranslations[lang][lang]}
+            leading={
+              language === lang ? (
+                <Image
+                  source={require("@/assets/icons/check.png")}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    tintColor: colors.foreground,
+                  }}
+                />
+              ) : null
+            }
+            onPress={() => changeLanguage(lang)}
+          />
+        ))}
       </ListSection>
     </ScrollView>
   );

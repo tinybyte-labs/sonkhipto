@@ -25,22 +25,21 @@ export type LanguageContextType = {
 
 export const LanguageContext = createContext<LanguageContextType | null>(null);
 
-const availableLanguages = ["english", "bangla"];
+export const availableLanguages: Language[] = ["en", "bn"];
 
 export default function LanguageProvider({
   children,
 }: {
   children: ReactNode;
 }) {
-  const [language, setLanguage] = useState<Language>("english");
+  const [language, setLanguage] = useState<Language>("en");
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasSelectedLanguage, setHasSelectedLanguage] = useState(false);
 
   const translate: LanguageContextType["translate"] = useCallback(
     (id, replacements) => {
       let value =
-        languageTranslations[language][id] ??
-        languageTranslations["english"][id];
+        languageTranslations[language][id] ?? languageTranslations["en"][id];
       if (replacements) {
         Object.entries(replacements).forEach((replacement) => {
           value = value.replaceAll(`{${replacement[0]}}`, replacement[1]);
@@ -67,7 +66,10 @@ export default function LanguageProvider({
           EVENT_KEYS.SELECTED_LANGUAGE,
         );
 
-        if (!!languageStr && availableLanguages.includes(languageStr)) {
+        if (
+          !!languageStr &&
+          availableLanguages.includes(languageStr as Language)
+        ) {
           setHasSelectedLanguage(true);
           setLanguage(languageStr as Language);
         }

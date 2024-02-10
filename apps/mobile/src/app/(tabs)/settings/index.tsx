@@ -1,15 +1,7 @@
+import { Image } from "expo-image";
 import * as Linking from "expo-linking";
 import * as MailComposer from "expo-mail-composer";
 import { router } from "expo-router";
-import {
-  BookmarkIcon,
-  FacebookIcon,
-  InstagramIcon,
-  LanguagesIcon,
-  MessageSquareIcon,
-  ScrollTextIcon,
-  StarIcon,
-} from "lucide-react-native";
 import { useCallback, useState } from "react";
 import { Alert, Platform, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -90,16 +82,12 @@ export default function SettingsMenuScreen() {
           title={translate("language")}
           type="navigation"
           onPress={() => router.push("/settings/language")}
-          icon={<LanguagesIcon size={22} color={colors.foreground} />}
-        />
-      </ListSection>
-
-      <ListSection title={translate("myContents")}>
-        <ListItem
-          title={translate("bookmarks")}
-          type="navigation"
-          onPress={() => router.push("/bookmarks/")}
-          icon={<BookmarkIcon size={22} color={colors.foreground} />}
+          icon={
+            <Image
+              source={require("@/assets/icons/language.png")}
+              style={{ width: 24, height: 24, tintColor: colors.foreground }}
+            />
+          }
         />
       </ListSection>
 
@@ -108,28 +96,48 @@ export default function SettingsMenuScreen() {
           title={translate("rateTheApp")}
           type="navigation"
           onPress={handleRateTheAppPress}
-          icon={<StarIcon size={22} color={colors.foreground} />}
+          icon={
+            <Image
+              source={require("@/assets/icons/star.png")}
+              style={{ width: 24, height: 24, tintColor: colors.foreground }}
+            />
+          }
         />
 
         <ListItem
           title={translate("sendFeedback")}
           type="navigation"
           onPress={sendFeedback}
-          icon={<MessageSquareIcon size={22} color={colors.foreground} />}
+          icon={
+            <Image
+              source={require("@/assets/icons/feedback.png")}
+              style={{ width: 24, height: 24, tintColor: colors.foreground }}
+            />
+          }
         />
 
         <ListItem
           title={translate("privacyPolicy")}
           type="navigation"
           onPress={() => openURL(PRIVACY_POLICY_URL)}
-          icon={<ScrollTextIcon size={22} color={colors.foreground} />}
+          icon={
+            <Image
+              source={require("@/assets/icons/privacy-policy.png")}
+              style={{ width: 24, height: 24, tintColor: colors.foreground }}
+            />
+          }
         />
 
         <ListItem
           title={translate("termsOfService")}
           type="navigation"
           onPress={() => openURL(TERMS_OF_SERVICE_URL)}
-          icon={<ScrollTextIcon size={22} color={colors.foreground} />}
+          icon={
+            <Image
+              source={require("@/assets/icons/terms-of-service.png")}
+              style={{ width: 24, height: 24, tintColor: colors.foreground }}
+            />
+          }
         />
       </ListSection>
       <ListSection title={translate("social")}>
@@ -137,14 +145,24 @@ export default function SettingsMenuScreen() {
           title={translate("followOnFacebook")}
           type="navigation"
           onPress={() => openURL(FACEBOOK_URL)}
-          icon={<FacebookIcon size={22} color={colors.foreground} />}
+          icon={
+            <Image
+              source={require("@/assets/icons/facebook.png")}
+              style={{ width: 24, height: 24, tintColor: colors.foreground }}
+            />
+          }
         />
 
         <ListItem
           title={translate("followOnInstagram")}
           type="navigation"
           onPress={() => openURL(INSTAGRAM_URL)}
-          icon={<InstagramIcon size={22} color={colors.foreground} />}
+          icon={
+            <Image
+              source={require("@/assets/icons/instagram.png")}
+              style={{ width: 24, height: 24, tintColor: colors.foreground }}
+            />
+          }
         />
       </ListSection>
       <View style={{ padding: 16, gap: 8 }}>

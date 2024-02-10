@@ -1,3 +1,4 @@
+import { Post, PostBookmark, PostReaction } from "@acme/db";
 import { forwardRef, useCallback } from "react";
 import {
   FlatList,
@@ -6,16 +7,21 @@ import {
   Text,
   View,
 } from "react-native";
+
+import FeedPostItemView from "./FeedPostItemView";
+
 import { useColors } from "@/hooks/useColors";
-
-import { Post } from "@acme/db";
-
-import FeedNewsItemView from "./FeedNewsItemView";
 
 export type FeedNewsItem = {
   type: "post";
   key: string;
-  data: Post;
+  data: Post & {
+    PostReaction?: PostReaction[];
+    PostBookmark?: PostBookmark[];
+    author?: {
+      name: string | null;
+    };
+  };
 };
 export type FeedAdItem = {
   type: "ad";
@@ -37,7 +43,7 @@ const FeedList = forwardRef<FlatList, FeedListProps>(
         switch (item.type) {
           case "post":
             return (
-              <FeedNewsItemView
+              <FeedPostItemView
                 post={item.data}
                 height={height}
                 useBottomInsets={useBottomInset}
@@ -59,7 +65,7 @@ const FeedList = forwardRef<FlatList, FeedListProps>(
             return <View style={{ height }} />;
         }
       },
-      [colors.secondaryForeground, height, useBottomInset]
+      [colors.secondaryForeground, height, useBottomInset],
     );
 
     return (
@@ -72,11 +78,12 @@ const FeedList = forwardRef<FlatList, FeedListProps>(
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         viewabilityConfig={{ itemVisiblePercentThreshold: 95 }}
+        initialNumToRender={3}
         renderItem={renderItem}
         {...props}
       />
     );
-  }
+  },
 );
 
 export default FeedList;
