@@ -1,15 +1,10 @@
-import AuthProvider from "@/providers/auth-provider";
-import TRPcProvider from "@/providers/trpc-provider";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import { AuthContextType } from "@/providers/auth-provider";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 
-export const Route = createRootRoute({
-  component: () => (
-    <TRPcProvider>
-      <AuthProvider>
-        <Outlet />
-        <TanStackRouterDevtools />
-      </AuthProvider>
-    </TRPcProvider>
-  ),
+export type RouterContext = {
+  auth: AuthContextType;
+};
+
+export const Route = createRootRouteWithContext<RouterContext>()({
+  component: () => <Outlet />,
 });

@@ -1,4 +1,5 @@
 import { User } from "@acme/db";
+import * as SecureStore from "expo-secure-store";
 import {
   ReactNode,
   createContext,
@@ -7,10 +8,11 @@ import {
   useEffect,
   useState,
 } from "react";
-import * as SecureStore from "expo-secure-store";
+
+import { setToken } from "./TRPcProvider";
+
 import { STORAGE_KEYS } from "@/constants/storage-keys";
 import { trpc } from "@/utils/trpc";
-import { setToken } from "./TRPcProvider";
 
 export type AuthContextType = {
   user?: User | null;
@@ -31,22 +33,22 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       const { accessToken, user } = await signInAnonymouslyMut.mutateAsync();
       await SecureStore.setItemAsync(
         STORAGE_KEYS.SECURE_ACCESS_TOKEN,
-        accessToken
+        accessToken,
       );
       setToken(accessToken);
       utils.auth.currentUser.setData(undefined, user);
       return user;
-    }, []);
+    }, [signInAnonymouslyMut, utils.auth.currentUser]);
 
   useEffect(() => {
     const init = async () => {
       try {
         const accessToken = await SecureStore.getItemAsync(
-          STORAGE_KEYS.SECURE_ACCESS_TOKEN
+          STORAGE_KEYS.SECURE_ACCESS_TOKEN,
         );
         if (accessToken) {
           setToken(accessToken);
-          await userQuery.refetch();
+          await utils.auth.currentUser.refetch();
         }
       } catch (error: any) {
         console.log(error);
@@ -55,7 +57,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
     init();
-  }, []);
+  }, [utils.auth.currentUser]);
 
   if (!isLoaded) {
     return null;
