@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { getAppBarHeight } from "@/components/AppBar";
 import FeedList, { FeedItem } from "@/components/FeedList";
 import { useColors } from "@/hooks/useColors";
 import { useLanguage } from "@/providers/LanguageProvider";
@@ -20,9 +21,10 @@ export default function BookmarksScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { translate } = useLanguage();
   const { index } = useLocalSearchParams();
+
   const height = useMemo(
-    () => dimensions.height - (insets.top + 58),
-    [insets.top, dimensions.height],
+    () => dimensions.height - getAppBarHeight(insets),
+    [dimensions.height, insets],
   );
 
   const bookmarksQuery = trpc.post.getBookmarksWithPost.useInfiniteQuery(

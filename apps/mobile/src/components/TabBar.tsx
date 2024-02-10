@@ -1,7 +1,12 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { EdgeInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
+
+export const getTabBarHeight = (insets: EdgeInsets) => {
+  return 64 + 1 + insets.bottom;
+};
 
 export default function TabBar({
   descriptors,
