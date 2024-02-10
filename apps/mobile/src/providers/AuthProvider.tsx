@@ -14,18 +14,28 @@ import { setToken } from "./TRPcProvider";
 import { STORAGE_KEYS } from "@/constants/storage-keys";
 import { trpc } from "@/utils/trpc";
 
-export type AuthContextType = {
-  user?: User | null;
+export type AuthContextType = (
+  | {
+      isAuthenticated: false;
+      user: null;
+    }
+  | {
+      isAuthenticated: true;
+      user: User;
+    }
+) & {
   signInAnonymously: () => Promise<User>;
+  signOut: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const utils = trpc.useUtils();
-  const userQuery = trpc.auth.currentUser.useQuery(undefined, { retry: false });
+  const [isLoadCalled, setIsLoadCalled] = useState(false);
+  const [user, setUser] = useState<AuthContextType["user"]>(null);
 
+  const getCurrentUserMut = trpc.auth.getCurrentUser.useMutation();
   const signInAnonymouslyMut = trpc.auth.signInAnonymously.useMutation();
 
   const signInAnonymously: AuthContextType["signInAnonymously"] =
@@ -36,19 +46,28 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         accessToken,
       );
       setToken(accessToken);
-      utils.auth.currentUser.setData(undefined, user);
+      setUser(user);
       return user;
-    }, [signInAnonymouslyMut, utils.auth.currentUser]);
+    }, [signInAnonymouslyMut]);
+
+  const signOut: AuthContextType["signOut"] = useCallback(async () => {
+    await SecureStore.deleteItemAsync(STORAGE_KEYS.SECURE_ACCESS_TOKEN);
+    setUser(null);
+    setToken("");
+  }, []);
 
   useEffect(() => {
-    const init = async () => {
+    if (isLoadCalled) return;
+
+    const load = async () => {
       try {
         const accessToken = await SecureStore.getItemAsync(
           STORAGE_KEYS.SECURE_ACCESS_TOKEN,
         );
         if (accessToken) {
           setToken(accessToken);
-          await utils.auth.currentUser.refetch();
+          const user = await getCurrentUserMut.mutateAsync();
+          setUser(user);
         }
       } catch (error: any) {
         console.log(error);
@@ -56,15 +75,25 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoaded(true);
       }
     };
-    init();
-  }, [utils.auth.currentUser]);
+
+    setIsLoadCalled(true);
+    load();
+  }, [getCurrentUserMut, isLoadCalled]);
 
   if (!isLoaded) {
     return null;
   }
 
   return (
-    <AuthContext.Provider value={{ user: userQuery.data, signInAnonymously }}>
+    <AuthContext.Provider
+      value={{
+        ...(user
+          ? { isAuthenticated: true, user }
+          : { isAuthenticated: false, user: null }),
+        signInAnonymously,
+        signOut,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

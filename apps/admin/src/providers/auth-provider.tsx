@@ -27,9 +27,9 @@ export type AuthContextType = (
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthContextType["user"]>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLoadCalled, setIsLoadCalled] = useState(false);
+  const [user, setUser] = useState<AuthContextType["user"]>(null);
 
   const getCurrentUserMut = trpc.auth.getCurrentUser.useMutation();
 
@@ -43,6 +43,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut: AuthContextType["signOut"] = useCallback(async () => {
     localStorage.clear();
+    setToken("");
     setUser(null);
   }, []);
 

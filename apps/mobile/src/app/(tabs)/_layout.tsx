@@ -9,10 +9,10 @@ import { useLanguage } from "@/providers/LanguageProvider";
 
 export default function TabLayout() {
   const { translate } = useLanguage();
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { feedType } = useFeed();
 
-  if (!user) {
+  if (!isAuthenticated) {
     return <Redirect href="/onboarding" />;
   }
 
