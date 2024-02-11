@@ -48,8 +48,8 @@ export const feedRouter = router({
           };
           orderBy = [
             { PostReaction: { _count: "desc" } },
-            { PostView: { _count: "desc" } },
             { PostBookmark: { _count: "desc" } },
+            { PostView: { _count: "desc" } },
             { createdAt: "desc" },
             { id: "asc" },
           ];
@@ -79,6 +79,11 @@ export const feedRouter = router({
       });
 
       let nextCursor = posts[opts.input.limit - 1]?.id;
+
+      console.log({
+        input: opts.input,
+        posts: posts.map((post) => post.id),
+      });
 
       return {
         nextCursor,

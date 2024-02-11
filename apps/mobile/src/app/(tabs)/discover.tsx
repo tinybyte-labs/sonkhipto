@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
-  Pressable,
 } from "react-native";
 
+import PostListItem from "@/components/PostListItem";
 import { useColors } from "@/hooks/useColors";
 import { FeedType, feedItems, useFeed } from "@/providers/FeedProvider";
 import { useLanguage } from "@/providers/LanguageProvider";
@@ -25,13 +25,27 @@ type ActionItem = {
 export default function DiscoverScreen() {
   const { changeFeedType } = useFeed();
   const colors = useColors();
-  const { translate } = useLanguage();
+  const { translate, language } = useLanguage();
+
   const bookmarksQuery = trpc.post.getBookmarksWithPost.useQuery({ limit: 5 });
+  const trendingQuery = trpc.feed.myFeed.useInfiniteQuery(
+    {
+      feedType: "trending",
+      language,
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    },
+  );
+  const trendingPosts = useMemo(
+    () => trendingQuery.data?.pages?.[0]?.posts.slice(0, 5) ?? [],
+    [trendingQuery.data?.pages],
+  );
 
   const handleOpenFeed = useCallback(
-    (type: FeedType) => {
+    (type: FeedType, index = 0) => {
       changeFeedType(type);
-      router.navigate("/");
+      router.navigate(`/?index=${index}`);
     },
     [changeFeedType],
   );
@@ -104,68 +118,57 @@ export default function DiscoverScreen() {
 
       {bookmarksQuery.data && bookmarksQuery.data.bookmarks.length > 0 && (
         <View style={{ gap: 12 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingHorizontal: 16,
+          <SectionTitle
+            title={translate("recentBookmarks")}
+            action={{
+              label: translate("seeAll"),
+              onPress: () => router.push("/bookmarks/"),
             }}
-          >
-            <Text
-              style={{
-                flex: 1,
-                fontSize: 18,
-                fontWeight: "700",
-                color: colors.foreground,
-              }}
-              numberOfLines={1}
-            >
-              {translate("recentBookmarks")}
-            </Text>
-            <TouchableOpacity onPress={() => router.push("/bookmarks/")}>
-              <Text style={{ fontWeight: "600", color: colors.tintColor }}>
-                {translate("seeAll")}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          />
+
           <View>
             {bookmarksQuery.data.bookmarks.map((bookmark, index) => (
               <Fragment key={bookmark.postId}>
-                <Pressable
-                  style={({ pressed }) => ({
-                    flexDirection: "row",
-                    paddingHorizontal: 16,
-                    paddingVertical: 8,
-                    alignItems: "center",
-                    gap: 12,
-                    backgroundColor: pressed
-                      ? colors.secondary
-                      : colors.background,
-                  })}
+                <PostListItem
+                  title={bookmark.post.title}
+                  thumbnailUrl={bookmark.post.imageUrl}
                   onPress={() => router.navigate(`/bookmarks/?index=${index}`)}
-                >
-                  <Image
-                    source={bookmark.post.imageUrl}
-                    style={{ height: 72, width: 72, borderRadius: 12 }}
-                  />
-                  <View style={{ flex: 1, gap: 6 }}>
-                    <Text
-                      style={{ color: colors.foreground, fontWeight: "600" }}
-                    >
-                      {bookmark.post.title}
-                    </Text>
-                    <Text
-                      style={{
-                        color: colors.secondaryForeground,
-                        fontSize: 12,
-                      }}
-                      numberOfLines={1}
-                    >
-                      {bookmark.post.content}
-                    </Text>
-                  </View>
-                </Pressable>
+                />
                 {index < bookmarksQuery.data.bookmarks.length - 1 && (
+                  <View style={{ paddingLeft: 16 + 12 + 72 }}>
+                    <View
+                      style={{
+                        flex: 1,
+                        height: 1,
+                        backgroundColor: colors.border,
+                      }}
+                    />
+                  </View>
+                )}
+              </Fragment>
+            ))}
+          </View>
+        </View>
+      )}
+
+      {trendingPosts.length > 0 && (
+        <View style={{ gap: 12 }}>
+          <SectionTitle
+            title={translate("trending")}
+            action={{
+              label: translate("seeAll"),
+              onPress: () => router.navigate("/trending"),
+            }}
+          />
+          <View>
+            {trendingPosts.map((post, index) => (
+              <Fragment key={post.id}>
+                <PostListItem
+                  title={post.title}
+                  thumbnailUrl={post.imageUrl}
+                  onPress={() => router.navigate(`/trending?index=${index}`)}
+                />
+                {index < trendingPosts.length - 1 && (
                   <View style={{ paddingLeft: 16 + 12 + 72 }}>
                     <View
                       style={{
@@ -184,3 +187,47 @@ export default function DiscoverScreen() {
     </ScrollView>
   );
 }
+
+const SectionTitle = ({
+  title,
+  action,
+}: {
+  title: string;
+  action?: { label: string; color?: string; onPress?: () => void };
+}) => {
+  const colors = useColors();
+
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 16,
+      }}
+    >
+      <Text
+        style={{
+          flex: 1,
+          fontSize: 18,
+          fontWeight: "700",
+          color: colors.foreground,
+        }}
+        numberOfLines={1}
+      >
+        {title}
+      </Text>
+      {!!action && (
+        <TouchableOpacity onPress={action.onPress}>
+          <Text
+            style={{
+              fontWeight: "600",
+              color: action.color ?? colors.tintColor,
+            }}
+          >
+            {action.label}
+          </Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+};

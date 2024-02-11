@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import * as Linking from "expo-linking";
 import * as MailComposer from "expo-mail-composer";
@@ -26,6 +27,7 @@ export default function SettingsMenuScreen() {
   const insets = useSafeAreaInsets();
   const colors = useColors();
   const { translate } = useLanguage();
+  const queryClient = useQueryClient();
 
   const sendFeedback = useCallback(async () => {
     try {
@@ -163,6 +165,15 @@ export default function SettingsMenuScreen() {
               style={{ width: 24, height: 24, tintColor: colors.foreground }}
             />
           }
+        />
+      </ListSection>
+      <ListSection title="Data">
+        <ListItem
+          title="Clear Cache"
+          type="navigation"
+          onPress={() => {
+            queryClient.clear();
+          }}
         />
       </ListSection>
       <View style={{ padding: 16, gap: 8 }}>

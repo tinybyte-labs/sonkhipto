@@ -27,10 +27,8 @@ export const VERSION_WITH_BUILD_NUMBER = `${APP_VERSION}(${APP_BUILD_NUMBER})`;
 
 export const DEV_PRO = __DEV__ && true;
 
-export const PRIVACY_POLICY_URL =
-  "https://tinybytelabs.com/legal/sonkhipto-privacy";
-export const TERMS_OF_SERVICE_URL =
-  "https://tinybytelabs.com/legal/sonkhipto-terms";
+export const PRIVACY_POLICY_URL = "https://sonkhipto.com/legal/privacy";
+export const TERMS_OF_SERVICE_URL = "https://sonkhipto.com/legal/terms";
 
 export const FACEBOOK_URL = "https://www.facebook.com/sonkhiptoapp";
 export const INSTAGRAM_URL = "https://www.instagram.com/sonkhipto.app";

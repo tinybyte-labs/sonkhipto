@@ -134,6 +134,21 @@ function RootLayoutNav() {
             ),
           }}
         />
+        <Stack.Screen
+          name="trending"
+          options={{
+            title: translate("trending"),
+            header: () => (
+              <AppBar>
+                <AppBarIconButton
+                  icon={<ArrowLeftIcon size={22} color={colors.tintColor} />}
+                  onPress={() => router.back()}
+                />
+                <AppBarTitle title={translate("trending")} />
+              </AppBar>
+            ),
+          }}
+        />
       </Stack>
     </View>
   );

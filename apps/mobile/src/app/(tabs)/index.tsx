@@ -3,7 +3,7 @@ import { useScrollToTop } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { useAtom } from "jotai";
 import { ChevronDownIcon } from "lucide-react-native";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import type { FlatList, ViewToken } from "react-native";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
@@ -25,8 +25,8 @@ export default function FeedTabScreen() {
   const { showActionSheetWithOptions } = useActionSheet();
   const [viewedPostIds, setViewedPostIds] = useAtom(viewedPostIdsAtom);
   const [height, setHeight] = useState(-1);
-
   useScrollToTop(listRef);
+
   const feedQuery = trpc.feed.myFeed.useInfiniteQuery(
     {
       language,
@@ -40,13 +40,10 @@ export default function FeedTabScreen() {
   const addView = trpc.post.addView.useMutation();
 
   const feed = useMemo(
-    () =>
+    (): FeedItem[] =>
       feedQuery.data?.pages
         .flatMap((page) => page.posts)
-        .map(
-          (post) =>
-            ({ type: "post", data: post, key: post.id }) satisfies FeedItem,
-        ) ?? [],
+        .map((post) => ({ type: "post", data: post, key: post.id })) ?? [],
     [feedQuery.data?.pages],
   );
 
@@ -97,10 +94,6 @@ export default function FeedTabScreen() {
       },
     );
   }, [changeFeedType, showActionSheetWithOptions, translate]);
-
-  useEffect(() => {
-    listRef.current?.scrollToOffset({ offset: 0, animated: false });
-  }, [language, feedType]);
 
   return (
     <View
