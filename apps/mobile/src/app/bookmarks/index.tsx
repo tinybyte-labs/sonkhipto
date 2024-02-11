@@ -1,31 +1,18 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import {
-  ActivityIndicator,
-  Text,
-  View,
-  useWindowDimensions,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ActivityIndicator, Text, View } from "react-native";
 
-import { getAppBarHeight } from "@/components/AppBar";
 import FeedList, { FeedItem } from "@/components/FeedList";
 import { useColors } from "@/hooks/useColors";
 import { useLanguage } from "@/providers/LanguageProvider";
 import { trpc } from "@/utils/trpc";
 
 export default function BookmarksScreen() {
-  const dimensions = useWindowDimensions();
-  const insets = useSafeAreaInsets();
   const colors = useColors();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { translate } = useLanguage();
   const { index } = useLocalSearchParams();
-
-  const height = useMemo(
-    () => dimensions.height - getAppBarHeight(insets),
-    [dimensions.height, insets],
-  );
+  const [height, setHeight] = useState(-1);
 
   const bookmarksQuery = trpc.post.getBookmarksWithPost.useInfiniteQuery(
     {},
@@ -57,8 +44,13 @@ export default function BookmarksScreen() {
   }, [bookmarksQuery]);
 
   return (
-    <View style={{ flex: 1 }}>
-      {bookmarksQuery.isPending || height === 0 ? (
+    <View
+      style={{ flex: 1 }}
+      onLayout={(ev) => {
+        setHeight(ev.nativeEvent.layout.height);
+      }}
+    >
+      {bookmarksQuery.isPending || height < 0 ? (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >

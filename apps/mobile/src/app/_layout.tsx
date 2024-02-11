@@ -110,7 +110,7 @@ function RootLayoutNav() {
 
   return (
     <View style={{ backgroundColor: colors.background, flex: 1 }}>
-      <Stack screenOptions={{ navigationBarColor: colors.transparent }}>
+      <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="onboarding"

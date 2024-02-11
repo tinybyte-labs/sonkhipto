@@ -49,6 +49,7 @@ export const englishTranslations = {
   trending: "Trending",
   recentBookmarks: "Recent Bookmarks",
   seeAll: "See all",
+  source: "Source {name}",
 };
 
 export type TranslationKey = keyof typeof englishTranslations;
@@ -102,6 +103,7 @@ export const banglaTranslations: Record<TranslationKey, string> = {
   trending: "চলমান",
   recentBookmarks: "সাম্প্রতিক বুকমার্কগুলি",
   seeAll: "সবগুলো দেখুন",
+  source: "সূত্র {name}",
 };
 
 export const languageTranslations: Record<
