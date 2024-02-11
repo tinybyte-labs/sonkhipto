@@ -1,4 +1,4 @@
-import { FastifyRequest, FastifyReply } from "fastify";
+import { FastifyRequest } from "fastify";
 import { $Enums, User } from "@acme/db";
 import jwt from "jsonwebtoken";
 
@@ -8,7 +8,7 @@ export type Payload = {
   role: $Enums.UserRole;
 };
 
-export const getSession = async (req: FastifyRequest, reply: FastifyReply) => {
+export const getSession = async (req: FastifyRequest) => {
   const accessToken = req.headers.authorization?.replace("Bearer ", "");
   if (!accessToken) {
     throw new Error("Unauthorized");

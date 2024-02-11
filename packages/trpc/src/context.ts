@@ -5,7 +5,7 @@ import { Payload, getSession } from "@acme/auth";
 export async function createContext({ req, res }: CreateFastifyContextOptions) {
   let session: Payload | null = null;
   try {
-    session = await getSession(req, res);
+    session = await getSession(req);
   } catch (error: any) {}
   return { req, res, db, session };
 }

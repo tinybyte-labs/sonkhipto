@@ -3,6 +3,7 @@ export type Colors = {
   primaryActive: string;
   primaryForeground: string;
   tintColor: string;
+  tintForegroundColor: string;
   background: string;
   foreground: string;
   distructive: string;
@@ -17,6 +18,7 @@ const darkColors: Colors = {
   primary: "#FF323B",
   primaryActive: "#FF5158",
   tintColor: "#ffffff",
+  tintForegroundColor: "#27272a",
   primaryForeground: "#FFFFFF",
   background: "#09090b",
   foreground: "#fafafa",
@@ -34,6 +36,7 @@ export const lightColors: Colors = {
   primaryActive: "#C40007",
   primaryForeground: "#FFFFFF",
   tintColor: "#09090b",
+  tintForegroundColor: "#ffffff",
   background: "#FFFFFF",
   foreground: "#09090b",
   secondary: "#f4f4f5",

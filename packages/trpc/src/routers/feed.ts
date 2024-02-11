@@ -53,6 +53,7 @@ export const feedRouter = router({
             { createdAt: "desc" },
             { id: "asc" },
           ];
+          break;
 
         default:
           break;

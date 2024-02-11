@@ -40,15 +40,18 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInAnonymously: AuthContextType["signInAnonymously"] =
     useCallback(async () => {
-      const { accessToken, user } = await signInAnonymouslyMut.mutateAsync();
+      if (user) {
+        return user;
+      }
+      const session = await signInAnonymouslyMut.mutateAsync();
       await SecureStore.setItemAsync(
         STORAGE_KEYS.SECURE_ACCESS_TOKEN,
-        accessToken,
+        session.accessToken,
       );
-      setToken(accessToken);
-      setUser(user);
-      return user;
-    }, [signInAnonymouslyMut]);
+      setToken(session.accessToken);
+      setUser(session.user);
+      return session.user;
+    }, [signInAnonymouslyMut, user]);
 
   const signOut: AuthContextType["signOut"] = useCallback(async () => {
     await SecureStore.deleteItemAsync(STORAGE_KEYS.SECURE_ACCESS_TOKEN);
@@ -65,13 +68,16 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           STORAGE_KEYS.SECURE_ACCESS_TOKEN,
         );
         if (accessToken) {
+          console.log(accessToken);
           setToken(accessToken);
           const user = await getCurrentUserMut.mutateAsync();
+          console.log(user);
           setUser(user);
         }
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error: unknown) {
         /* empty */
+        console.log(error);
       } finally {
         setIsLoaded(true);
       }
