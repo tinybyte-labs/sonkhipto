@@ -6,7 +6,7 @@ export const APP_NAME = "Sonkhipto";
 export const API_URL =
   !Device.isDevice || __DEV__
     ? "http://localhost:8000"
-    : "https://sonkhipto-server.onrender.com";
+    : "https://api.sonkhipto.com";
 
 export const ITUNE_ITEM_ID = 6477333889;
 export const ANDROID_PACKAGE_NAME = "com.tinybytelabs.sonkhipto";

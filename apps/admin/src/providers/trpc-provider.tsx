@@ -1,7 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import { QueryClient } from "@tanstack/react-query";
-import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/react-query";
 import { ReactNode, useState } from "react";
 import superjson from "superjson";
@@ -26,18 +23,13 @@ export default function TRPcProvider({ children }: { children: ReactNode }) {
         },
       }),
   );
-  const [asyncStoragePersister] = useState(() =>
-    createAsyncStoragePersister({
-      storage: AsyncStorage,
-    }),
-  );
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
         httpBatchLink({
           url: `${API_URL}/trpc`,
           transformer: superjson,
-          headers(opts) {
+          headers() {
             return {
               authorization: token ? `Bearer ${token}` : undefined,
             };
@@ -48,12 +40,7 @@ export default function TRPcProvider({ children }: { children: ReactNode }) {
   );
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <PersistQueryClientProvider
-        persistOptions={{ persister: asyncStoragePersister }}
-        client={queryClient}
-      >
-        {children}
-      </PersistQueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </trpc.Provider>
   );
 }

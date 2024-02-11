@@ -1,7 +1,7 @@
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useScrollToTop } from "@react-navigation/native";
-import { Image } from "expo-image";
 import { Stack } from "expo-router";
+import { useAtom } from "jotai";
 import { ChevronDownIcon } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FlatList, ViewToken } from "react-native";
@@ -14,12 +14,14 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AppBar, AppBarIconButton, AppBarTitle } from "@/components/AppBar";
+import { AppBar, AppBarTitle, getAppBarHeight } from "@/components/AppBar";
 import type { FeedItem } from "@/components/FeedList";
 import FeedList from "@/components/FeedList";
+import { getTabBarHeight } from "@/components/TabBar";
 import { useColors } from "@/hooks/useColors";
 import { feedItems, useFeed } from "@/providers/FeedProvider";
 import { useLanguage } from "@/providers/LanguageProvider";
+import { viewedPostIdsAtom } from "@/stores/viewed-post-ids";
 import { trpc } from "@/utils/trpc";
 
 export default function FeedTabScreen() {
@@ -31,14 +33,13 @@ export default function FeedTabScreen() {
   const dimensions = useWindowDimensions();
   const { feedType, changeFeedType } = useFeed();
   const { showActionSheetWithOptions } = useActionSheet();
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [viewedPostIds, setViewedPostIds] = useState<string[]>([]);
+  const [viewedPostIds, setViewedPostIds] = useAtom(viewedPostIdsAtom);
 
   useScrollToTop(listRef);
 
   const height = useMemo(
-    () => dimensions.height - (insets.top + insets.bottom + 65 + 58),
-    [dimensions.height, insets.top, insets.bottom],
+    () => dimensions.height - getAppBarHeight(insets) - getTabBarHeight(insets),
+    [dimensions.height, insets],
   );
 
   const feedQuery = trpc.feed.myFeed.useInfiniteQuery(
@@ -75,22 +76,19 @@ export default function FeedTabScreen() {
       const changedItem = info.changed[0];
       if (changedItem && changedItem.isViewable) {
         const item = changedItem.item as FeedItem;
-        setActiveIndex(changedItem.index ?? 0);
         if (item && item.type === "post") {
           const index = viewedPostIds.findIndex((id) => id === item.data.id);
           if (index === -1) {
             addView.mutate({ postId: item.data.id });
-            console.log("ADD POST VIEW", item.data.id);
             setViewedPostIds([...viewedPostIds, item.data.id]);
           }
         }
       }
     },
-    [addView, viewedPostIds],
+    [addView, setViewedPostIds, viewedPostIds],
   );
 
   const handleRefresh = useCallback(async () => {
-    console.log("Refresh");
     setIsRefreshing(true);
     await feedQuery.refetch();
     setIsRefreshing(false);
@@ -132,45 +130,6 @@ export default function FeedTabScreen() {
                 <AppBarTitle title={translate(feedType)} style={{ flex: 0 }} />
                 <ChevronDownIcon color={colors.foreground} size={24} />
               </TouchableOpacity>
-              <View style={{ flex: 1 }} />
-              {activeIndex > 0 ? (
-                <AppBarIconButton
-                  icon={
-                    <Image
-                      source={require("@/assets/icons/arrow-up.png")}
-                      style={{
-                        width: 24,
-                        height: 24,
-                        tintColor: colors.foreground,
-                      }}
-                    />
-                  }
-                  onPress={() =>
-                    listRef.current?.scrollToOffset({
-                      offset: 0,
-                      animated: true,
-                    })
-                  }
-                />
-              ) : (
-                <AppBarIconButton
-                  icon={
-                    feedQuery.isRefetching ? (
-                      <ActivityIndicator size={24} color={colors.tintColor} />
-                    ) : (
-                      <Image
-                        source={require("@/assets/icons/refresh.png")}
-                        style={{
-                          width: 24,
-                          height: 24,
-                          tintColor: colors.foreground,
-                        }}
-                      />
-                    )
-                  }
-                  onPress={() => feedQuery.refetch()}
-                />
-              )}
             </AppBar>
           ),
           title: translate(feedType),

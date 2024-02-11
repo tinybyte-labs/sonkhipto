@@ -287,7 +287,6 @@ export default function FeedPostItemView({
               styles.wideButtonTitle,
               {
                 color: colors.tintColor,
-                flex: 1,
               },
             ]}
             numberOfLines={1}
@@ -296,6 +295,7 @@ export default function FeedPostItemView({
           </Text>
           <ArrowUpRightIcon size={22} color={colors.tintColor} />
         </Pressable>
+        <View style={{ flex: 1 }} />
         <Pressable
           style={({ pressed }) => [
             styles.iconButton,
@@ -374,7 +374,6 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     height: 48,
     borderRadius: 48,
-    flex: 1,
   },
   wideButtonTitle: {
     fontWeight: "600",

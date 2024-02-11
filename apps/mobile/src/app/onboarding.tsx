@@ -25,7 +25,6 @@ export default function LanguageSelector() {
       router.replace("/");
     } catch (error: any) {
       Alert.alert("Error", error.message);
-      console.log(error);
     } finally {
       setIsLoading(false);
     }

@@ -1,5 +1,3 @@
-import { User } from "@acme/db";
-import * as SecureStore from "expo-secure-store";
 import {
   ReactNode,
   createContext,
@@ -8,11 +6,9 @@ import {
   useEffect,
   useState,
 } from "react";
-
-import { setToken } from "./TRPcProvider";
-
-import { STORAGE_KEYS } from "@/constants/storage-keys";
+import type { User } from "@acme/db";
 import { trpc } from "@/utils/trpc";
+import { setToken } from "./trpc-provider";
 
 export type AuthContextType = (
   | {
@@ -24,8 +20,8 @@ export type AuthContextType = (
       user: User;
     }
 ) & {
-  signInAnonymously: () => Promise<User>;
-  signOut: () => Promise<void>;
+  onSignIn: (accessToken: string, user: User) => void;
+  signOut: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -36,40 +32,31 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthContextType["user"]>(null);
 
   const getCurrentUserMut = trpc.auth.getCurrentUser.useMutation();
-  const signInAnonymouslyMut = trpc.auth.signInAnonymously.useMutation();
 
-  const signInAnonymously: AuthContextType["signInAnonymously"] =
-    useCallback(async () => {
-      const { accessToken, user } = await signInAnonymouslyMut.mutateAsync();
-      await SecureStore.setItemAsync(
-        STORAGE_KEYS.SECURE_ACCESS_TOKEN,
-        accessToken,
-      );
-      setToken(accessToken);
+  const onSignIn: AuthContextType["onSignIn"] = useCallback(
+    async (accessToken, user) => {
+      localStorage.setItem("access_token", accessToken);
       setUser(user);
-      return user;
-    }, [signInAnonymouslyMut]);
+    },
+    [],
+  );
 
   const signOut: AuthContextType["signOut"] = useCallback(async () => {
-    await SecureStore.deleteItemAsync(STORAGE_KEYS.SECURE_ACCESS_TOKEN);
-    setUser(null);
+    localStorage.clear();
     setToken("");
+    setUser(null);
   }, []);
 
   useEffect(() => {
     if (isLoadCalled) return;
-
     const load = async () => {
       try {
-        const accessToken = await SecureStore.getItemAsync(
-          STORAGE_KEYS.SECURE_ACCESS_TOKEN,
-        );
-        if (accessToken) {
-          setToken(accessToken);
+        const token = localStorage.getItem("access_token");
+        if (token) {
+          setToken(token);
           const user = await getCurrentUserMut.mutateAsync();
           setUser(user);
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error: unknown) {
         /* empty */
       } finally {
@@ -82,7 +69,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }, [getCurrentUserMut, isLoadCalled]);
 
   if (!isLoaded) {
-    return null;
+    return <p>Loading...</p>;
   }
 
   return (
@@ -91,7 +78,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         ...(user
           ? { isAuthenticated: true, user }
           : { isAuthenticated: false, user: null }),
-        signInAnonymously,
+        onSignIn,
         signOut,
       }}
     >

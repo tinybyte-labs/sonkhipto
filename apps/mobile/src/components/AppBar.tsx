@@ -7,13 +7,17 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
 
 export type CustomHeaderProps = {
   children: ReactNode;
   hideInset?: boolean;
+};
+
+export const getAppBarHeight = (insets: EdgeInsets) => {
+  return 58 + insets.top;
 };
 
 export const AppBar = ({ children, hideInset }: CustomHeaderProps) => {

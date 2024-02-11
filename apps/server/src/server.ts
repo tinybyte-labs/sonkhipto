@@ -24,7 +24,7 @@ listeners.forEach((signal) => {
 
 fastify.register(fastifyCors, {
   origin: (origin, cb) => {
-    const allowedOrigins = ["http://localhost:3000"];
+    const allowedOrigins = ["http://localhost:3000", "http://localhost:5173"];
     if (origin && !allowedOrigins.includes(origin)) {
       cb(new Error("Not Allowed"), false);
       return;
