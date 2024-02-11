@@ -245,7 +245,7 @@ export default function FeedPostItemView({
           >
             {post.author?.name
               ? `${translate("byPublisher", {
-                  name: post.sourceName,
+                  name: post.author.name,
                 })} • `
               : ``}
             {dayjs(post.createdAt, {
@@ -278,7 +278,9 @@ export default function FeedPostItemView({
         <Pressable
           style={({ pressed }) => [
             styles.wideButton,
-            { backgroundColor: pressed ? colors.card : colors.secondary },
+            {
+              backgroundColor: colors.tintColor,
+            },
           ]}
           onPress={onReadMore}
         >
@@ -286,66 +288,74 @@ export default function FeedPostItemView({
             style={[
               styles.wideButtonTitle,
               {
-                color: colors.tintColor,
+                color: colors.tintForegroundColor,
               },
             ]}
             numberOfLines={1}
           >
             {translate("readMore")}
           </Text>
-          <ArrowUpRightIcon size={22} color={colors.tintColor} />
+          <ArrowUpRightIcon size={22} color={colors.tintForegroundColor} />
         </Pressable>
-        <View style={{ flex: 1 }} />
-        <Pressable
-          style={({ pressed }) => [
-            styles.iconButton,
-            { backgroundColor: pressed ? colors.card : colors.secondary },
-          ]}
-          onPress={onReactionPress}
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 6,
+            flex: 1,
+            justifyContent: "flex-end",
+          }}
         >
-          {reaction === "LIKE" ? (
+          <Pressable
+            style={({ pressed }) => [
+              styles.iconButton,
+              { backgroundColor: pressed ? colors.card : colors.secondary },
+            ]}
+            onPress={onReactionPress}
+          >
+            {reaction === "LIKE" ? (
+              <Image
+                source={require("@/assets/icons/like-fill.png")}
+                style={{ width: 24, height: 24, tintColor: colors.tintColor }}
+              />
+            ) : (
+              <Image
+                source={require("@/assets/icons/like-outline.png")}
+                style={{ width: 24, height: 24, tintColor: colors.tintColor }}
+              />
+            )}
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              styles.iconButton,
+              { backgroundColor: pressed ? colors.card : colors.secondary },
+            ]}
+            onPress={onShare}
+          >
             <Image
-              source={require("@/assets/icons/like-fill.png")}
+              source={require("@/assets/icons/share.png")}
               style={{ width: 24, height: 24, tintColor: colors.tintColor }}
             />
-          ) : (
-            <Image
-              source={require("@/assets/icons/like-outline.png")}
-              style={{ width: 24, height: 24, tintColor: colors.tintColor }}
-            />
-          )}
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            styles.iconButton,
-            { backgroundColor: pressed ? colors.card : colors.secondary },
-          ]}
-          onPress={onShare}
-        >
-          <Image
-            source={require("@/assets/icons/share.png")}
-            style={{ width: 24, height: 24, tintColor: colors.tintColor }}
-          />
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            styles.iconButton,
-            { backgroundColor: pressed ? colors.card : colors.secondary },
-          ]}
-          onPress={onBookmarkPress}
-        >
-          {isBookmarked ? (
-            <Image
-              source={require("@/assets/icons/bookmark-fill.png")}
-              style={{ width: 24, height: 24, tintColor: colors.tintColor }}
-            />
-          ) : (
-            <Image
-              source={require("@/assets/icons/bookmark-outline.png")}
-              style={{ width: 24, height: 24, tintColor: colors.tintColor }}
-            />
-          )}
-        </Pressable>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              styles.iconButton,
+              { backgroundColor: pressed ? colors.card : colors.secondary },
+            ]}
+            onPress={onBookmarkPress}
+          >
+            {isBookmarked ? (
+              <Image
+                source={require("@/assets/icons/bookmark-fill.png")}
+                style={{ width: 24, height: 24, tintColor: colors.tintColor }}
+              />
+            ) : (
+              <Image
+                source={require("@/assets/icons/bookmark-outline.png")}
+                style={{ width: 24, height: 24, tintColor: colors.tintColor }}
+              />
+            )}
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -362,18 +372,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     borderRadius: 44,
-    width: 48,
-    height: 48,
+    width: 44,
+    height: 44,
     justifyContent: "center",
   },
   wideButton: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 4,
+    gap: 6,
     paddingRight: 16,
     paddingLeft: 16,
-    height: 48,
-    borderRadius: 48,
+    height: 44,
+    borderRadius: 44,
   },
   wideButtonTitle: {
     fontWeight: "600",
