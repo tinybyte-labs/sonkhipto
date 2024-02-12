@@ -11,7 +11,7 @@
     "dev": "pnpm build --watch",
     "studio": "pnpm with-env prisma studio",
     "migrate": "pnpm with-env prisma migrate dev",
-    "push": "pnpm with-env prisma db push",
+    "push": "pnpm with-env prisma db push --accept-data-loss",
     "generate": "pnpm with-env prisma generate",
     "with-env": "dotenv -e ../../.env --"
   },
