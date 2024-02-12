@@ -1,6 +1,6 @@
 import { Image, ImageSource } from "expo-image";
 import { router } from "expo-router";
-import { Fragment, useCallback, useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import {
   View,
   Text,
@@ -10,20 +10,39 @@ import {
 } from "react-native";
 
 import PostListItem from "@/components/PostListItem";
+import { TranslationKey } from "@/constants/translations";
 import { useColors } from "@/hooks/useColors";
-import { FeedType, feedItems, useFeed } from "@/providers/FeedProvider";
 import { useLanguage } from "@/providers/LanguageProvider";
 import { trpc } from "@/utils/trpc";
 
-type ActionItem = {
-  id: string;
-  name: string;
-  image: ImageSource;
-  onPress: () => void;
-};
+export const feedItems: {
+  id: TranslationKey;
+  icon: ImageSource;
+  href: string;
+}[] = [
+  {
+    id: "my-feed",
+    icon: require("@/assets/icons/my-feed.png"),
+    href: "/",
+  },
+  {
+    id: "all-posts",
+    icon: require("@/assets/icons/all-posts.png"),
+    href: "/all-posts",
+  },
+  {
+    id: "trending",
+    icon: require("@/assets/icons/trending.png"),
+    href: "/trending",
+  },
+  {
+    id: "bookmark",
+    icon: require("@/assets/icons/bookmarks.png"),
+    href: "/bookmarks/",
+  },
+];
 
 export default function DiscoverScreen() {
-  const { changeFeedType } = useFeed();
   const colors = useColors();
   const { translate, language } = useLanguage();
 
@@ -42,46 +61,20 @@ export default function DiscoverScreen() {
     [trendingQuery.data?.pages],
   );
 
-  const handleOpenFeed = useCallback(
-    (type: FeedType, index = 0) => {
-      changeFeedType(type);
-      router.navigate(`/?index=${index}`);
-    },
-    [changeFeedType],
-  );
-
-  const items = useMemo(
-    (): ActionItem[] => [
-      ...feedItems.map<ActionItem>((item) => ({
-        id: item.id,
-        image: item.icon,
-        name: translate(item.id),
-        onPress: () => handleOpenFeed(item.id),
-      })),
-      {
-        id: "bookmark",
-        image: require("@/assets/icons/bookmarks.png"),
-        name: translate("bookmarks"),
-        onPress: () => router.push("/bookmarks/"),
-      },
-    ],
-    [handleOpenFeed, translate],
-  );
-
   return (
     <ScrollView
       style={{ flexGrow: 1 }}
       contentContainerStyle={{ paddingVertical: 16, gap: 32 }}
     >
       <FlatList
-        data={items}
+        data={feedItems}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
         renderItem={({ item }) => (
           <TouchableOpacity
             key={item.id}
-            onPress={item.onPress}
+            onPress={() => router.navigate(item.href)}
             style={{
               width: 86,
             }}
@@ -96,7 +89,7 @@ export default function DiscoverScreen() {
               }}
             >
               <Image
-                source={item.image}
+                source={item.icon}
                 style={{ width: 52, height: 52, tintColor: colors.tintColor }}
               />
             </View>
@@ -110,7 +103,7 @@ export default function DiscoverScreen() {
               }}
               numberOfLines={1}
             >
-              {item.name}
+              {translate(item.id)}
             </Text>
           </TouchableOpacity>
         )}

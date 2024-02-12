@@ -1,4 +1,4 @@
-import { Post, PostBookmark, PostReaction } from "@acme/db";
+import { Post, PostBookmark, FavoritePost } from "@acme/db";
 import { forwardRef, useCallback } from "react";
 import {
   FlatList,
@@ -16,10 +16,13 @@ export type FeedNewsItem = {
   type: "post";
   key: string;
   data: Post & {
-    PostReaction?: PostReaction[];
+    FavoritePost?: FavoritePost[];
     PostBookmark?: PostBookmark[];
     author?: {
       name: string | null;
+    };
+    _count?: {
+      FavoritePost?: number;
     };
   };
 };
@@ -31,11 +34,12 @@ export type FeedItem = FeedNewsItem | FeedAdItem;
 
 export type FeedListProps = Omit<FlatListProps<FeedItem>, "renderItem"> & {
   height: number;
-  useBottomInset?: boolean;
+  bottomInset?: number;
+  topInset?: number;
 };
 
 const FeedList = forwardRef<FlatList, FeedListProps>(
-  ({ height, useBottomInset, ...props }, ref) => {
+  ({ height, topInset, bottomInset, ...props }, ref) => {
     const colors = useColors();
 
     const renderItem: ListRenderItem<FeedItem> = useCallback(
@@ -46,7 +50,8 @@ const FeedList = forwardRef<FlatList, FeedListProps>(
               <FeedPostItemView
                 post={item.data}
                 height={height}
-                useBottomInsets={useBottomInset}
+                bottomInset={bottomInset}
+                topInset={topInset}
               />
             );
           case "ad":
@@ -65,7 +70,7 @@ const FeedList = forwardRef<FlatList, FeedListProps>(
             return <View style={{ height }} />;
         }
       },
-      [colors.secondaryForeground, height, useBottomInset],
+      [bottomInset, colors.secondaryForeground, height, topInset],
     );
 
     return (

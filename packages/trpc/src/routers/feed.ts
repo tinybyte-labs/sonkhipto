@@ -47,7 +47,7 @@ export const feedRouter = router({
             },
           };
           orderBy = [
-            { PostReaction: { _count: "desc" } },
+            { FavoritePost: { _count: "desc" } },
             { PostBookmark: { _count: "desc" } },
             { PostView: { _count: "desc" } },
             { createdAt: "desc" },
@@ -66,12 +66,13 @@ export const feedRouter = router({
         cursor: opts.input.cursor ? { id: opts.input.cursor } : undefined,
         include: {
           author: { select: { name: true } },
-          PostReaction: {
+          FavoritePost: {
             where: { userId: opts.ctx.user.id },
           },
           PostBookmark: {
             where: { userId: opts.ctx.user.id },
           },
+          _count: { select: { FavoritePost: true } },
         },
         where: {
           ...where,

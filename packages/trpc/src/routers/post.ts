@@ -1,37 +1,8 @@
 import { z } from "zod";
-import { protectedProcedure, publicProcedure, router } from "../trpc";
+import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 
 export const postRouter = router({
-  findMany: publicProcedure
-    .input(
-      z.object({
-        language: z.enum(["bn", "en"]).optional(),
-        countryCode: z.enum(["BN"]).optional(),
-        limit: z.number().min(0).max(50).default(10),
-        cursor: z.string().uuid().optional(),
-      }),
-    )
-    .query(async ({ ctx, input: { cursor, limit, countryCode, language } }) => {
-      const posts = await ctx.db.post.findMany({
-        take: limit,
-        skip: cursor ? 1 : 0,
-        orderBy: [{ createdAt: "desc" }, { id: "asc" }],
-        cursor: cursor ? { id: cursor } : undefined,
-        include: { author: { select: { name: true } } },
-        where: {
-          language,
-          countryCode,
-        },
-      });
-
-      let nextCursor = posts[limit - 1]?.id;
-
-      return {
-        nextCursor,
-        posts,
-      };
-    }),
   addBookmark: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
@@ -79,26 +50,21 @@ export const postRouter = router({
       return deletedBookmark;
     }),
 
-  addReaction: protectedProcedure
-    .input(z.object({ id: z.string().uuid(), reaction: z.enum(["LIKE"]) }))
+  addToFavorites: protectedProcedure
+    .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const post = await ctx.db.post.findUnique({ where: { id: input.id } });
       if (!post) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found!" });
       }
-
-      const reaction = await ctx.db.postReaction.upsert({
-        where: { userId_postId: { userId: ctx.user.id, postId: post.id } },
-        create: {
-          reaction: input.reaction,
+      return ctx.db.favoritePost.create({
+        data: {
           userId: ctx.user.id,
           postId: post.id,
         },
-        update: { reaction: input.reaction },
       });
-      return reaction;
     }),
-  removeReaction: protectedProcedure
+  removeFromFavorites: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const post = await ctx.db.post.findUnique({ where: { id: input.id } });
@@ -106,10 +72,9 @@ export const postRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found!" });
       }
 
-      const deletedReaction = await ctx.db.postReaction.delete({
+      return ctx.db.favoritePost.delete({
         where: { userId_postId: { userId: ctx.user.id, postId: post.id } },
       });
-      return deletedReaction;
     }),
   getBookmarks: protectedProcedure.query(async ({ ctx }) => {
     const bookmarks = await ctx.db.postBookmark.findMany({
@@ -131,11 +96,16 @@ export const postRouter = router({
           post: {
             include: {
               author: { select: { name: true } },
-              PostReaction: {
+              FavoritePost: {
                 where: { userId: ctx.user.id },
               },
               PostBookmark: {
                 where: { userId: ctx.user.id },
+              },
+              _count: {
+                select: {
+                  FavoritePost: true,
+                },
               },
             },
           },
