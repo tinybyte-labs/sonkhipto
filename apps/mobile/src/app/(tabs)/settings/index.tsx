@@ -171,8 +171,32 @@ export default function SettingsMenuScreen() {
         <ListItem
           title="Clear Cache"
           type="navigation"
+          icon={
+            <Image
+              source={require("@/assets/icons/delete.png")}
+              style={{ width: 24, height: 24, tintColor: colors.foreground }}
+            />
+          }
           onPress={() => {
-            queryClient.clear();
+            Alert.alert(
+              "Clear Cache?",
+              "Are you sure you want to clear all cache?",
+              [
+                {
+                  style: "cancel",
+                  text: "Cancel",
+                },
+                {
+                  style: "destructive",
+                  text: "Clear",
+                  onPress: async () => {
+                    queryClient.clear();
+                    await Image.clearDiskCache();
+                    await Image.clearMemoryCache();
+                  },
+                },
+              ],
+            );
           }}
         />
       </ListSection>

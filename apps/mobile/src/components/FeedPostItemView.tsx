@@ -14,6 +14,7 @@ import {
   StyleSheet,
   Text,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -44,6 +45,7 @@ export default function FeedPostItemView({
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const utils = trpc.useUtils();
+  const dimensions = useWindowDimensions();
 
   const isBookmarked = useMemo(() => {
     const _bookmark = postBookmarks[post.id];
@@ -161,7 +163,7 @@ export default function FeedPostItemView({
         height,
       }}
     >
-      <View style={{ aspectRatio: 16 / 9 }}>
+      <View style={{ height: dimensions.height * 0.25 }}>
         <Pressable onPress={() => setShowImage(!showImage)}>
           <Image
             source={post.imageUrl}
