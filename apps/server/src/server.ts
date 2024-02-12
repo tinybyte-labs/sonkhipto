@@ -12,7 +12,7 @@ import {
   scrapeNewsFeedsJob,
 } from "./jobs/scrape-news-feeds";
 
-const fastify = Fastify({ logger: true });
+const fastify = Fastify({ logger: process.env.NODE_ENV === "development" });
 
 const listeners = ["SIGINT", "SIGTERM"];
 listeners.forEach((signal) => {
