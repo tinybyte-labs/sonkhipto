@@ -68,10 +68,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           STORAGE_KEYS.SECURE_ACCESS_TOKEN,
         );
         if (accessToken) {
-          console.log(accessToken);
           setToken(accessToken);
           const user = await getCurrentUserMut.mutateAsync();
-          console.log(user);
           setUser(user);
         }
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

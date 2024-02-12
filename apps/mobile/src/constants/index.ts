@@ -11,8 +11,6 @@ export const DEV_API = `http://${LOCALHOST}:8000`;
 
 export const API_URL = Device.isDevice || !__DEV__ ? PROD_API : DEV_API;
 
-console.log({ API_URL, isDevice: Device.isDevice });
-
 export const ITUNE_ITEM_ID = 6477333889;
 export const ANDROID_PACKAGE_NAME = "com.tinybytelabs.sonkhipto";
 export const IOS_BUNDLE_IDENTIFIER = "com.tinybytelabs.sonkhipto";

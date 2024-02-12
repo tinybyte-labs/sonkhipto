@@ -3,7 +3,7 @@ import { useScrollToTop } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { useAtom } from "jotai";
 import { ChevronDownIcon } from "lucide-react-native";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FlatList, ViewToken } from "react-native";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
@@ -88,12 +88,17 @@ export default function FeedTabScreen() {
       },
       (index) => {
         const item = feedItems[index ?? -1];
-        if (item) {
+        if (item && item.id !== feedType) {
           changeFeedType(item.id);
+          listRef.current?.scrollToIndex({ index: 0, animated: false });
         }
       },
     );
-  }, [changeFeedType, showActionSheetWithOptions, translate]);
+  }, [changeFeedType, feedType, showActionSheetWithOptions, translate]);
+
+  useEffect(() => {
+    listRef.current?.scrollToIndex({ index: 0, animated: false });
+  }, [language]);
 
   return (
     <View
