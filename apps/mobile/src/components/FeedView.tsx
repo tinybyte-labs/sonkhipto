@@ -1,30 +1,30 @@
-import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useScrollToTop } from "@react-navigation/native";
-import { Stack } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { useAtom } from "jotai";
-import { ChevronDownIcon } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FlatList, ViewToken } from "react-native";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AppBar, AppBarTitle } from "@/components/AppBar";
 import type { FeedItem } from "@/components/FeedList";
 import FeedList from "@/components/FeedList";
 import { useColors } from "@/hooks/useColors";
-import { feedItems, useFeed } from "@/providers/FeedProvider";
+import { FeedType } from "@/providers/FeedProvider";
 import { useLanguage } from "@/providers/LanguageProvider";
 import { viewedPostIdsAtom } from "@/stores/viewed-post-ids";
 import { trpc } from "@/utils/trpc";
 
-export default function FeedTabScreen() {
+export default function FeedView({ feedType }: { feedType: FeedType }) {
   const { translate, language } = useLanguage();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const colors = useColors();
   const listRef = useRef<FlatList<FeedItem>>(null);
-  const { feedType, changeFeedType } = useFeed();
-  const { showActionSheetWithOptions } = useActionSheet();
   const [viewedPostIds, setViewedPostIds] = useAtom(viewedPostIdsAtom);
   const [height, setHeight] = useState(-1);
+  const { index } = useLocalSearchParams<{ index?: string }>();
+  const insets = useSafeAreaInsets();
+
   useScrollToTop(listRef);
 
   const feedQuery = trpc.feed.myFeed.useInfiniteQuery(
@@ -76,29 +76,19 @@ export default function FeedTabScreen() {
     setIsRefreshing(false);
   }, [feedQuery]);
 
-  const showFeedTypePicker = useCallback(() => {
-    showActionSheetWithOptions(
-      {
-        options: [
-          ...feedItems.map((item) => translate(item.id)),
-          translate("cancel"),
-        ],
-        cancelButtonIndex: feedItems.length,
-        title: "Select Feed",
-      },
-      (index) => {
-        const item = feedItems[index ?? -1];
-        if (item && item.id !== feedType) {
-          changeFeedType(item.id);
-          listRef.current?.scrollToIndex({ index: 0, animated: false });
-        }
-      },
-    );
-  }, [changeFeedType, feedType, showActionSheetWithOptions, translate]);
-
   useEffect(() => {
     listRef.current?.scrollToIndex({ index: 0, animated: false });
   }, [language]);
+
+  useEffect(() => {
+    console.log(index);
+    if (index) {
+      listRef.current?.scrollToIndex({
+        index: Number(index) ?? 0,
+        animated: false,
+      });
+    }
+  }, [index]);
 
   return (
     <View
@@ -107,22 +97,7 @@ export default function FeedTabScreen() {
         setHeight(ev.nativeEvent.layout.height);
       }}
     >
-      <Stack.Screen
-        options={{
-          header: () => (
-            <AppBar>
-              <TouchableOpacity
-                onPress={showFeedTypePicker}
-                style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-              >
-                <AppBarTitle title={translate(feedType)} style={{ flex: 0 }} />
-                <ChevronDownIcon color={colors.foreground} size={24} />
-              </TouchableOpacity>
-            </AppBar>
-          ),
-          title: translate(feedType),
-        }}
-      />
+      <StatusBar style="light" />
       {feedQuery.isPending || height < 0 ? (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
@@ -145,6 +120,13 @@ export default function FeedTabScreen() {
           onEndReached={handleEndReached}
           onEndReachedThreshold={3}
           height={height}
+          topInset={insets.top + 40}
+          initialScrollIndex={index ? Number(index) : 0}
+          getItemLayout={(_, index) => ({
+            index,
+            length: height,
+            offset: height * index,
+          })}
           ListEmptyComponent={() => (
             <View
               style={{ height, alignItems: "center", justifyContent: "center" }}

@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import FeedList, { FeedItem } from "@/components/FeedList";
 import { useColors } from "@/hooks/useColors";
@@ -13,6 +14,7 @@ export default function BookmarksScreen() {
   const { translate } = useLanguage();
   const { index } = useLocalSearchParams<{ index: string }>();
   const [height, setHeight] = useState(-1);
+  const insets = useSafeAreaInsets();
 
   const bookmarksQuery = trpc.post.getBookmarksWithPost.useInfiniteQuery(
     {},
@@ -62,7 +64,7 @@ export default function BookmarksScreen() {
         <FeedList
           data={feedItems}
           height={height}
-          useBottomInset
+          bottomInset={insets.bottom}
           refreshing={isRefreshing}
           onRefresh={handleRefresh}
           onEndReached={handleEndReached}

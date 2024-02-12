@@ -4,13 +4,11 @@ import { Redirect, Tabs } from "expo-router";
 import { AppBar, AppBarTitle } from "@/components/AppBar";
 import TabBar from "@/components/TabBar";
 import { useAuth } from "@/providers/AuthProvider";
-import { feedItems, useFeed } from "@/providers/FeedProvider";
 import { useLanguage } from "@/providers/LanguageProvider";
 
 export default function TabLayout() {
   const { translate } = useLanguage();
   const { isAuthenticated } = useAuth();
-  const { feedType } = useFeed();
 
   if (!isAuthenticated) {
     return <Redirect href="/onboarding" />;
@@ -19,12 +17,13 @@ export default function TabLayout() {
   return (
     <Tabs tabBar={(props) => <TabBar {...props} />}>
       <Tabs.Screen
-        name="index"
+        name="(feed)"
         options={{
-          title: translate(feedType),
+          title: translate("home"),
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Image
-              source={feedItems.find((item) => item.id === feedType)?.icon}
+              source={require("@/assets/icons/home.png")}
               style={{ width: size, height: size, tintColor: color }}
             />
           ),

@@ -17,7 +17,6 @@ import { AppBar, AppBarIconButton, AppBarTitle } from "@/components/AppBar";
 import { colors } from "@/constants/colors";
 import { useColors } from "@/hooks/useColors";
 import AuthProvider from "@/providers/AuthProvider";
-import FeedProvider from "@/providers/FeedProvider";
 import LanguageProvider, { useLanguage } from "@/providers/LanguageProvider";
 import TRPcProvider from "@/providers/TRPcProvider";
 
@@ -79,10 +78,8 @@ export default function RootLayout() {
               <AuthProvider>
                 <LanguageProvider>
                   <Analytics>
-                    <FeedProvider>
-                      <StatusBar style={theme.dark ? "light" : "dark"} />
-                      <RootLayoutNav />
-                    </FeedProvider>
+                    <StatusBar style={theme.dark ? "light" : "dark"} />
+                    <RootLayoutNav />
                   </Analytics>
                 </LanguageProvider>
               </AuthProvider>
@@ -130,21 +127,6 @@ function RootLayoutNav() {
                   onPress={() => router.back()}
                 />
                 <AppBarTitle title={translate("bookmarks")} />
-              </AppBar>
-            ),
-          }}
-        />
-        <Stack.Screen
-          name="trending"
-          options={{
-            title: translate("trending"),
-            header: () => (
-              <AppBar>
-                <AppBarIconButton
-                  icon={<ArrowLeftIcon size={22} color={colors.tintColor} />}
-                  onPress={() => router.back()}
-                />
-                <AppBarTitle title={translate("trending")} />
               </AppBar>
             ),
           }}

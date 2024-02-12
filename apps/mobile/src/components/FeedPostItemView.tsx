@@ -1,21 +1,10 @@
 import analytics from "@react-native-firebase/analytics";
 import dayjs from "dayjs";
 import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
 import * as WebBrowser from "expo-web-browser";
 import { useAtom } from "jotai";
-import { ArrowUpRightIcon } from "lucide-react-native";
-import { useCallback, useMemo, useState } from "react";
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  Share,
-  StyleSheet,
-  Text,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { useCallback, useMemo } from "react";
+import { Alert, Pressable, Share, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { FeedNewsItem } from "./FeedList";
@@ -23,29 +12,35 @@ import { FeedNewsItem } from "./FeedList";
 import { EVENT_KEYS } from "@/constants/event-keys";
 import { useColors } from "@/hooks/useColors";
 import { useLanguage } from "@/providers/LanguageProvider";
+import { favoritePostsAtom } from "@/stores/favorite-posts-atom";
 import { postBookmarksAtom } from "@/stores/post-bookmark-atom";
-import { postReactionsAtom } from "@/stores/post-reactions-atom";
 import { trpc } from "@/utils/trpc";
 
 export default function FeedPostItemView({
   post,
   height,
   isViewable,
-  useBottomInsets,
+  bottomInset = 0,
+  topInset = 0,
 }: {
   post: FeedNewsItem["data"];
   height: number;
   isViewable?: boolean;
-  useBottomInsets?: boolean;
+  bottomInset?: number;
+  topInset?: number;
 }) {
-  const [postReactions, setPostReactions] = useAtom(postReactionsAtom);
+  const [favoritePosts, setFavoritePosts] = useAtom(favoritePostsAtom);
   const [postBookmarks, setPostBookmarks] = useAtom(postBookmarksAtom);
-  const [showImage, setShowImage] = useState(false);
   const { translate, language } = useLanguage();
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const utils = trpc.useUtils();
-  const dimensions = useWindowDimensions();
+
+  const favoritePost = useMemo(
+    () => favoritePosts[post.id],
+    [favoritePosts, post.id],
+  );
+  console.log({ favoritePost, id: post.id, fav: post.FavoritePost });
 
   const isBookmarked = useMemo(() => {
     const _bookmark = postBookmarks[post.id];
@@ -55,35 +50,54 @@ export default function FeedPostItemView({
     return !!post.PostBookmark?.[0];
   }, [post.PostBookmark, post.id, postBookmarks]);
 
-  const reaction = useMemo(() => {
-    const _reaction = postReactions[post.id];
-    if (typeof _reaction !== "undefined") {
-      return _reaction;
+  const isFavoritePost = useMemo(() => {
+    if (favoritePost === "favorite") {
+      return true;
+    } else if (favoritePost === "favorite-removed") {
+      return false;
     }
-    return post.PostReaction?.[0]?.reaction ?? null;
-  }, [postReactions, post.PostReaction, post.id]);
+    return !!post.FavoritePost?.[0];
+  }, [favoritePost, post.FavoritePost]);
 
-  const addReaction = trpc.post.addReaction.useMutation({
-    onMutate: (data) => {
-      const _reactions = { ...postReactions };
-      _reactions[data.id] = data.reaction;
-      setPostReactions(_reactions);
+  const favoriteCount = useMemo(() => {
+    let count = post._count?.FavoritePost ?? 0;
+    if (favoritePost === "favorite") {
+      count += 1;
+    } else if (favoritePost === "favorite-removed") {
+      count -= 1;
+    }
+    return count;
+  }, [favoritePost, post._count?.FavoritePost]);
+
+  const addToFavorites = trpc.post.addToFavorites.useMutation({
+    onMutate: () => {
+      const posts = { ...favoritePosts };
+      if (favoritePost === "favorite-removed") {
+        posts[post.id] = undefined;
+      } else {
+        posts[post.id] = "favorite";
+      }
+      setFavoritePosts(posts);
     },
   });
 
-  const removeReaction = trpc.post.removeReaction.useMutation({
-    onMutate: (data) => {
-      const _reactions = { ...postReactions };
-      _reactions[data.id] = null;
-      setPostReactions(_reactions);
+  const removeFromFavorites = trpc.post.removeFromFavorites.useMutation({
+    onMutate: () => {
+      const posts = { ...favoritePosts };
+      if (favoritePost === "favorite") {
+        posts[post.id] = undefined;
+      } else {
+        posts[post.id] = "favorite-removed";
+      }
+      setFavoritePosts(posts);
     },
   });
 
   const addBookmark = trpc.post.addBookmark.useMutation({
     onMutate: (data) => {
-      const _reactions = { ...postBookmarks };
-      _reactions[data.id] = true;
-      setPostBookmarks(_reactions);
+      const bookmarks = { ...postBookmarks };
+      bookmarks[data.id] = true;
+      setPostBookmarks(bookmarks);
     },
     onSuccess: () => {
       utils.post.getBookmarksWithPost.invalidate();
@@ -92,9 +106,9 @@ export default function FeedPostItemView({
 
   const removeBookmark = trpc.post.removeBookmark.useMutation({
     onMutate: (data) => {
-      const _reactions = { ...postBookmarks };
-      _reactions[data.id] = false;
-      setPostBookmarks(_reactions);
+      const bookmarks = { ...postBookmarks };
+      bookmarks[data.id] = false;
+      setPostBookmarks(bookmarks);
     },
     onSuccess: () => {
       utils.post.getBookmarksWithPost.invalidate();
@@ -148,13 +162,13 @@ export default function FeedPostItemView({
     }
   }, [isBookmarked, addBookmark, removeBookmark, post, translate]);
 
-  const onReactionPress = useCallback(() => {
-    if (reaction) {
-      removeReaction.mutate({ id: post.id });
+  const onFavoritePress = useCallback(() => {
+    if (isFavoritePost) {
+      removeFromFavorites.mutate({ id: post.id });
     } else {
-      addReaction.mutate({ id: post.id, reaction: "LIKE" });
+      addToFavorites.mutate({ id: post.id });
     }
-  }, [addReaction, post.id, reaction, removeReaction]);
+  }, [addToFavorites, isFavoritePost, post.id, removeFromFavorites]);
 
   return (
     <View
@@ -163,8 +177,8 @@ export default function FeedPostItemView({
         height,
       }}
     >
-      <View style={{ height: dimensions.height * 0.25 }}>
-        <Pressable onPress={() => setShowImage(!showImage)}>
+      <Pressable style={{ flex: 1 }} onPress={onReadMore}>
+        <View style={{ flex: 1, maxHeight: 240 + topInset }}>
           <Image
             source={post.imageUrl}
             style={{
@@ -174,133 +188,93 @@ export default function FeedPostItemView({
             }}
             contentFit="cover"
           />
-        </Pressable>
-      </View>
+        </View>
 
-      <View style={{ padding: 16, paddingBottom: 4 }}>
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: "600",
-            lineHeight: 24,
-            color: colors.foreground,
-          }}
-        >
-          {post.title}
-        </Text>
-      </View>
-      <View style={{ flex: 1 }}>
-        <ScrollView
-          style={{
-            flex: 1,
-          }}
-          contentContainerStyle={{
-            paddingTop: 4,
-            paddingHorizontal: 16,
-            paddingBottom: 24,
-          }}
-        >
+        <View style={{ padding: 16 }}>
           <Text
             style={{
-              lineHeight: 22,
+              fontSize: 24,
+              fontWeight: "700",
+              lineHeight: 32,
               color: colors.foreground,
             }}
+            numberOfLines={3}
           >
-            {post.content}
+            {post.title}
           </Text>
           <Text
             style={{
-              fontSize: 12,
-              lineHeight: 16,
-              marginTop: 6,
+              lineHeight: 20,
+              marginTop: 8,
               color: colors.secondaryForeground,
             }}
           >
             {post.author?.name
-              ? `${translate("byPublisher", {
+              ? `${translate("source", { name: post.sourceName })} • ${dayjs(
+                  post.createdAt,
+                  {
+                    locale: language === "bn" ? "bn-bd" : "en",
+                  },
+                ).fromNow()} • ${translate("byPublisher", {
                   name: post.author.name,
-                })} • ${translate("source", { name: post.sourceName })} • `
+                })}`
               : ``}
-            {dayjs(post.createdAt, {
-              locale: language === "bn" ? "bn-bd" : "en",
-            }).fromNow()}
           </Text>
-        </ScrollView>
-        <LinearGradient
-          colors={[colors.transparent, colors.background]}
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 20,
-            zIndex: 1,
-          }}
-        />
-      </View>
-
+          <Text
+            style={{
+              color: colors.foreground,
+              fontSize: 16,
+              lineHeight: 24,
+              marginTop: 8,
+            }}
+            numberOfLines={6}
+          >
+            {post.content}
+          </Text>
+        </View>
+      </Pressable>
       <View
         style={[
-          styles.actionsContainer,
           {
-            borderColor: colors.border,
-            paddingBottom: useBottomInsets ? insets.bottom + 12 : 12,
+            paddingHorizontal: 16,
+            paddingBottom: bottomInset ? insets.bottom : 0,
           },
         ]}
       >
-        <Pressable
+        <View
           style={[
-            styles.wideButton,
+            styles.actionsContainer,
             {
-              backgroundColor: colors.tintColor,
+              borderColor: colors.border,
             },
           ]}
-          onPress={onReadMore}
-        >
-          <Text
-            style={[
-              styles.wideButtonTitle,
-              {
-                color: colors.tintForegroundColor,
-              },
-            ]}
-            numberOfLines={1}
-          >
-            {translate("readMore")}
-          </Text>
-          <ArrowUpRightIcon size={22} color={colors.tintForegroundColor} />
-        </Pressable>
-        <View
-          style={{
-            flexDirection: "row",
-            gap: 6,
-            flex: 1,
-            justifyContent: "flex-end",
-          }}
         >
           <Pressable
             style={({ pressed }) => [
-              styles.iconButton,
-              { backgroundColor: pressed ? colors.card : colors.secondary },
+              styles.actionBtn,
+              { backgroundColor: pressed ? colors.card : colors.background },
             ]}
-            onPress={onReactionPress}
+            onPress={onFavoritePress}
           >
-            {reaction === "LIKE" ? (
+            {isFavoritePost ? (
               <Image
-                source={require("@/assets/icons/like-fill.png")}
+                source={require("@/assets/icons/heart-fill.png")}
                 style={{ width: 24, height: 24, tintColor: colors.tintColor }}
               />
             ) : (
               <Image
-                source={require("@/assets/icons/like-outline.png")}
+                source={require("@/assets/icons/heart-outline.png")}
                 style={{ width: 24, height: 24, tintColor: colors.tintColor }}
               />
             )}
+            <Text style={[styles.actionLabel, { color: colors.foreground }]}>
+              {favoriteCount}
+            </Text>
           </Pressable>
           <Pressable
             style={({ pressed }) => [
-              styles.iconButton,
-              { backgroundColor: pressed ? colors.card : colors.secondary },
+              styles.actionBtn,
+              { backgroundColor: pressed ? colors.card : colors.background },
             ]}
             onPress={onShare}
           >
@@ -311,8 +285,8 @@ export default function FeedPostItemView({
           </Pressable>
           <Pressable
             style={({ pressed }) => [
-              styles.iconButton,
-              { backgroundColor: pressed ? colors.card : colors.secondary },
+              styles.actionBtn,
+              { backgroundColor: pressed ? colors.card : colors.background },
             ]}
             onPress={onBookmarkPress}
           >
@@ -337,28 +311,20 @@ export default function FeedPostItemView({
 const styles = StyleSheet.create({
   actionsContainer: {
     flexDirection: "row",
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-    gap: 8,
+    borderTopWidth: 1,
+    padding: 4,
   },
-  iconButton: {
-    alignItems: "center",
-    gap: 8,
-    borderRadius: 44,
-    width: 44,
-    height: 44,
-    justifyContent: "center",
-  },
-  wideButton: {
-    alignItems: "center",
+  actionBtn: {
     flexDirection: "row",
-    gap: 6,
-    paddingRight: 16,
-    paddingLeft: 16,
-    height: 44,
-    borderRadius: 44,
+    alignItems: "center",
+    gap: 8,
+    flex: 1,
+    height: 40,
+    justifyContent: "center",
+    borderRadius: 8,
   },
-  wideButtonTitle: {
-    fontWeight: "600",
+  actionLabel: {
+    fontSize: 13,
+    fontWeight: "500",
   },
 });
