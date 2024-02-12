@@ -173,35 +173,6 @@ export default function FeedPostItemView({
             contentFit="cover"
           />
         </Pressable>
-        <View
-          style={{
-            backgroundColor: "rgb(255,255,255)",
-            paddingHorizontal: 10,
-            borderRadius: 999,
-            position: "absolute",
-            bottom: -8,
-            height: 24,
-            alignItems: "center",
-            justifyContent: "center",
-            right: 12,
-            shadowColor: "black",
-            shadowOpacity: 0.1,
-            shadowOffset: { width: 0, height: 2 },
-            shadowRadius: 2,
-            elevation: 2,
-          }}
-        >
-          <Text
-            style={{
-              color: "black",
-              opacity: 0.75,
-              fontWeight: "600",
-              fontSize: 12,
-            }}
-          >
-            Sonkhipto
-          </Text>
-        </View>
       </View>
 
       <View style={{ padding: 16, paddingBottom: 4 }}>
@@ -246,7 +217,7 @@ export default function FeedPostItemView({
             {post.author?.name
               ? `${translate("byPublisher", {
                   name: post.author.name,
-                })} • `
+                })} • ${translate("source", { name: post.sourceName })} • `
               : ``}
             {dayjs(post.createdAt, {
               locale: language === "bn" ? "bn-bd" : "en",
@@ -276,7 +247,7 @@ export default function FeedPostItemView({
         ]}
       >
         <Pressable
-          style={({ pressed }) => [
+          style={[
             styles.wideButton,
             {
               backgroundColor: colors.tintColor,

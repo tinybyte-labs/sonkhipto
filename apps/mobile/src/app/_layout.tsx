@@ -110,7 +110,7 @@ function RootLayoutNav() {
 
   return (
     <View style={{ backgroundColor: colors.background, flex: 1 }}>
-      <Stack screenOptions={{ navigationBarColor: colors.transparent }}>
+      <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="onboarding"
@@ -130,6 +130,21 @@ function RootLayoutNav() {
                   onPress={() => router.back()}
                 />
                 <AppBarTitle title={translate("bookmarks")} />
+              </AppBar>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="trending"
+          options={{
+            title: translate("trending"),
+            header: () => (
+              <AppBar>
+                <AppBarIconButton
+                  icon={<ArrowLeftIcon size={22} color={colors.tintColor} />}
+                  onPress={() => router.back()}
+                />
+                <AppBarTitle title={translate("trending")} />
               </AppBar>
             ),
           }}

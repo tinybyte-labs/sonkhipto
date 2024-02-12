@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
-import Link from "next/link";
-import Image from "next/image";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Sonkhipto",
+  title:
+    "Sonkhipto - Your Daily Dose of Concise News. Stay Informed, Save Time!",
+  description:
+    "Sonkhipto delivers concise news updates tailored for the modern reader. Stay ahead of the curve with quick, easy-to-digest news bites in both Bangla and English. Spend less time scrolling, more time knowing.",
 };
 
 export default function RootLayout({
@@ -17,26 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <header>
-          <nav>
-            <div className="container py-4 flex items-center">
-              <Link href="/">
-                <Image
-                  src="/sonkhipto.svg"
-                  alt="Sonkhipto Logo"
-                  width={3755}
-                  height={1080}
-                  className="h-14 w-fit"
-                />
-              </Link>
-              <div className="flex-1"></div>
-              <div className="flex"></div>
-            </div>
-          </nav>
-        </header>
-        {children}
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

@@ -7,41 +7,42 @@ import { useColors } from "@/hooks/useColors";
 import { useLanguage } from "@/providers/LanguageProvider";
 import { trpc } from "@/utils/trpc";
 
-export default function BookmarksScreen() {
+export default function TrendingScreen() {
   const colors = useColors();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { translate } = useLanguage();
+  const { translate, language } = useLanguage();
   const { index } = useLocalSearchParams<{ index: string }>();
   const [height, setHeight] = useState(-1);
 
-  const bookmarksQuery = trpc.post.getBookmarksWithPost.useInfiniteQuery(
-    {},
+  const trendingQuery = trpc.feed.myFeed.useInfiniteQuery(
+    {
+      language,
+      feedType: "trending",
+    },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     },
   );
 
-  const feedItems = useMemo(() => {
-    const items: FeedItem[] = [];
-    bookmarksQuery.data?.pages
-      .flatMap((page) => page.bookmarks)
-      .forEach((bookmark) => {
-        items.push({ type: "post", data: bookmark.post, key: bookmark.postId });
-      });
-    return items;
-  }, [bookmarksQuery.data?.pages]);
+  const feed = useMemo(
+    (): FeedItem[] =>
+      trendingQuery.data?.pages
+        .flatMap((page) => page.posts)
+        .map((post) => ({ type: "post", data: post, key: post.id })) ?? [],
+    [trendingQuery.data?.pages],
+  );
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    await bookmarksQuery.refetch();
+    await trendingQuery.refetch();
     setIsRefreshing(false);
-  }, [bookmarksQuery]);
+  }, [trendingQuery]);
 
   const handleEndReached = useCallback(() => {
-    if (!bookmarksQuery.isFetchingNextPage) {
-      bookmarksQuery.fetchNextPage();
+    if (!trendingQuery.isFetchingNextPage) {
+      trendingQuery.fetchNextPage();
     }
-  }, [bookmarksQuery]);
+  }, [trendingQuery]);
 
   return (
     <View
@@ -50,17 +51,17 @@ export default function BookmarksScreen() {
         setHeight(ev.nativeEvent.layout.height);
       }}
     >
-      {bookmarksQuery.isPending || height < 0 ? (
+      {trendingQuery.isPending || height < 0 ? (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
           <ActivityIndicator color={colors.foreground} />
         </View>
-      ) : bookmarksQuery.isError ? (
-        <Text>Error: {bookmarksQuery.error.message}</Text>
+      ) : trendingQuery.isError ? (
+        <Text>Error: {trendingQuery.error.message}</Text>
       ) : (
         <FeedList
-          data={feedItems}
+          data={feed}
           height={height}
           useBottomInset
           refreshing={isRefreshing}
@@ -78,7 +79,7 @@ export default function BookmarksScreen() {
               style={{ height, alignItems: "center", justifyContent: "center" }}
             >
               <Text style={{ color: colors.secondaryForeground }}>
-                {translate("noBookmarks")}
+                {translate("noDataToShow")}
               </Text>
               <Text
                 style={{
@@ -93,8 +94,7 @@ export default function BookmarksScreen() {
             </View>
           )}
           ListFooterComponent={() =>
-            feedItems.length ===
-            0 ? null : bookmarksQuery.isFetchingNextPage ? (
+            feed.length === 0 ? null : trendingQuery.isFetchingNextPage ? (
               <View
                 style={{
                   height,
