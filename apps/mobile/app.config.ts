@@ -38,7 +38,7 @@ const defineConfig = (): ExpoConfig => ({
   android: {
     adaptiveIcon: {
       foregroundImage: "./assets/images/adaptive-icon.png",
-      backgroundColor: "#ffffff",
+      backgroundColor: "#FF3F48",
     },
     package: "com.tinybytelabs.sonkhipto",
     googleServicesFile: "./google-services.json",

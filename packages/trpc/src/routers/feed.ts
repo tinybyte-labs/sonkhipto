@@ -80,11 +80,6 @@ export const feedRouter = router({
 
       let nextCursor = posts[opts.input.limit - 1]?.id;
 
-      console.log({
-        input: opts.input,
-        posts: posts.map((post) => post.id),
-      });
-
       return {
         nextCursor,
         posts,
