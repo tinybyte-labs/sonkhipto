@@ -1,9 +1,10 @@
+import { useScrollToTop } from "@react-navigation/native";
 import { useQueryClient } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import * as Linking from "expo-linking";
 import * as MailComposer from "expo-mail-composer";
 import { router } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Alert, Platform, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -28,6 +29,8 @@ export default function SettingsMenuScreen() {
   const colors = useColors();
   const { translate } = useLanguage();
   const queryClient = useQueryClient();
+  const listRef = useRef<ScrollView>(null);
+  useScrollToTop(listRef);
 
   const sendFeedback = useCallback(async () => {
     try {
@@ -70,6 +73,7 @@ export default function SettingsMenuScreen() {
 
   return (
     <ScrollView
+      ref={listRef}
       style={{ flexGrow: 1 }}
       contentContainerStyle={{
         flexGrow: 1,

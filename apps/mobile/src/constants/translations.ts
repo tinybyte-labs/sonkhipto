@@ -51,6 +51,8 @@ export const englishTranslations = {
   seeAll: "See all",
   source: "Source {name}",
   home: "Home",
+  addedToBookmarks: "Added to bookmarks",
+  manageBookmarks: "Manage Bookmarks",
 };
 
 export type TranslationKey = keyof typeof englishTranslations;
@@ -106,6 +108,8 @@ export const banglaTranslations: Record<TranslationKey, string> = {
   seeAll: "সবগুলো দেখুন",
   source: "সূত্র {name}",
   home: "হোম",
+  addedToBookmarks: "বুকমার্ক যোগ করা হয়েছে",
+  manageBookmarks: "বুকমার্ক ম্যানেজ করুন",
 };
 
 export const languageTranslations: Record<

@@ -1,31 +1,38 @@
 import { useScrollToTop } from "@react-navigation/native";
+import { FlashList } from "@shopify/flash-list";
 import { useLocalSearchParams } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { useAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { FlatList, ViewToken } from "react-native";
+import type { ViewToken } from "react-native";
 import { ActivityIndicator, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { FeedItem } from "@/components/FeedList";
 import FeedList from "@/components/FeedList";
 import { useColors } from "@/hooks/useColors";
-import { FeedType } from "@/providers/FeedProvider";
+import { useAuth } from "@/providers/AuthProvider";
 import { useLanguage } from "@/providers/LanguageProvider";
-import { viewedPostIdsAtom } from "@/stores/viewed-post-ids";
 import { trpc } from "@/utils/trpc";
 
-export default function FeedView({ feedType }: { feedType: FeedType }) {
+export type FeedType = Parameters<
+  typeof trpc.feed.myFeed.useInfiniteQuery
+>["0"]["feedType"];
+
+export type FeedViewProps = {
+  feedType: FeedType;
+};
+
+export default function FeedView({ feedType }: FeedViewProps) {
   const { translate, language } = useLanguage();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const colors = useColors();
-  const listRef = useRef<FlatList<FeedItem>>(null);
-  const [viewedPostIds, setViewedPostIds] = useAtom(viewedPostIdsAtom);
+  const listRef = useRef<FlashList<FeedItem>>(null);
+  const [viewedPostIds, setViewedPostIds] = useState<string[]>([]);
   const [height, setHeight] = useState(-1);
   const { index } = useLocalSearchParams<{ index?: string }>();
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
 
-  useScrollToTop(listRef);
+  useScrollToTop(listRef as any);
 
   const feedQuery = trpc.feed.myFeed.useInfiniteQuery(
     {
@@ -36,16 +43,32 @@ export default function FeedView({ feedType }: { feedType: FeedType }) {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     },
   );
-
-  const addView = trpc.post.addView.useMutation();
-
   const feed = useMemo(
     (): FeedItem[] =>
       feedQuery.data?.pages
         .flatMap((page) => page.posts)
-        .map((post) => ({ type: "post", data: post, key: post.id })) ?? [],
-    [feedQuery.data?.pages],
+        .map((post) => ({
+          type: "post",
+          data: {
+            id: post.id,
+            title: post.title,
+            content: post.content,
+            imageUrl: post.imageUrl ?? undefined,
+            authorName: post.author.name ?? undefined,
+            createdAt: post.createdAt,
+            sourceName: post.sourceName,
+            sourceUrl: post.sourceUrl,
+            bookmarkCount: post._count.PostBookmark,
+            favoriteCount: post._count.FavoritePost,
+            isBookmarked: !!user && post.PostBookmark?.[0]?.userId === user.id,
+            isFavorite: !!user && post.FavoritePost?.[0]?.userId === user.id,
+          },
+          key: post.id,
+        })) ?? [],
+    [feedQuery.data?.pages, user],
   );
+
+  const addViewMut = trpc.post.addView.useMutation();
 
   const handleEndReached = useCallback(() => {
     if (!feedQuery.isFetchingNextPage) {
@@ -61,13 +84,13 @@ export default function FeedView({ feedType }: { feedType: FeedType }) {
         if (item && item.type === "post") {
           const index = viewedPostIds.findIndex((id) => id === item.data.id);
           if (index === -1) {
-            addView.mutate({ postId: item.data.id });
+            addViewMut.mutate({ postId: item.data.id });
             setViewedPostIds([...viewedPostIds, item.data.id]);
           }
         }
       }
     },
-    [addView, setViewedPostIds, viewedPostIds],
+    [addViewMut, setViewedPostIds, viewedPostIds],
   );
 
   const handleRefresh = useCallback(async () => {
@@ -81,7 +104,6 @@ export default function FeedView({ feedType }: { feedType: FeedType }) {
   }, [language]);
 
   useEffect(() => {
-    console.log(index);
     if (index) {
       listRef.current?.scrollToIndex({
         index: Number(index) ?? 0,
@@ -97,7 +119,6 @@ export default function FeedView({ feedType }: { feedType: FeedType }) {
         setHeight(ev.nativeEvent.layout.height);
       }}
     >
-      <StatusBar style="light" />
       {feedQuery.isPending || height < 0 ? (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
@@ -122,14 +143,13 @@ export default function FeedView({ feedType }: { feedType: FeedType }) {
           height={height}
           topInset={insets.top + 40}
           initialScrollIndex={index ? Number(index) : 0}
-          getItemLayout={(_, index) => ({
-            index,
-            length: height,
-            offset: height * index,
-          })}
           ListEmptyComponent={() => (
             <View
-              style={{ height, alignItems: "center", justifyContent: "center" }}
+              style={{
+                height,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
               <Text style={{ color: colors.secondaryForeground }}>
                 {translate("youHaveCompletelyCaughtUp")}

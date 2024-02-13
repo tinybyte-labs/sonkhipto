@@ -36,6 +36,7 @@ const defineConfig = (): ExpoConfig => ({
     },
   },
   android: {
+    versionCode: 1,
     adaptiveIcon: {
       foregroundImage: "./assets/images/adaptive-icon.png",
       backgroundColor: "#FF3F48",

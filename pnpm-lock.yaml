@@ -204,6 +204,9 @@ importers:
       expo-font:
         specifier: ~11.10.2
         version: 11.10.2(expo@50.0.6)
+      expo-haptics:
+        specifier: ~12.8.1
+        version: 12.8.1(expo@50.0.6)
       expo-image:
         specifier: ~1.10.5
         version: 1.10.6(expo@50.0.6)
@@ -246,6 +249,9 @@ importers:
       lucide-react-native:
         specifier: ^0.322.0
         version: 0.322.0(react-native-svg@14.1.0)(react-native@0.73.4)(react@18.2.0)
+      millify:
+        specifier: ^6.1.0
+        version: 6.1.0
       nanoid:
         specifier: ^5.0.5
         version: 5.0.5
@@ -9267,6 +9273,14 @@ packages:
       fontfaceobserver: 2.3.0
     dev: false
 
+  /expo-haptics@12.8.1(expo@50.0.6):
+    resolution: {integrity: sha512-ntLsHkfle8K8w9MW8pZEw92ZN3sguaGUSSIxv30fPKNeQFu7Cq/h47Qv3tONv2MO3wU48N9FbKnant6XlfptpA==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 50.0.6(@babel/core@7.23.9)(@react-native/babel-preset@0.73.21)
+    dev: false
+
   /expo-image@1.10.6(expo@50.0.6):
     resolution: {integrity: sha512-vcnAIym1eU8vQgV1re1E7rVQZStJimBa4aPDhjFfzMzbddAF7heJuagyewiUkTzbZUwYzPaZAie6VJPyWx9Ueg==}
     peerDependencies:
@@ -13123,6 +13137,13 @@ packages:
     dependencies:
       braces: 3.0.2
       picomatch: 2.3.1
+
+  /millify@6.1.0:
+    resolution: {integrity: sha512-H/E3J6t+DQs/F2YgfDhxUVZz/dF8JXPPKTLHL/yHCcLZLtCXJDUaqvhJXQwqOVBvbyNn4T0WjLpIHd7PAw7fBA==}
+    hasBin: true
+    dependencies:
+      yargs: 17.7.2
+    dev: false
 
   /mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
