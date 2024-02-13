@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import FeedList, { FeedItem } from "@/components/FeedList";
 import { useColors } from "@/hooks/useColors";
+import { useAuth } from "@/providers/AuthProvider";
 import { useLanguage } from "@/providers/LanguageProvider";
 import { trpc } from "@/utils/trpc";
 
@@ -15,6 +16,7 @@ export default function BookmarksScreen() {
   const { index } = useLocalSearchParams<{ index: string }>();
   const [height, setHeight] = useState(-1);
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
 
   const bookmarksQuery = trpc.post.getBookmarksWithPost.useInfiniteQuery(
     {},
@@ -23,15 +25,32 @@ export default function BookmarksScreen() {
     },
   );
 
-  const feedItems = useMemo(() => {
-    const items: FeedItem[] = [];
-    bookmarksQuery.data?.pages
-      .flatMap((page) => page.bookmarks)
-      .forEach((bookmark) => {
-        items.push({ type: "post", data: bookmark.post, key: bookmark.postId });
-      });
-    return items;
-  }, [bookmarksQuery.data?.pages]);
+  const feedItems = useMemo(
+    (): FeedItem[] =>
+      bookmarksQuery.data?.pages
+        .flatMap((page) => page.bookmarks)
+        .map((bookmark) => ({
+          type: "post",
+          data: {
+            id: bookmark.post.id,
+            title: bookmark.post.title,
+            content: bookmark.post.content,
+            imageUrl: bookmark.post.imageUrl ?? undefined,
+            authorName: bookmark.post.author.name ?? undefined,
+            createdAt: bookmark.post.createdAt,
+            sourceName: bookmark.post.sourceName,
+            sourceUrl: bookmark.post.sourceUrl,
+            bookmarkCount: bookmark.post._count.PostBookmark,
+            favoriteCount: bookmark.post._count.FavoritePost,
+            isBookmarked:
+              !!user && bookmark.post.PostBookmark?.[0]?.userId === user.id,
+            isFavorite:
+              !!user && bookmark.post.FavoritePost?.[0]?.userId === user.id,
+          },
+          key: bookmark.postId,
+        })) ?? [],
+    [bookmarksQuery.data?.pages, user],
+  );
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -70,14 +89,13 @@ export default function BookmarksScreen() {
           onEndReached={handleEndReached}
           onEndReachedThreshold={3}
           initialScrollIndex={index ? Number(index) : 0}
-          getItemLayout={(_, index) => ({
-            index,
-            length: height,
-            offset: height * index,
-          })}
           ListEmptyComponent={() => (
             <View
-              style={{ height, alignItems: "center", justifyContent: "center" }}
+              style={{
+                height,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
               <Text style={{ color: colors.secondaryForeground }}>
                 {translate("noBookmarks")}
@@ -111,19 +129,7 @@ export default function BookmarksScreen() {
                   {translate("loadingMore")}...
                 </Text>
               </View>
-            ) : (
-              <View
-                style={{
-                  height,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ color: colors.secondaryForeground }}>
-                  {translate("youHaveReachedTheEnd")}
-                </Text>
-              </View>
-            )
+            ) : null
           }
         />
       )}

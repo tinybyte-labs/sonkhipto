@@ -1,6 +1,7 @@
+import { useScrollToTop } from "@react-navigation/native";
 import { Image, ImageSource } from "expo-image";
 import { router } from "expo-router";
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -45,6 +46,8 @@ export const feedItems: {
 export default function DiscoverScreen() {
   const colors = useColors();
   const { translate, language } = useLanguage();
+  const listRef = useRef<ScrollView>(null);
+  useScrollToTop(listRef);
 
   const bookmarksQuery = trpc.post.getBookmarksWithPost.useQuery({ limit: 5 });
   const trendingQuery = trpc.feed.myFeed.useInfiniteQuery(
@@ -63,6 +66,7 @@ export default function DiscoverScreen() {
 
   return (
     <ScrollView
+      ref={listRef}
       style={{ flexGrow: 1 }}
       contentContainerStyle={{ paddingVertical: 16, gap: 32 }}
     >

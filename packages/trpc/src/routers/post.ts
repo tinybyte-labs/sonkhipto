@@ -105,6 +105,7 @@ export const postRouter = router({
               _count: {
                 select: {
                   FavoritePost: true,
+                  PostBookmark: true,
                 },
               },
             },
