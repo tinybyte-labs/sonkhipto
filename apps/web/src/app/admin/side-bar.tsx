@@ -19,14 +19,14 @@ export default function SideBar() {
       exactMatch: true,
     },
     {
-      icon: <UsersIcon />,
-      label: "Users",
-      href: "/users",
-    },
-    {
       icon: <ListIcon />,
       label: "Posts",
       href: "/posts",
+    },
+    {
+      icon: <UsersIcon />,
+      label: "Users",
+      href: "/users",
     },
   ];
 

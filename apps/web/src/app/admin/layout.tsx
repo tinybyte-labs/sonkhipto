@@ -45,7 +45,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <div className="absolute left-0 top-0 bottom-0 w-64 border-r">
+      <div className="fixed left-0 top-0 bottom-0 w-64 border-r">
         <SideBar />
       </div>
       <div className="ml-64">{children}</div>
