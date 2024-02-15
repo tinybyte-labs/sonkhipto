@@ -12,4 +12,5 @@ export const queryClient = new QueryClient({
 
 export const asyncStoragePersister = createAsyncStoragePersister({
   storage: AsyncStorage,
+  throttleTime: 1000 * 60, // 1min
 });

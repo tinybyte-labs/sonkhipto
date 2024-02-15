@@ -24,14 +24,14 @@ export type FeedNewsItem = {
     createdAt: Date;
     title: string;
     content: string;
-    imageUrl?: string;
+    imageUrl?: string | null;
     sourceName: string;
     sourceUrl: string;
-    authorName?: string;
-    favoriteCount?: number;
-    bookmarkCount?: number;
-    isFavorite?: boolean;
-    isBookmarked?: boolean;
+    authorName?: string | null;
+    favoriteCount?: number | null;
+    bookmarkCount?: number | null;
+    isFavorite?: boolean | null;
+    isBookmarked?: boolean | null;
   };
 };
 export type FeedAdItem = {

@@ -7,7 +7,6 @@ declare module "fastify" {
       DATABASE_URL: string;
       JWT_SECRET: string;
       PORT: string;
-      AUTHOR_ID: string;
     };
     authenticate: any;
   }

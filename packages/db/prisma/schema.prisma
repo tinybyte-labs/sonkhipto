@@ -67,7 +67,7 @@ model Post {
   updatedAt   DateTime @updatedAt
   title       String   @db.VarChar(100)
   content     String   @db.VarChar(500)
-  authorId    String   @db.Uuid
+  authorId    String?  @db.Uuid
   imageUrl    String?
   sourceName  String   @db.VarChar(50)
   sourceUrl   String   @unique
@@ -75,7 +75,7 @@ model Post {
   countryCode String   @db.VarChar(6)
   type        PostType @default(NEWS)
 
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
 
   PostBookmark PostBookmark[]
   FavoritePost FavoritePost[]

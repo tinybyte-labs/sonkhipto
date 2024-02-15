@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import React, { useCallback, useState } from "react";
-import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import PrimaryButton from "@/components/PrimaryButton";
@@ -10,7 +10,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { availableLanguages, useLanguage } from "@/providers/LanguageProvider";
 import { Language } from "@/types/language";
 
-export default function LanguageSelector() {
+export default function OnboardingScreen() {
   const colors = useColors();
   const [selectedLanguage, setLang] = useState<Language>("en");
   const { changeLanguage } = useLanguage();
