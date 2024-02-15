@@ -36,7 +36,7 @@ fastify.register(fastifyEnv, {
   confKey: "config",
   schema: {
     type: "object",
-    required: ["PORT", "JWT_SECRET", "DATABASE_URL", "AUTHOR_ID"],
+    required: ["PORT", "JWT_SECRET", "DATABASE_URL"],
     properties: {
       PORT: {
         type: "string",
@@ -84,12 +84,13 @@ const start = async () => {
   try {
     const port = process.env.PORT ? Number(process.env.PORT) : 8000;
     const host = "RENDER" in process.env ? `0.0.0.0` : `localhost`;
+    console.log({ port, host });
 
     await fastify.listen({ port, host });
     console.log("listening on port", port);
     fastify.cron.startAllJobs();
   } catch (err) {
-    fastify.log.error(err);
+    console.error(err);
     process.exit(1);
   }
 };

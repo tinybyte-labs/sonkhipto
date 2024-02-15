@@ -1,32 +1,37 @@
-import "dotenv/config";
-
 import { Params } from "fastify-cron";
 import { newsPublishers } from "../constants/publishers";
 import * as htmlparser2 from "htmlparser2";
-import { db } from "@acme/db";
+import { Prisma, db } from "@acme/db";
 import { NewsPublisher } from "../types/news-publisher";
 import { getPageMetadata } from "../utils/get-page-metadata";
-
-const getUrlWithUtm = (url: string) => {
-  const sourceUrl = new URL(url);
-  sourceUrl.searchParams.set("utm_campaign", "fullarticle");
-  sourceUrl.searchParams.set("utm_medium", "referral");
-  sourceUrl.searchParams.set("utm_source", "sonkhipto");
-  return sourceUrl.toString();
-};
+import { chunkArray } from "../utils";
 
 const scrapeFeedItem = async (item: htmlparser2.DomUtils.FeedItem) => {
-  if (!item.link) {
+  if (typeof item.link !== "string") {
+    console.log("Invalid Link", item.link);
     throw new Error("Invalid Link");
   }
-  const pageMetadata = await getPageMetadata(item.link);
-  const sourceUrl = getUrlWithUtm(item.link);
-  const title = pageMetadata?.title;
-  const content = pageMetadata?.content;
+
+  const sourceUrl = item.link;
+
+  const exists = await db.post.findUnique({
+    where: { sourceUrl },
+  });
+
+  if (exists) {
+    throw new Error("Already scraped");
+  }
+
+  const pageMetadata = await getPageMetadata(sourceUrl);
+  const title = pageMetadata?.title || item.title;
+  const content = pageMetadata?.content || item.description;
+  const imageUrl = pageMetadata?.imageUrl ?? item.media?.[0]?.url;
+
   if (!title || title.length >= 100) {
     throw new Error("Invalid title");
   }
-  if (!content || content.length >= 500) {
+
+  if (!content || content.length > 500 || content.length < 50) {
     throw new Error("Invalid content");
   }
 
@@ -34,7 +39,7 @@ const scrapeFeedItem = async (item: htmlparser2.DomUtils.FeedItem) => {
     title,
     content,
     sourceUrl,
-    imageUrl: pageMetadata?.imageUrl,
+    imageUrl,
   };
 
   return newsItem;
@@ -49,34 +54,58 @@ const scrapePublisherFeed = async (publisher: NewsPublisher) => {
     throw new Error("Failed to parse feed");
   }
 
-  const results = await Promise.allSettled(feed.items.map(scrapeFeedItem));
+  console.log(`${publisher.url} - TOTAL ${feed.items.length} ITEMS`);
 
-  return results
-    .flatMap((result) => (result.status === "fulfilled" ? result.value : []))
-    .map((post) => ({
-      ...post,
-      language: publisher.language,
-      countryCode: publisher.countryCode,
-      sourceName: publisher.name,
-    }));
+  const posts: Prisma.PostCreateInput[] = [];
+
+  const chunks = chunkArray(feed.items, 30);
+
+  for (let i = 0; i < chunks.length; i++) {
+    try {
+      const chunk = chunks[i];
+      const results = await Promise.allSettled(chunk.map(scrapeFeedItem));
+      results.forEach((result) => {
+        if (result.status === "fulfilled") {
+          posts.push({
+            ...result.value,
+            language: publisher.language,
+            countryCode: publisher.countryCode,
+            sourceName: publisher.name,
+          });
+        }
+      });
+    } catch (error: any) {}
+  }
+  console.log(`${publisher.url} - TOTAL ${posts.length} UNIQUE POSTS`);
+
+  return posts;
 };
 
 const startScrapingNewsFeeds = async () => {
-  try {
-    console.log("START NEWS FEED SCRAPE!");
-    const results = await Promise.allSettled(
-      newsPublishers.map(scrapePublisherFeed),
-    );
+  console.log("NEWS FEED SCRAPE STARTED!");
+  console.log(`SCRAPING TOTAL ${newsPublishers.length} NEWS PUBLISHERS`);
 
-    const posts = results.flatMap((result) =>
-      result.status === "fulfilled" ? result.value : [],
-    );
+  try {
+    const data: Prisma.PostCreateInput[] = [];
+
+    for (let i = 0; i < newsPublishers.length; i++) {
+      const publisher = newsPublishers[i];
+      try {
+        console.log(`${publisher.url} - SCRAPE STARTED`);
+        const newPosts = await scrapePublisherFeed(publisher);
+        data.push(...newPosts);
+        console.log(`${publisher.url} - SCRAPE FINISHED`);
+      } catch (error: any) {
+        console.log(`${publisher.url} - SCRAPE ERROR`);
+      }
+    }
+    console.log(`TOTAL ${data.length} POSTS SCRAPED`);
 
     await db.post.createMany({
-      data: posts,
+      data,
       skipDuplicates: true,
     });
-
+    console.log(`ALL SCRAPED POSTS ADDED TO DB`);
     console.log("NEWS FEED SCRAPE SUCCESS!");
   } catch (error: any) {
     console.log("FAILED TO SCRAPE NEWS FEEDS", error);
@@ -87,6 +116,6 @@ export const SCRAPE_NEWS_FEEDS_JOB_NAME = "scrape-news-feeds";
 
 export const scrapeNewsFeedsJob: Params = {
   name: SCRAPE_NEWS_FEEDS_JOB_NAME,
-  cronTime: "0 */6 * * *",
+  cronTime: "0 */4 * * *",
   onTick: startScrapingNewsFeeds,
 };
