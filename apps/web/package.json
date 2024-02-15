@@ -3,12 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "pnpm with-env next dev -p 3000",
+    "build": "pnpm with-env next build",
+    "start": "pnpm with-env next start",
+    "lint": "pnpm with-env next lint",
+    "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-toast": "^1.1.5",
+    "@react-oauth/google": "^0.12.1",
+    "@tanstack/react-query": "^5.17.7",
+    "@tanstack/react-router": "^1.16.0",
+    "@trpc/client": "11.0.0-next-beta.264",
+    "@trpc/react-query": "11.0.0-next-beta.264",
+    "@trpc/server": "11.0.0-next-beta.264",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "lucide-react": "^0.323.0",
@@ -17,9 +26,13 @@
     "react-dom": "^18",
     "reading-time": "^1.5.0",
     "tailwind-merge": "^2.2.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@acme/db": "workspace:*",
+    "@acme/trpc": "workspace:*",
+    "@acme/typescript-config": "workspace:*",
     "@tailwindcss/typography": "^0.5.10",
     "@types/node": "^20",
     "@types/react": "^18",
