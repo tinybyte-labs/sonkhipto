@@ -1,51 +1,22 @@
-import {
-  createFileRoute,
-  getRouteApi,
-  redirect,
-  useNavigate,
-} from "@tanstack/react-router";
+"use client";
+
 import { trpc } from "@/utils/trpc";
 import { useToast } from "@/components/ui/use-toast";
 import { GoogleLogin } from "@react-oauth/google";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
-import { z } from "zod";
-import { flushSync } from "react-dom";
-import { UserRole } from "@acme/db";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
-const signInSearchSchema = z.object({ redirect: z.string().catch("/") });
-
-export const Route = createFileRoute("/signin")({
-  beforeLoad: ({ context }) => {
-    if (context.auth.isAuthenticated) {
-      throw redirect({ to: "/" });
-    }
-  },
-  component: SignIn,
-  validateSearch: signInSearchSchema,
-});
-
-const routeApi = getRouteApi("/signin");
-
-const allowedRoles: UserRole[] = ["ADMIN", "WRITER"];
-
-function SignIn() {
+export default function LogIn({ redirect }: { redirect?: string }) {
   const { toast } = useToast();
-  const { onSignIn } = useAuth();
-  const search = routeApi.useSearch();
-  const navigate = useNavigate();
+  const { onSignIn, state } = useAuth();
+  const router = useRouter();
 
   const signInWithGoogleMut = trpc.auth.signInWithGoogle.useMutation({
     onSuccess: (data) => {
-      if (!allowedRoles.includes(data.user.role)) {
-        toast({ title: "You don't have access to admin panel" });
-        return;
-      }
       toast({ title: "Log in success!" });
-      flushSync(() => {
-        onSignIn(data.accessToken, data.user);
-      });
-      navigate({ to: search.redirect });
+      onSignIn(data.accessToken, data.user);
     },
     onError: (error) => {
       toast({
@@ -55,6 +26,20 @@ function SignIn() {
       });
     },
   });
+
+  useEffect(() => {
+    if (state === "authenticated") {
+      router.replace(redirect ?? "/");
+    }
+  }, [state, redirect]);
+
+  if (state === "loading") {
+    return <p>Loading...</p>;
+  }
+
+  if (state === "authenticated") {
+    return <p>Redirecting...</p>;
+  }
 
   return (
     <div className="p-2">
