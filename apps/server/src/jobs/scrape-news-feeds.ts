@@ -62,24 +62,15 @@ const scrapePublisherFeed = async (publisher: NewsPublisher) => {
 };
 
 const startScrapingNewsFeeds = async () => {
-  const authorId = process.env.AUTHOR_ID;
-  if (!authorId) {
-    console.log("No Author ID");
-    return;
-  }
-
   try {
     console.log("START NEWS FEED SCRAPE!");
     const results = await Promise.allSettled(
-      newsPublishers.map(scrapePublisherFeed)
+      newsPublishers.map(scrapePublisherFeed),
     );
 
-    const posts = results
-      .flatMap((result) => (result.status === "fulfilled" ? result.value : []))
-      .map((item) => ({
-        ...item,
-        authorId,
-      }));
+    const posts = results.flatMap((result) =>
+      result.status === "fulfilled" ? result.value : [],
+    );
 
     await db.post.createMany({
       data: posts,
