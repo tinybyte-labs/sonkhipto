@@ -1,15 +1,17 @@
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+import NetInfo from "@react-native-community/netinfo";
 import { DarkTheme, Theme, ThemeProvider } from "@react-navigation/native";
+import { onlineManager } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useFonts } from "expo-font";
-import { router, Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { Provider as JotaiProvider } from "jotai";
 import { ArrowLeftIcon } from "lucide-react-native";
 import { useEffect, useMemo } from "react";
-import { useColorScheme, View } from "react-native";
+import { View, useColorScheme } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import Analytics from "@/components/Analytics";
@@ -58,6 +60,13 @@ export default function RootLayout() {
       themedColors.primary,
     ],
   );
+
+  useEffect(() => {
+    return NetInfo.addEventListener((state) => {
+      const status = !!state.isConnected;
+      onlineManager.setOnline(status);
+    });
+  }, []);
 
   useEffect(() => {
     if (error) {

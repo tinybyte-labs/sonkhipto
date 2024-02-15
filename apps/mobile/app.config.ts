@@ -3,7 +3,7 @@ import type { ExpoConfig } from "expo/config";
 const defineConfig = (): ExpoConfig => ({
   name: "Sonkhipto",
   slug: "sonkhipto",
-  version: "1.1.0",
+  version: "1.2.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: "myapp",
@@ -33,6 +33,9 @@ const defineConfig = (): ExpoConfig => ({
     },
     config: {
       usesNonExemptEncryption: false,
+    },
+    entitlements: {
+      "com.apple.developer.networking.wifi-info": true,
     },
   },
   android: {
