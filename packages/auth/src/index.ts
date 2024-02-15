@@ -1,5 +1,5 @@
 import { FastifyRequest } from "fastify";
-import { $Enums, User } from "@acme/db";
+import type { $Enums, User } from "@acme/db";
 import jwt from "jsonwebtoken";
 
 export type Payload = {
