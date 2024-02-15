@@ -1,11 +1,11 @@
 import { FastifyRequest } from "fastify";
-import type { $Enums, User } from "@acme/db";
+import type { User, UserRole } from "@acme/db";
 import jwt from "jsonwebtoken";
 
 export type Payload = {
   id: string;
   name: string | null;
-  role: $Enums.UserRole;
+  role: UserRole;
 };
 
 export const getSession = async (req: FastifyRequest) => {
