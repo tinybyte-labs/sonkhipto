@@ -1,3 +1,5 @@
+"use client";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/react-query";
 import { ReactNode, useState } from "react";
@@ -12,7 +14,9 @@ export const setToken = (tk: string) => {
   token = tk;
 };
 
-export default function TRPcProvider({ children }: { children: ReactNode }) {
+export type TRPCProviderProps = { children: ReactNode };
+
+export default function TRPCProvider({ children }: TRPCProviderProps) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -40,7 +44,9 @@ export default function TRPcProvider({ children }: { children: ReactNode }) {
   );
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <>{children}</>
+      </QueryClientProvider>
     </trpc.Provider>
   );
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ReactNode,
   createContext,
@@ -12,11 +14,15 @@ import { setToken } from "./trpc-provider";
 
 export type AuthContextType = (
   | {
-      isAuthenticated: false;
+      state: "loading";
       user: null;
     }
   | {
-      isAuthenticated: true;
+      state: "unauthenticated";
+      user: null;
+    }
+  | {
+      state: "authenticated";
       user: User;
     }
 ) & {
@@ -68,16 +74,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     load();
   }, [getCurrentUserMut, isLoadCalled]);
 
-  if (!isLoaded) {
-    return <p>Loading...</p>;
-  }
-
   return (
     <AuthContext.Provider
       value={{
-        ...(user
-          ? { isAuthenticated: true, user }
-          : { isAuthenticated: false, user: null }),
+        ...(!isLoaded
+          ? { state: "loading", user: null }
+          : user
+            ? { state: "authenticated", user }
+            : { state: "unauthenticated", user: null }),
         onSignIn,
         signOut,
       }}

@@ -14,7 +14,6 @@ export const feedRouter = router({
       }),
     )
     .query(async (opts) => {
-      const last3Day = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
       let where: Prisma.PostWhereInput = {};
       let orderBy: Prisma.PostOrderByWithRelationInput[] = [
         { createdAt: "desc" },
@@ -29,9 +28,6 @@ export const feedRouter = router({
         case "my-feed":
           where = {
             language: opts.input.language,
-            createdAt: {
-              gte: last3Day,
-            },
             PostView: {
               none: {
                 userId: opts.ctx.user.id,
@@ -40,6 +36,7 @@ export const feedRouter = router({
           };
           break;
         case "trending":
+          const last3Day = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
           where = {
             language: opts.input.language,
             createdAt: {

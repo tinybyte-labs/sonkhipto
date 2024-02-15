@@ -1,8 +1,45 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
+import { Prisma } from "@acme/db";
 
 export const postRouter = router({
+  findMany: protectedProcedure
+    .input(
+      z.object({
+        language: z.enum(["bn", "en"]).optional(),
+        countryCode: z.enum(["BN"]).optional(),
+        limit: z.number().min(0).max(100).default(10),
+        cursor: z.string().uuid().optional(),
+        orderBy: z
+          .enum(["createdAt", "updatedAt", "title"])
+          .default("createdAt"),
+        orderType: z.enum(["asc", "desc"]).default("asc"),
+      }),
+    )
+    .query(async (opts) => {
+      const orderBy: Prisma.PostOrderByWithRelationInput = {};
+      orderBy[opts.input.orderBy] = opts.input.orderType;
+
+      const posts = await opts.ctx.db.post.findMany({
+        take: opts.input.limit,
+        skip: opts.input.cursor ? 1 : 0,
+        cursor: opts.input.cursor ? { id: opts.input.cursor } : undefined,
+        orderBy,
+        include: {
+          author: true,
+          PostCategory: true,
+          _count: {
+            select: { FavoritePost: true, PostBookmark: true, PostView: true },
+          },
+        },
+      });
+      let nextCursor = posts[opts.input.limit - 1]?.id;
+      return {
+        nextCursor,
+        posts,
+      };
+    }),
   addBookmark: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
