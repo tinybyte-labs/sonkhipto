@@ -102,7 +102,7 @@ const startScrapingNewsFeeds = async () => {
     console.log(`TOTAL ${data.length} POSTS SCRAPED`);
 
     await db.post.createMany({
-      data,
+      data: data.map((item) => ({ ...item, authorId: process.env.AUTHOR_ID })),
       skipDuplicates: true,
     });
     console.log(`ALL SCRAPED POSTS ADDED TO DB`);
