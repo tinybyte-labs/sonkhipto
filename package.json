@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "pnpm db:generate && pnpm db:push && turbo build",
+    "web:build": "pnpm db:generate && turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
