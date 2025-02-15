@@ -117,6 +117,8 @@ const scrapePublisherFeed = async (publisher: NewsPublisher) => {
   return posts;
 };
 
+export const maxDuration = 120;
+
 export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   const body = await req.json();
   const { publisherId } = await z
