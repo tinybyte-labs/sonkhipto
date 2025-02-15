@@ -3,7 +3,7 @@ import type { ExpoConfig } from "expo/config";
 const defineConfig = (): ExpoConfig => ({
   name: "Sonkhipto",
   slug: "sonkhipto",
-  version: "1.2.1",
+  version: "1.3.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: "myapp",
@@ -39,7 +39,7 @@ const defineConfig = (): ExpoConfig => ({
     },
   },
   android: {
-    versionCode: 4,
+    versionCode: 5,
     adaptiveIcon: {
       foregroundImage: "./assets/images/adaptive-icon.png",
       backgroundColor: "#FF3F48",

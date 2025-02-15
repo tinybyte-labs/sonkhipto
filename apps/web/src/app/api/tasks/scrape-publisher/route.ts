@@ -2,7 +2,7 @@ import { newsPublishers } from "@/constants/publishers";
 import { qstashClient } from "@/lib/qstash-client";
 import { chunkArray } from "@/lib/utils";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
-import * as htmlparser2 from "htmlparser2";
+import RSSParser from "rss-parser";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -23,7 +23,8 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   try {
     const res = await fetch(publisher.rssFeedUrl);
     const feedStr = await res.text();
-    const feed = htmlparser2.parseFeed(feedStr);
+    const parser = new RSSParser();
+    const feed = await parser.parseString(feedStr);
 
     if (!feed) {
       throw new Error("Failed to parse feed");

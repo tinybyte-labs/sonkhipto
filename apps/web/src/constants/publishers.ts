@@ -52,14 +52,6 @@ export const newsPublishers: NewsPublisher[] = [
     language: "en",
   },
   {
-    id: "jugantor",
-    name: "Jugantor",
-    url: "https://www.jugantor.com",
-    rssFeedUrl: "https://www.jugantor.com/feed/rss.xml",
-    countryCode: "BD",
-    language: "bn",
-  },
-  {
     id: "kalerkantho-bangla",
     name: "কালের কণ্ঠ",
     url: "https://www.kalerkantho.com",

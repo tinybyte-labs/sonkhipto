@@ -9,10 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@acme/ui": "workspace:*",
-    "@acme/db": "workspace:*",
     "@acme/auth": "workspace:*",
+    "@acme/db": "workspace:*",
     "@acme/trpc": "workspace:*",
+    "@acme/ui": "workspace:*",
     "@ai-sdk/openai": "^1.1.11",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
@@ -27,12 +27,12 @@
     "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
-    "htmlparser2": "^10.0.0",
     "lucide-react": "^0.323.0",
     "next": "14.1.0",
     "react": "^18",
     "react-dom": "^18",
     "reading-time": "^1.5.0",
+    "rss-parser": "^3.13.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
