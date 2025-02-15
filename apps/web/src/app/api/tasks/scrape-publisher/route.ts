@@ -2,9 +2,14 @@ import { newsPublishers } from "@/constants/publishers";
 import { qstashClient } from "@/lib/qstash-client";
 import { chunkArray } from "@/lib/utils";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
-import RSSParser from "rss-parser";
+import Parser from "rss-parser";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { BASE_URL } from "@/constants";
+
+const parser = new Parser();
+
+export const maxDuration = 30;
 
 export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   const body = await req.json();
@@ -21,10 +26,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   }
 
   try {
-    const res = await fetch(publisher.rssFeedUrl);
-    const feedStr = await res.text();
-    const parser = new RSSParser();
-    const feed = await parser.parseString(feedStr);
+    const feed = await parser.parseURL(publisher.rssFeedUrl);
 
     if (!feed) {
       throw new Error("Failed to parse feed");
@@ -41,7 +43,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
     await Promise.all(
       chunks.map((urls) =>
         qstashClient.publishJSON({
-          url: `https://sonkhipto.com/api/tasks/scrape-posts`,
+          url: `${BASE_URL}/api/tasks/scrape-posts`,
           body: {
             publisherId: publisher.id,
             urls,
