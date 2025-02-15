@@ -48,7 +48,7 @@ export default function FeedPostItemView({
       }}
     >
       <Pressable style={{ flex: 1 }} onPress={onReadMore}>
-        <View style={{ flex: 1, maxHeight: 320 + topInset }}>
+        <View style={{ flex: 1, maxHeight: 200 + topInset }}>
           <Image
             source={post.imageUrl}
             style={{
@@ -63,19 +63,18 @@ export default function FeedPostItemView({
         <View style={{ padding: 16 }}>
           <Text
             style={{
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: "700",
               lineHeight: 24,
               color: colors.foreground,
             }}
-            numberOfLines={2}
           >
             {post.title}
           </Text>
           <Text
             style={{
               lineHeight: 20,
-              marginTop: 8,
+              marginTop: 4,
               color: colors.secondaryForeground,
             }}
           >
@@ -94,9 +93,8 @@ export default function FeedPostItemView({
               color: colors.foreground,
               fontSize: 16,
               lineHeight: 24,
-              marginTop: 8,
+              marginTop: 16,
             }}
-            // numberOfLines={6}
           >
             {post.content}
           </Text>
