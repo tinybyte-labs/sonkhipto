@@ -8,7 +8,7 @@ import { parse } from "node-html-parser";
 import { z } from "zod";
 import { newsPublishers } from "@/constants/publishers";
 
-export const getPageMetadata = async (link: string) => {
+const getPageMetadata = async (link: string) => {
   const res = await fetch(link);
   const html = await res.text();
   const $ = parse(html);
