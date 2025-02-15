@@ -131,14 +131,27 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
     return NextResponse.json("Publisher not found!", { status: 404 });
   }
 
-  const data = await scrapePublisherFeed(publisher);
+  try {
+    const data = await scrapePublisherFeed(publisher);
 
-  const post = await db.post.createMany({
-    data,
-    skipDuplicates: true,
-  });
+    const post = await db.post.createMany({
+      data,
+      skipDuplicates: true,
+    });
 
-  return new Response(
-    `Publisher "${publisher.name}" scrapped successfully. Scrapped ${post.count} posts.`,
-  );
+    return new NextResponse(
+      `Publisher "${publisher.id}" scrapped successfully. Total scrapped ${post.count} posts.`,
+    );
+  } catch (error) {
+    console.error(`Failed to scrape ${publisher.id}`, error);
+    return NextResponse.json(
+      {
+        message: `Failed to scrape ${publisher.id}`,
+        error,
+      },
+      {
+        status: 400,
+      },
+    );
+  }
 });
