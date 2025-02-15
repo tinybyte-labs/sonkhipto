@@ -11,7 +11,7 @@ const nextConfig = {
     ],
   },
   experimental: {
-    serverComponentsExternalPackages: ["cheerio"],
+    serverComponentsExternalPackages: ["cheerio", "rss-parser"],
   },
   transpilePackages: ["@acme/trpc", "@acme/atuh", "@acme/db"],
 };
