@@ -10,6 +10,7 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^1.1.11",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
     "@react-oauth/google": "^0.12.1",
@@ -19,6 +20,8 @@
     "@trpc/react-query": "11.0.0-next-beta.264",
     "@trpc/server": "11.0.0-next-beta.264",
     "@upstash/qstash": "^2.7.21",
+    "ai": "^4.1.41",
+    "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "htmlparser2": "^10.0.0",
@@ -30,6 +33,7 @@
     "reading-time": "^1.5.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
+    "turndown": "^7.2.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -40,6 +44,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/turndown": "^5.0.5",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
