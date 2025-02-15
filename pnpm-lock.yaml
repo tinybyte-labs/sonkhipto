@@ -249,6 +249,18 @@ importers:
 
   apps/web:
     dependencies:
+      '@acme/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@acme/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@acme/trpc':
+        specifier: workspace:*
+        version: link:../../packages/trpc
+      '@acme/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@ai-sdk/openai':
         specifier: ^1.1.11
         version: 1.1.11(zod@3.24.2)
@@ -300,9 +312,6 @@ importers:
       next:
         specifier: 14.1.0
         version: 14.1.0(@babel/core@7.26.9)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      node-html-parser:
-        specifier: ^7.0.1
-        version: 7.0.1
       react:
         specifier: ^18
         version: 18.2.0
@@ -318,19 +327,10 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3)))
-      turndown:
-        specifier: ^7.2.0
-        version: 7.2.0
       zod:
         specifier: ^3.22.4
         version: 3.24.2
     devDependencies:
-      '@acme/db':
-        specifier: workspace:*
-        version: link:../../packages/db
-      '@acme/trpc':
-        specifier: workspace:*
-        version: link:../../packages/trpc
       '@acme/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
@@ -346,9 +346,6 @@ importers:
       '@types/react-dom':
         specifier: ^18
         version: 18.3.5(@types/react@18.3.18)
-      '@types/turndown':
-        specifier: ^5.0.5
-        version: 5.0.5
       autoprefixer:
         specifier: ^10.0.1
         version: 10.4.20(postcss@8.5.2)
@@ -2148,9 +2145,6 @@ packages:
   '@microsoft/tsdoc@0.14.2':
     resolution: {integrity: sha512-9b8mPpKrfeGRuhFH5iO1iwCLeIIsV6+H1sRfxbkoGXIyQE2BTsPd9zqSqQJ+pv5sJ/hT5M1zvOFL02MnEezFug==}
 
-  '@mixmark-io/domino@2.2.0':
-    resolution: {integrity: sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw==}
-
   '@next/env@14.1.0':
     resolution: {integrity: sha512-Py8zIo+02ht82brwwhTg36iogzFqGLPXlRGKQw5s+qP/kMNc4MAyDeEwBKDijk6zTIbegEgu8Qy7C1LboslQAw==}
 
@@ -3137,9 +3131,6 @@ packages:
 
   '@types/tough-cookie@4.0.5':
     resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
-
-  '@types/turndown@5.0.5':
-    resolution: {integrity: sha512-TL2IgGgc7B5j78rIccBtlYAnkuv8nUQqhQc+DSYV5j9Be9XOcm/SKOVRuA47xAVI3680Tk9B1d8flK2GWT2+4w==}
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
@@ -5364,10 +5355,6 @@ packages:
   hastscript@7.2.0:
     resolution: {integrity: sha512-TtYPq24IldU8iKoJQqvZOuhi5CyCQRAbvDOX0x1eW6rsHSxa/1i2CCiptNTotGHJ3VoHRGmqiv6/D3q113ikkw==}
 
-  he@1.2.0:
-    resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
-    hasBin: true
-
   header-case@1.0.1:
     resolution: {integrity: sha512-i0q9mkOeSuhXw6bGgiQCCBgY/jlZuV/7dZXyZ9c6LcBrqwvT8eT719E9uxE5LiZftdl+z81Ugbg/VvXV4OJOeQ==}
 
@@ -6891,9 +6878,6 @@ packages:
   node-forge@1.3.1:
     resolution: {integrity: sha512-dPEtOeMvF9VMcYV/1Wb8CPoVAXtp6MKMlcbAt4ddqmGqUJ6fQZFXkNZNkNlfevtNkGtaSoXf/vNNNSvgrdXwtA==}
     engines: {node: '>= 6.13.0'}
-
-  node-html-parser@7.0.1:
-    resolution: {integrity: sha512-KGtmPY2kS0thCWGK0VuPyOS+pBKhhe8gXztzA2ilAOhbUbxa9homF1bOyKvhGzMLXUoRds9IOmr/v5lr/lqNmA==}
 
   node-int64@0.4.0:
     resolution: {integrity: sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw==}
@@ -8579,9 +8563,6 @@ packages:
   turbo@1.13.4:
     resolution: {integrity: sha512-1q7+9UJABuBAHrcC4Sxp5lOqYS5mvxRrwa33wpIyM18hlOCpRD/fTJNxZ0vhbMcJmz15o9kkVm743mPn7p6jpQ==}
     hasBin: true
-
-  turndown@7.2.0:
-    resolution: {integrity: sha512-eCZGBN4nNNqM9Owkv9HAtWRYfLA4h909E/WGAWWBpmB275ehNhZyk87/Tpvjbp0jjNl9XwCsbe6bm6CqFsgD+A==}
 
   typanion@3.14.0:
     resolution: {integrity: sha512-ZW/lVMRabETuYCd9O9ZvMhAh8GslSqaUjxmK/JLPCh6l73CvLBiuXswj/+7LdnWOgYsQ130FqLzFz5aGT4I3Ug==}
@@ -11113,8 +11094,6 @@ snapshots:
 
   '@microsoft/tsdoc@0.14.2': {}
 
-  '@mixmark-io/domino@2.2.0': {}
-
   '@next/env@14.1.0': {}
 
   '@next/eslint-plugin-next@14.1.0':
@@ -12256,8 +12235,6 @@ snapshots:
   '@types/tinycolor2@1.4.6': {}
 
   '@types/tough-cookie@4.0.5': {}
-
-  '@types/turndown@5.0.5': {}
 
   '@types/unist@2.0.11': {}
 
@@ -15103,8 +15080,6 @@ snapshots:
       property-information: 6.5.0
       space-separated-tokens: 2.0.2
 
-  he@1.2.0: {}
-
   header-case@1.0.1:
     dependencies:
       no-case: 2.3.2
@@ -17144,11 +17119,6 @@ snapshots:
 
   node-forge@1.3.1: {}
 
-  node-html-parser@7.0.1:
-    dependencies:
-      css-select: 5.1.0
-      he: 1.2.0
-
   node-int64@0.4.0: {}
 
   node-plop@0.26.3:
@@ -19079,10 +19049,6 @@ snapshots:
       turbo-linux-arm64: 1.13.4
       turbo-windows-64: 1.13.4
       turbo-windows-arm64: 1.13.4
-
-  turndown@7.2.0:
-    dependencies:
-      '@mixmark-io/domino': 2.2.0
 
   typanion@3.14.0: {}
 

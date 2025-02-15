@@ -10,6 +10,10 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    serverComponentsExternalPackages: ["cheerio"],
+  },
+  transpilePackages: ["@acme/trpc", "@acme/atuh", "@acme/db"],
 };
 
 export default withContentlayer(nextConfig);
