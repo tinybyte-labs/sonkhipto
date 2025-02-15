@@ -88,21 +88,13 @@ const scrapeFeedItem = async (
   const htmlText = await res.text();
   const $ = cheerio.load(htmlText);
 
-  let title: string | undefined = $("title").text().trim();
-  if (!title) {
-    title = $(`meta[name="title"]`).attr("content")?.trim();
-  }
-
-  if (!title) {
-    throw new Error("Title not found!");
-  }
-
   const metaOgImage = $(`meta[property="og:image"]`).attr("content");
   const metaTwitterImage = $(`meta[name="twitter:image"]`).attr("content");
   const imageUrl = metaOgImage ?? metaTwitterImage;
 
   $("head").remove();
   $("meta").remove();
+  $("link").remove();
   $("script").remove();
   $("style").remove();
   $("noscript").remove();
@@ -118,22 +110,23 @@ const scrapeFeedItem = async (
     system:
       "Extract the main points from the following HTML blog post and generate a concise summary in the same language as the original text. Ensure the summary captures key ideas, main arguments, and important conclusions while maintaining clarity and readability. Remove unnecessary HTML tags or metadata and focus only on the main content.",
     schema: z.object({
+      title: z.string().describe("Title of the blog post"),
       summary: z
         .string()
         .describe(
-          "A concise summary extracted from the blog post, capturing key ideas and main arguments. Maximum 500 characters",
+          "A concise summary extracted from the blog post, capturing key ideas and main arguments. Maximum 400 characters",
         ),
     }),
     messages: [{ role: "user", content: body }],
     maxTokens: 300,
   });
 
-  const content = result.object.summary;
+  const { summary, title } = result.object;
 
   return {
     sourceUrl,
     title,
-    content,
+    content: summary,
     imageUrl,
   };
 };

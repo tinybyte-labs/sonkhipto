@@ -5,5 +5,5 @@ export const sleep = (ms: number) =>
 
 export const nanoid = customAlphabet(
   "abcdefghijklmnopqrstuvwxyz0123456789",
-  10
+  10,
 );

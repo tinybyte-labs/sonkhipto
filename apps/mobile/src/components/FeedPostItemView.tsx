@@ -63,12 +63,12 @@ export default function FeedPostItemView({
         <View style={{ padding: 16 }}>
           <Text
             style={{
-              fontSize: 24,
+              fontSize: 20,
               fontWeight: "700",
-              lineHeight: 32,
+              lineHeight: 24,
               color: colors.foreground,
             }}
-            numberOfLines={3}
+            numberOfLines={2}
           >
             {post.title}
           </Text>
@@ -96,7 +96,7 @@ export default function FeedPostItemView({
               lineHeight: 24,
               marginTop: 8,
             }}
-            numberOfLines={6}
+            // numberOfLines={6}
           >
             {post.content}
           </Text>
