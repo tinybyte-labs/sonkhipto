@@ -16,6 +16,7 @@ export const feedRouter = router({
     .query(async (opts) => {
       let where: Prisma.PostWhereInput = {};
       let orderBy: Prisma.PostOrderByWithRelationInput[] = [
+        { publishedAt: "desc" },
         { createdAt: "desc" },
         { id: "asc" },
       ];
@@ -47,6 +48,7 @@ export const feedRouter = router({
             { FavoritePost: { _count: "desc" } },
             { PostBookmark: { _count: "desc" } },
             { PostView: { _count: "desc" } },
+            { publishedAt: "desc" },
             { createdAt: "desc" },
             { id: "asc" },
           ];
