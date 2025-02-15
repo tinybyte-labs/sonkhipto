@@ -2,10 +2,9 @@ import { newsPublishers } from "@/constants/publishers";
 import { scrapePost } from "@/utils/server/scraping";
 import { db, Prisma } from "@acme/db";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
+import chromium from "chrome-aws-lambda";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import chromium from "chrome-aws-lambda";
-import puppeteer from "puppeteer-core";
 
 export const maxDuration = 120;
 
@@ -35,7 +34,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   }
 
   try {
-    const browser = await puppeteer.launch({
+    const browser = await chromium.puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath,

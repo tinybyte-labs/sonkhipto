@@ -3,7 +3,6 @@ import { scrapePost } from "@/utils/server/scraping";
 import { db } from "@acme/db";
 import chromium from "chrome-aws-lambda";
 import { NextRequest, NextResponse } from "next/server";
-import puppeteer from "puppeteer-core";
 import { z } from "zod";
 
 export const POST = async (req: NextRequest) => {
@@ -24,7 +23,7 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json("Publisher not found!", { status: 404 });
   }
 
-  const browser = await puppeteer.launch({
+  const browser = await chromium.puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath,
