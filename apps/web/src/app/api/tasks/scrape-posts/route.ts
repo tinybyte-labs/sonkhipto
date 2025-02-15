@@ -4,6 +4,8 @@ import { db, Prisma } from "@acme/db";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import chromium from "@sparticuz/chromium-min";
+import puppeteer from "puppeteer-core";
 
 export const maxDuration = 120;
 
@@ -33,9 +35,24 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   }
 
   try {
+    const isLocal = !!process.env.CHROME_EXECUTABLE_PATH;
+
+    const browser = await puppeteer.launch({
+      args: isLocal ? puppeteer.defaultArgs() : chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath:
+        process.env.CHROME_EXECUTABLE_PATH ||
+        (await chromium.executablePath(
+          "https://github.com/Sparticuz/chromium/releases/download/v121.0.0/chromium-v121.0.0-pack.tar",
+        )),
+      headless: true,
+    });
+
     const results = await Promise.allSettled(
-      items.map((item) => scrapePost(item.link)),
+      items.map((item) => scrapePost(item.link, browser)),
     );
+
+    await browser.close();
     const data = results
       .map((result) => {
         if (result.status === "fulfilled") {

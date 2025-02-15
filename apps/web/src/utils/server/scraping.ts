@@ -2,12 +2,12 @@ import { db } from "@acme/db";
 import { openai } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import * as cheerio from "cheerio";
+import { Browser } from "puppeteer-core";
 import { z } from "zod";
-import chromium from "@sparticuz/chromium-min";
-import puppeteer from "puppeteer-core";
 
 export const scrapePost = async (
   link: string,
+  browser: Browser,
 ): Promise<{
   title: string;
   content: string;
@@ -22,19 +22,6 @@ export const scrapePost = async (
     throw new Error("Already scraped");
   }
 
-  const isLocal = !!process.env.CHROME_EXECUTABLE_PATH;
-
-  const browser = await puppeteer.launch({
-    args: isLocal ? puppeteer.defaultArgs() : chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath:
-      process.env.CHROME_EXECUTABLE_PATH ||
-      (await chromium.executablePath(
-        "https://github.com/Sparticuz/chromium/releases/download/v121.0.0/chromium-v121.0.0-pack.tar",
-      )),
-    headless: true,
-  });
-
   const page = await browser.newPage();
   await page.goto(link, { waitUntil: "networkidle2" });
   await page.title();
@@ -43,7 +30,7 @@ export const scrapePost = async (
     return document.documentElement.outerHTML;
   });
 
-  await browser.close();
+  await page.close();
 
   const $ = cheerio.load(html);
 
