@@ -33,6 +33,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
         if (result.status === "fulfilled") {
           return {
             ...result.value,
+            content: result.value.content.slice(0, 500),
             language: publisher.language,
             countryCode: publisher.countryCode,
             sourceName: publisher.name,
