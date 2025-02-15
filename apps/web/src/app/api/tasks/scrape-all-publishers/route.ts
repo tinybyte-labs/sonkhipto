@@ -11,6 +11,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
         body: {
           publisherId: publisher.id,
         },
+        retries: 0,
       }),
     ),
   );

@@ -45,6 +45,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
             publisherId: publisher.id,
             urls,
           },
+          retries: 0,
         }),
       ),
     );
