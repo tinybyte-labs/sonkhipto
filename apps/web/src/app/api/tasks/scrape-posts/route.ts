@@ -82,7 +82,8 @@ const scrapeFeedItem = async (
   }
 
   const res = await fetch(sourceUrl);
-  if (!res.ok) {
+  if (res.status !== 200) {
+    console.log(res.status, res.statusText);
     throw res.statusText;
   }
   const htmlText = await res.text();
