@@ -62,6 +62,7 @@ export default function FeedView({ feedType }: FeedViewProps) {
             favoriteCount: post._count.FavoritePost,
             isBookmarked: !!user && post.PostBookmark?.[0]?.userId === user.id,
             isFavorite: !!user && post.FavoritePost?.[0]?.userId === user.id,
+            publishedAt: post.publishedAt,
           },
           key: post.id,
         })) ?? [],

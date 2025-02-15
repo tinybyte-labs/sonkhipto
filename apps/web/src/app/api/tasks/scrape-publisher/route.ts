@@ -35,18 +35,18 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
     console.log(`${publisher.url} - TOTAL ${feed.items.length} ITEMS`);
 
     const allUrls = feed.items
-      .map((item) => item.link)
-      .filter((link) => !!link) as string[];
+      .map((item) => ({ link: item.link, pubDate: item.pubDate }))
+      .filter((item) => !!item.link);
 
     const chunks = chunkArray(allUrls, 10);
 
     await Promise.all(
-      chunks.map((urls) =>
+      chunks.map((items) =>
         qstashClient.publishJSON({
           url: `${BASE_URL}/api/tasks/scrape-posts`,
           body: {
             publisherId: publisher.id,
-            urls,
+            items,
           },
           retries: 0,
         }),

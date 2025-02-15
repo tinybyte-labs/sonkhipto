@@ -79,7 +79,7 @@ export default function FeedPostItemView({
             }}
           >
             {post.sourceName} •{" "}
-            {dayjs(post.createdAt, {
+            {dayjs(post.publishedAt ?? post.createdAt, {
               locale: language === "bn" ? "bn-bd" : "en",
             }).fromNow()}
             {post.authorName

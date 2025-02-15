@@ -5,22 +5,22 @@ import * as cheerio from "cheerio";
 import { z } from "zod";
 
 export const scrapePost = async (
-  sourceUrl: string,
+  link: string,
 ): Promise<{
   title: string;
   content: string;
   imageUrl?: string;
-  sourceUrl: string;
+  link: string;
 }> => {
   const exists = await db.post.findUnique({
-    where: { sourceUrl },
+    where: { sourceUrl: link },
   });
 
   if (exists) {
     throw new Error("Already scraped");
   }
 
-  const res = await fetch(sourceUrl);
+  const res = await fetch(link);
   if (res.status !== 200) {
     console.log(res.status, res.statusText);
     throw res.statusText;
@@ -64,7 +64,7 @@ export const scrapePost = async (
   const { summary, title } = result.object;
 
   return {
-    sourceUrl,
+    link,
     title,
     content: summary,
     imageUrl,

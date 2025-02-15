@@ -62,18 +62,19 @@ enum PostType {
 }
 
 model Post {
-  id          String   @id @default(uuid()) @db.Uuid
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  title       String   @db.VarChar(100)
-  content     String   @db.VarChar(500)
-  authorId    String?  @db.Uuid
+  id          String    @id @default(uuid()) @db.Uuid
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+  title       String    @db.VarChar(100)
+  content     String    @db.VarChar(500)
+  authorId    String?   @db.Uuid
   imageUrl    String?
-  sourceName  String   @db.VarChar(100)
-  sourceUrl   String   @unique
-  language    String   @db.VarChar(6)
-  countryCode String   @db.VarChar(6)
-  type        PostType @default(NEWS)
+  sourceName  String    @db.VarChar(100)
+  sourceUrl   String    @unique
+  language    String    @db.VarChar(6)
+  countryCode String    @db.VarChar(6)
+  type        PostType  @default(NEWS)
 
   author User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
 

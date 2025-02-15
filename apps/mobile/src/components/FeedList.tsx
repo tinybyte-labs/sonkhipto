@@ -22,6 +22,7 @@ export type FeedNewsItem = {
   data: {
     id: string;
     createdAt: Date;
+    publishedAt: Date | null;
     title: string;
     content: string;
     imageUrl?: string | null;

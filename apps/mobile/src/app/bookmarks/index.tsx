@@ -36,7 +36,7 @@ export default function BookmarksScreen() {
             title: bookmark.post.title,
             content: bookmark.post.content,
             imageUrl: bookmark.post.imageUrl ?? undefined,
-            authorName: bookmark.post.author.name ?? undefined,
+            authorName: bookmark.post.author?.name ?? undefined,
             createdAt: bookmark.post.createdAt,
             sourceName: bookmark.post.sourceName,
             sourceUrl: bookmark.post.sourceUrl,
@@ -46,6 +46,7 @@ export default function BookmarksScreen() {
               !!user && bookmark.post.PostBookmark?.[0]?.userId === user.id,
             isFavorite:
               !!user && bookmark.post.FavoritePost?.[0]?.userId === user.id,
+            publishedAt: bookmark.post.publishedAt,
           },
           key: bookmark.postId,
         })) ?? [],

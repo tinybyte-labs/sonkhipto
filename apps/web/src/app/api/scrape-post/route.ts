@@ -6,8 +6,9 @@ import { z } from "zod";
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
-  const { postUrl, publisherId } = await z
+  const { postUrl, publisherId, pubDate } = await z
     .object({
+      pubDate: z.string().optional(),
       postUrl: z.string().url(),
       publisherId: z.string(),
     })
@@ -25,13 +26,14 @@ export const POST = async (req: NextRequest) => {
 
   const post = await db.post.create({
     data: {
-      sourceUrl: data.sourceUrl,
+      sourceUrl: data.link,
       imageUrl: data.imageUrl,
       title: data.title.slice(0, 100),
       content: data.content.slice(0, 500),
       language: publisher.language,
       countryCode: publisher.countryCode,
       sourceName: publisher.name,
+      publishedAt: pubDate ? new Date(pubDate) : new Date(),
     },
   });
 
