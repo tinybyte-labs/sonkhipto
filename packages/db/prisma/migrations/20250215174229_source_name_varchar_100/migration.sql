@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Post" ALTER COLUMN "sourceName" SET DATA TYPE VARCHAR(100);

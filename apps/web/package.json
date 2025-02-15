@@ -3,11 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm with-env next dev -p 3000",
-    "build": "pnpm with-env next build",
-    "start": "pnpm with-env next start",
-    "lint": "pnpm with-env next lint",
-    "with-env": "dotenv -e ../../.env --"
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@acme/ui": "workspace:*",

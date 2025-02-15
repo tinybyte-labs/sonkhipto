@@ -32,7 +32,9 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
       .map((result) => {
         if (result.status === "fulfilled") {
           return {
-            ...result.value,
+            sourceUrl: result.value.sourceUrl,
+            imageUrl: result.value.imageUrl,
+            title: result.value.title.slice(0, 100),
             content: result.value.content.slice(0, 500),
             language: publisher.language,
             countryCode: publisher.countryCode,

@@ -69,7 +69,7 @@ model Post {
   content     String   @db.VarChar(500)
   authorId    String?  @db.Uuid
   imageUrl    String?
-  sourceName  String   @db.VarChar(50)
+  sourceName  String   @db.VarChar(100)
   sourceUrl   String   @unique
   language    String   @db.VarChar(6)
   countryCode String   @db.VarChar(6)

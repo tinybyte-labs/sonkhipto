@@ -9,11 +9,10 @@
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "pnpm build --watch",
-    "studio": "pnpm with-env prisma studio",
-    "migrate": "pnpm with-env prisma migrate dev",
-    "push": "pnpm with-env prisma db push --accept-data-loss",
-    "generate": "pnpm with-env prisma generate",
-    "with-env": "dotenv -e ../../.env --"
+    "studio": "prisma studio",
+    "migrate": "prisma migrate dev",
+    "push": "prisma db push --accept-data-loss",
+    "generate": "prisma generate"
   },
   "keywords": [],
   "author": "",
@@ -25,7 +24,6 @@
     "@acme/typescript-config": "workspace:*",
     "prisma": "^5.9.1",
     "@types/node": "^20.11.13",
-    "dotenv-cli": "^7.3.0",
     "esbuild": "^0.20.0",
     "eslint": "^8.56.0",
     "tsx": "^4.7.0",
