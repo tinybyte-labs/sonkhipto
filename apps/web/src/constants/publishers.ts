@@ -1,7 +1,8 @@
-import { NewsPublisher } from "../types/news-publisher";
+import { NewsPublisher } from "@/types";
 
 export const newsPublishers: NewsPublisher[] = [
   {
+    id: "prothomalo-bangla",
     name: "প্রথম আলো",
     url: "https://www.prothomalo.com",
     rssFeedUrl:
@@ -10,6 +11,7 @@ export const newsPublishers: NewsPublisher[] = [
     language: "bn",
   },
   {
+    id: "prothomalo-english",
     name: "Prothom Alo",
     url: "https://en.prothomalo.com/",
     rssFeedUrl:
@@ -18,6 +20,7 @@ export const newsPublishers: NewsPublisher[] = [
     language: "en",
   },
   {
+    id: "bd24live",
     name: "BD 24 Live",
     url: "https://www.bd24live.com",
     rssFeedUrl: "https://www.bd24live.com/feed",
@@ -25,6 +28,7 @@ export const newsPublishers: NewsPublisher[] = [
     language: "en",
   },
   {
+    id: "dailyinqilab",
     name: "দৈনিক ইনকিলাব",
     url: "https://dailyinqilab.com",
     rssFeedUrl: "https://m.dailyinqilab.com/feed/",
@@ -32,6 +36,7 @@ export const newsPublishers: NewsPublisher[] = [
     language: "bn",
   },
   {
+    id: "ittefaq-bangla",
     name: "দৈনিক ইত্তেফাক",
     url: "https://www.ittefaq.com.bd/",
     rssFeedUrl: "https://www.ittefaq.com.bd/feed/",
@@ -39,6 +44,7 @@ export const newsPublishers: NewsPublisher[] = [
     language: "bn",
   },
   {
+    id: "ittefaq-english",
     name: "The Daily Ittefaq",
     url: "https://en.ittefaq.com.bd/",
     rssFeedUrl: "https://en.ittefaq.com.bd/feed/",
@@ -46,6 +52,7 @@ export const newsPublishers: NewsPublisher[] = [
     language: "en",
   },
   {
+    id: "jugantor",
     name: "Jugantor",
     url: "https://www.jugantor.com",
     rssFeedUrl: "https://www.jugantor.com/feed/rss.xml",
@@ -53,6 +60,7 @@ export const newsPublishers: NewsPublisher[] = [
     language: "bn",
   },
   {
+    id: "kalerkantho-bangla",
     name: "কালের কণ্ঠ",
     url: "https://www.kalerkantho.com",
     rssFeedUrl: "https://www.kalerkantho.com/rss.xml",
@@ -60,6 +68,7 @@ export const newsPublishers: NewsPublisher[] = [
     language: "bn",
   },
   {
+    id: "news24bd",
     name: "News24 TV",
     url: "https://www.news24bd.tv",
     rssFeedUrl: "https://www.news24bd.tv/rss.xml",
@@ -67,6 +76,7 @@ export const newsPublishers: NewsPublisher[] = [
     language: "bn",
   },
   {
+    id: "thedailystar",
     name: "The Daily Star",
     url: "https://www.thedailystar.net",
     rssFeedUrl: "https://www.thedailystar.net/frontpage/rss.xml",

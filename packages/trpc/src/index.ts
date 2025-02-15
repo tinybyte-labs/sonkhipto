@@ -4,7 +4,7 @@ import { feedRouter } from "./routers/feed";
 import { postRouter } from "./routers/post";
 import { router } from "./trpc";
 
-export { createContext } from "./context";
+export { createTRPCContext } from "./context";
 
 export const appRouter = router({
   api: apiRouter,

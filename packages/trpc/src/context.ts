@@ -1,13 +1,11 @@
-import type { CreateFastifyContextOptions } from "@trpc/server/adapters/fastify";
 import { db } from "@acme/db";
 import { Payload, getSession } from "@acme/auth";
+import { NextRequest } from "next/server";
+import { inferAsyncReturnType } from "@trpc/server";
 
-export async function createContext({ req, res }: CreateFastifyContextOptions) {
-  let session: Payload | null = null;
-  try {
-    session = await getSession(req);
-  } catch (error: any) {}
-  return { req, res, db, session };
+export async function createTRPCContext({ req }: { req: NextRequest }) {
+  const session = await getSession(req);
+  return { req, db, session };
 }
 
-export type Context = Awaited<ReturnType<typeof createContext>>;
+export type Context = Awaited<ReturnType<typeof createTRPCContext>>;

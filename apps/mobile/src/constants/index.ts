@@ -6,8 +6,8 @@ export const APP_NAME = "Sonkhipto";
 
 export const LOCALHOST = Platform.OS === "android" ? "10.0.2.2" : "localhost";
 
-export const PROD_API = "https://api.sonkhipto.com";
-export const DEV_API = `http://${LOCALHOST}:8000`;
+export const PROD_API = "https://sonkhipto.com";
+export const DEV_API = `http://${LOCALHOST}:3000`;
 
 export const API_URL = Device.isDevice || !__DEV__ ? PROD_API : DEV_API;
 

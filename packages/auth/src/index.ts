@@ -1,6 +1,6 @@
-import { FastifyRequest } from "fastify";
 import type { User, UserRole } from "@acme/db";
 import jwt from "jsonwebtoken";
+import { NextRequest } from "next/server";
 
 export type Payload = {
   id: string;
@@ -8,13 +8,17 @@ export type Payload = {
   role: UserRole;
 };
 
-export const getSession = async (req: FastifyRequest) => {
-  const accessToken = req.headers.authorization?.replace("Bearer ", "");
+export const getSession = async (req: NextRequest): Promise<Payload | null> => {
+  const accessToken = req.headers.get("Authorization")?.replace("Bearer ", "");
   if (!accessToken) {
-    throw new Error("Unauthorized");
+    return null;
   }
-  const payload = await jwt.verify(accessToken, process.env.JWT_SECRET!);
-  return payload as Payload;
+  try {
+    const payload = await jwt.verify(accessToken, process.env.JWT_SECRET!);
+    return payload as Payload;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const signJwt = async (user: User) => {

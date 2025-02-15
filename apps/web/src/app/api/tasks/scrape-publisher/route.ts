@@ -1,10 +1,46 @@
-import { Params } from "fastify-cron";
-import { newsPublishers } from "../constants/publishers";
+import { chunkArray } from "@/lib/utils";
+import { NewsPublisher } from "@/types";
+import { db, Prisma } from "@acme/db";
+import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
+import { NextRequest, NextResponse } from "next/server";
 import * as htmlparser2 from "htmlparser2";
-import { Prisma, db } from "@acme/db";
-import { NewsPublisher } from "../types/news-publisher";
-import { getPageMetadata } from "../utils/get-page-metadata";
-import { chunkArray } from "../utils";
+import { parse } from "node-html-parser";
+import { z } from "zod";
+import { newsPublishers } from "@/constants/publishers";
+
+export const getPageMetadata = async (link: string) => {
+  const res = await fetch(link);
+  const html = await res.text();
+  const $ = parse(html);
+  const language = $.querySelector("html")?.getAttribute("lang")?.trim();
+  const content = $.querySelector('meta[property="og:description"]')
+    ?.getAttribute("content")
+    ?.trim();
+  const authorName = $.querySelector('meta[name="author"]')
+    ?.getAttribute("content")
+    ?.trim();
+  const keywords = $.querySelector('meta[name="keywords"]')
+    ?.getAttribute("content")
+    ?.trim()
+    .split(",")
+    .map((keyword) => keyword.trim())
+    .filter(Boolean);
+  const title = $.querySelector('meta[property="og:title"]')
+    ?.getAttribute("content")
+    ?.trim();
+  const imageUrl = $.querySelector('meta[property="og:image"]')
+    ?.getAttribute("content")
+    ?.trim();
+
+  return {
+    language,
+    title,
+    content,
+    imageUrl,
+    authorName,
+    keywords,
+  };
+};
 
 const scrapeFeedItem = async (item: htmlparser2.DomUtils.FeedItem) => {
   if (typeof item.link !== "string") {
@@ -81,44 +117,26 @@ const scrapePublisherFeed = async (publisher: NewsPublisher) => {
   return posts;
 };
 
-const startScrapingNewsFeeds = async () => {
-  console.log("NEWS FEED SCRAPE STARTED!");
-  console.log(`SCRAPING TOTAL ${newsPublishers.length} NEWS PUBLISHERS`);
-
-  try {
-    const data: Prisma.PostCreateInput[] = [];
-
-    for (let i = 0; i < newsPublishers.length; i++) {
-      const publisher = newsPublishers[i];
-      try {
-        console.log(`${publisher.url} - SCRAPE STARTED`);
-        const newPosts = await scrapePublisherFeed(publisher);
-        data.push(...newPosts);
-        console.log(`${publisher.url} - SCRAPE FINISHED`);
-      } catch (error: any) {
-        console.log(`${publisher.url} - SCRAPE ERROR`);
-      }
-    }
-    console.log(`TOTAL ${data.length} POSTS SCRAPED`);
-
-    await db.post.createMany({
-      data: data.map((item) => ({
-        ...item,
-        authorId: null,
-      })),
-      skipDuplicates: true,
-    });
-    console.log(`ALL SCRAPED POSTS ADDED TO DB`);
-    console.log("NEWS FEED SCRAPE SUCCESS!");
-  } catch (error: any) {
-    console.log("FAILED TO SCRAPE NEWS FEEDS", error);
+export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
+  const body = await req.json();
+  const { publisherId } = await z
+    .object({ publisherId: z.string() })
+    .parseAsync(body);
+  const publisher = newsPublishers.find(
+    (publisher) => publisher.id === publisherId,
+  );
+  if (!publisher) {
+    return NextResponse.json("Publisher not found!", { status: 404 });
   }
-};
 
-export const SCRAPE_NEWS_FEEDS_JOB_NAME = "scrape-news-feeds";
+  const data = await scrapePublisherFeed(publisher);
 
-export const scrapeNewsFeedsJob: Params = {
-  name: SCRAPE_NEWS_FEEDS_JOB_NAME,
-  cronTime: "0 */4 * * *",
-  onTick: startScrapingNewsFeeds,
-};
+  const post = await db.post.createMany({
+    data,
+    skipDuplicates: true,
+  });
+
+  return new Response(
+    `Publisher "${publisher.name}" scrapped successfully. Scrapped ${post.count} posts.`,
+  );
+});

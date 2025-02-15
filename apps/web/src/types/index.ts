@@ -1,4 +1,5 @@
 export type NewsPublisher = {
+  id: string;
   name: string;
   url: string;
   rssFeedUrl: string;

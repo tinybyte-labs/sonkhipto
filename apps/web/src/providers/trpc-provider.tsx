@@ -5,7 +5,6 @@ import { httpBatchLink } from "@trpc/react-query";
 import { ReactNode, useState } from "react";
 import superjson from "superjson";
 
-import { API_URL } from "@/constants";
 import { trpc } from "@/utils/trpc";
 
 export let token: string | undefined = undefined;
@@ -31,7 +30,7 @@ export default function TRPCProvider({ children }: TRPCProviderProps) {
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: `${API_URL}/trpc`,
+          url: `/api/trpc`,
           transformer: superjson,
           headers() {
             return {
