@@ -414,9 +414,6 @@ importers:
       '@types/node':
         specifier: ^20.11.13
         version: 20.17.19
-      dotenv-cli:
-        specifier: ^7.3.0
-        version: 7.4.4
       esbuild:
         specifier: ^0.20.0
         version: 0.20.2
@@ -487,9 +484,6 @@ importers:
       '@types/node':
         specifier: ^20.11.13
         version: 20.17.19
-      dotenv-cli:
-        specifier: ^7.3.0
-        version: 7.4.4
       esbuild:
         specifier: ^0.20.0
         version: 0.20.2
