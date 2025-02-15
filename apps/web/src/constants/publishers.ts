@@ -27,14 +27,14 @@ export const newsPublishers: NewsPublisher[] = [
     countryCode: "BD",
     language: "en",
   },
-  {
-    id: "dailyinqilab",
-    name: "দৈনিক ইনকিলাব",
-    url: "https://dailyinqilab.com",
-    rssFeedUrl: "https://m.dailyinqilab.com/feed/",
-    countryCode: "BD",
-    language: "bn",
-  },
+  // {
+  //   id: "dailyinqilab",
+  //   name: "দৈনিক ইনকিলাব",
+  //   url: "https://dailyinqilab.com",
+  //   rssFeedUrl: "https://m.dailyinqilab.com/feed/",
+  //   countryCode: "BD",
+  //   language: "bn",
+  // },
   {
     id: "ittefaq-bangla",
     name: "দৈনিক ইত্তেফাক",
