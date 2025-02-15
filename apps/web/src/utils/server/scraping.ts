@@ -23,7 +23,7 @@ export const scrapePost = async (
   }
 
   const page = await browser.newPage();
-  await page.goto(link, { waitUntil: "networkidle2" });
+  await page.goto(link, { waitUntil: "networkidle0" });
   await page.title();
 
   const html = await page.evaluate(() => {

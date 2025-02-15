@@ -4,7 +4,7 @@ import { db, Prisma } from "@acme/db";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import chromium from "@sparticuz/chromium-min";
+import chromium from "chrome-aws-lambda";
 import puppeteer from "puppeteer-core";
 
 export const maxDuration = 120;
@@ -35,17 +35,11 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   }
 
   try {
-    const isLocal = !!process.env.CHROME_EXECUTABLE_PATH;
-
     const browser = await puppeteer.launch({
-      args: isLocal ? puppeteer.defaultArgs() : chromium.args,
+      args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath:
-        process.env.CHROME_EXECUTABLE_PATH ||
-        (await chromium.executablePath(
-          "https://github.com/Sparticuz/chromium/releases/download/v121.0.0/chromium-v121.0.0-pack.tar",
-        )),
-      headless: true,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
     });
 
     const results = await Promise.allSettled(

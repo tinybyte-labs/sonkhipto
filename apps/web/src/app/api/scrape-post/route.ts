@@ -1,9 +1,9 @@
 import { newsPublishers } from "@/constants/publishers";
 import { scrapePost } from "@/utils/server/scraping";
 import { db } from "@acme/db";
-import chromium from "@sparticuz/chromium-min";
-import puppeteer from "puppeteer-core";
+import chromium from "chrome-aws-lambda";
 import { NextRequest, NextResponse } from "next/server";
+import puppeteer from "puppeteer-core";
 import { z } from "zod";
 
 export const POST = async (req: NextRequest) => {
@@ -24,17 +24,11 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json("Publisher not found!", { status: 404 });
   }
 
-  const isLocal = !!process.env.CHROME_EXECUTABLE_PATH;
-
   const browser = await puppeteer.launch({
-    args: isLocal ? puppeteer.defaultArgs() : chromium.args,
+    args: chromium.args,
     defaultViewport: chromium.defaultViewport,
-    executablePath:
-      process.env.CHROME_EXECUTABLE_PATH ||
-      (await chromium.executablePath(
-        "https://github.com/Sparticuz/chromium/releases/download/v121.0.0/chromium-v121.0.0-pack.tar",
-      )),
-    headless: true,
+    executablePath: await chromium.executablePath,
+    headless: chromium.headless,
   });
 
   const data = await scrapePost(postUrl, browser);
