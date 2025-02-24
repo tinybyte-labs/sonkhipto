@@ -1,4 +1,7 @@
-import { getArticleMetadataFromPrathamAloBangla } from "@/publishers/prothomalo-bangla";
+import {
+  getArticleMetadataFromPrathamAloBangla,
+  getLatestArticleLinksFromPrathamAloBangla,
+} from "@/publishers/prothomalo-bangla";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -6,8 +9,6 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
 export const GET = async () => {
-  const links = await getArticleMetadataFromPrathamAloBangla(
-    "https://www.prothomalo.com/politics/cr7jmc7oy6",
-  );
+  const links = await getLatestArticleLinksFromPrathamAloBangla();
   return NextResponse.json(links);
 };
