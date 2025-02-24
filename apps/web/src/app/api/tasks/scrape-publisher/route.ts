@@ -1,4 +1,5 @@
 import { BASE_URL } from "@/constants";
+import { getBrowser } from "@/lib/browser";
 import { qstashClient } from "@/lib/qstash-client";
 import { chunkArray } from "@/lib/utils";
 import { publishers } from "@/publishers/publishers";
@@ -24,7 +25,9 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   }
 
   try {
-    const links = await publisher.getLatestArticleLinks();
+    const browser = await getBrowser();
+    const links = await publisher.getLatestArticleLinks(browser);
+    await browser.close();
 
     const existingLinks = await db.post.findMany({
       where: { sourceUrl: { in: links } },

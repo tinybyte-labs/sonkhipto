@@ -276,6 +276,9 @@ importers:
       '@sparticuz/chromium':
         specifier: ^132.0.0
         version: 132.0.0
+      '@sparticuz/chromium-min':
+        specifier: ^132.0.0
+        version: 132.0.0
       '@tanstack/react-query':
         specifier: ^5.17.7
         version: 5.66.0(react@18.2.0)
@@ -2918,6 +2921,10 @@ packages:
 
   '@sinonjs/fake-timers@10.3.0':
     resolution: {integrity: sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==}
+
+  '@sparticuz/chromium-min@132.0.0':
+    resolution: {integrity: sha512-Wqz6DK0fkXNrcQ/POablGRoip4NVPYoZ8yYPuipKTox6sRGzGKTdhgNHS4yK1UUPc47IfP7Wm8hTPxyXI5zgmg==}
+    engines: {node: '>= 16'}
 
   '@sparticuz/chromium@132.0.0':
     resolution: {integrity: sha512-7SAhVa4nHAP7bxEhnMFuwV7KNDqAF4RVGZNwRhvyss8lJNT7Syi9nPwIPYvsHtjJ1S7Nx8OL8uqe9V3a/ED/Mg==}
@@ -12087,6 +12094,14 @@ snapshots:
   '@sinonjs/fake-timers@10.3.0':
     dependencies:
       '@sinonjs/commons': 3.0.1
+
+  '@sparticuz/chromium-min@132.0.0':
+    dependencies:
+      follow-redirects: 1.15.9
+      tar-fs: 3.0.8
+    transitivePeerDependencies:
+      - bare-buffer
+      - debug
 
   '@sparticuz/chromium@132.0.0':
     dependencies:

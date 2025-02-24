@@ -18,9 +18,9 @@ export interface ArticleMetadata {
 
 export type GetArticleMetadataFn = (
   articleUrl: string,
-  browser?: Browser,
+  browser: Browser,
 ) => Promise<ArticleMetadata | null>;
-export type GetLatestArticleLinksFn = (browser?: Browser) => Promise<string[]>;
+export type GetLatestArticleLinksFn = (browser: Browser) => Promise<string[]>;
 
 export interface Publisher {
   id: string;

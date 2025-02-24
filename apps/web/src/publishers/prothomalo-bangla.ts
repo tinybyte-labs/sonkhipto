@@ -1,10 +1,5 @@
-import { getBrowser } from "@/lib/browser";
-import type {
-  ArticleMetadata,
-  GetArticleMetadataFn,
-  GetLatestArticleLinksFn,
-} from "@/types";
-import type { Browser } from "puppeteer-core";
+import type { GetArticleMetadataFn, GetLatestArticleLinksFn } from "@/types";
+import { Browser } from "puppeteer-core";
 
 const baseUrl = "https://www.prothomalo.com";
 
@@ -165,8 +160,7 @@ const getLinksFromCategory = async (browser: Browser, category: string) => {
 };
 
 export const getLatestArticleLinksFromPrathamAloBangla: GetLatestArticleLinksFn =
-  async (parentBrowser) => {
-    const browser = parentBrowser ?? (await getBrowser());
+  async (browser) => {
     const topLevelCategories = categories.filter((c) => !c.includes("/"));
 
     let links = [];
@@ -174,16 +168,11 @@ export const getLatestArticleLinksFromPrathamAloBangla: GetLatestArticleLinksFn 
       const l = await getLinksFromCategory(browser, category);
       links.push(l);
     }
-    if (!parentBrowser) {
-      await browser.close();
-    }
     return links.flatMap((link) => link.links);
   };
 
 export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
-  async (articleUrl, parentBrowser) => {
-    const browser = parentBrowser ?? (await getBrowser());
-
+  async (articleUrl, browser) => {
     const page = await browser.newPage();
     await page.goto(articleUrl, { waitUntil: "domcontentloaded" });
     await page.setViewport({ width: 1080, height: 1024 });
@@ -222,10 +211,6 @@ export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
         pubDate,
       };
     });
-
-    if (!parentBrowser) {
-      await browser.close();
-    }
 
     return {
       title: metadata.title?.trim(),
