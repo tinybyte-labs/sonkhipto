@@ -14,7 +14,7 @@ const nextConfig = {
     serverComponentsExternalPackages: [
       "cheerio",
       "puppeteer-core",
-      "chrome-aws-lambda",
+      "@sparticuz/chromium",
     ],
   },
   transpilePackages: ["@acme/trpc", "@acme/atuh", "@acme/db"],
