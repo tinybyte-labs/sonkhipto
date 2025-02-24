@@ -38,7 +38,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
 
     console.log(`${publisher.id} - TOTAL ${uniqueLinks.length} ITEMS`);
 
-    const chunks = chunkArray(uniqueLinks, 10);
+    const chunks = chunkArray(uniqueLinks, 5);
 
     await Promise.all(
       chunks.map((items) =>
