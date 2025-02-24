@@ -1,3 +1,5 @@
+import { Browser } from "puppeteer-core";
+
 export type NewsPublisher = {
   id: string;
   name: string;
@@ -14,10 +16,18 @@ export interface ArticleMetadata {
   publishedAt?: Date | null;
 }
 
+export type GetArticleMetadataFn = (
+  articleUrl: string,
+  browser?: Browser,
+) => Promise<ArticleMetadata | null>;
+export type GetLatestArticleLinksFn = (browser?: Browser) => Promise<string[]>;
+
 export interface Publisher {
   id: string;
   name: string;
   websiteUrl: string;
-  getLatestArticleLinks: () => Promise<string[]>;
-  getArticleMetadata: (articleUrl: string) => Promise<ArticleMetadata | null>;
+  countryCode: string;
+  language: string;
+  getLatestArticleLinks: GetLatestArticleLinksFn;
+  getArticleMetadata: GetArticleMetadataFn;
 }

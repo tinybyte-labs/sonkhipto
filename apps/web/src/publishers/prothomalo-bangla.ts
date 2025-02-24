@@ -1,5 +1,9 @@
 import { getBrowser } from "@/lib/browser";
-import type { ArticleMetadata } from "@/types";
+import type {
+  ArticleMetadata,
+  GetArticleMetadataFn,
+  GetLatestArticleLinksFn,
+} from "@/types";
 import type { Browser } from "puppeteer-core";
 
 const baseUrl = "https://www.prothomalo.com";
@@ -160,70 +164,73 @@ const getLinksFromCategory = async (browser: Browser, category: string) => {
   return { category, links, total: links.length };
 };
 
-export async function getLatestArticleLinksFromPrathamAloBangla(): Promise<
-  string[]
-> {
-  const browser = await getBrowser();
-  const topLevelCategories = categories.filter((c) => !c.includes("/"));
+export const getLatestArticleLinksFromPrathamAloBangla: GetLatestArticleLinksFn =
+  async (parentBrowser) => {
+    const browser = parentBrowser ?? (await getBrowser());
+    const topLevelCategories = categories.filter((c) => !c.includes("/"));
 
-  let links = [];
-  for (const category of topLevelCategories) {
-    const l = await getLinksFromCategory(browser, category);
-    links.push(l);
-  }
-  await browser.close();
-  return links.flatMap((link) => link.links);
-}
+    let links = [];
+    for (const category of topLevelCategories) {
+      const l = await getLinksFromCategory(browser, category);
+      links.push(l);
+    }
+    if (!parentBrowser) {
+      await browser.close();
+    }
+    return links.flatMap((link) => link.links);
+  };
 
-export async function getArticleMetadataFromPrathamAloBangla(
-  articleUrl: string,
-): Promise<ArticleMetadata> {
-  const browser = await getBrowser();
-  const page = await browser.newPage();
-  await page.goto(articleUrl, { waitUntil: "domcontentloaded" });
-  await page.setViewport({ width: 1080, height: 1024 });
+export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
+  async (articleUrl, parentBrowser) => {
+    const browser = parentBrowser ?? (await getBrowser());
 
-  const metadata = await page.evaluate(() => {
-    const title = document
-      .querySelector(".story-content-wrapper > div > .story-head h1")
-      ?.textContent?.trim();
+    const page = await browser.newPage();
+    await page.goto(articleUrl, { waitUntil: "domcontentloaded" });
+    await page.setViewport({ width: 1080, height: 1024 });
 
-    const pubDate = (
-      document.querySelector(
-        ".story-content-wrapper > div > .story-head .story-metadata-wrapper time",
-      ) as HTMLTimeElement | null
-    )?.dateTime;
+    const metadata = await page.evaluate(() => {
+      const title = document
+        .querySelector(".story-content-wrapper > div > .story-head h1")
+        ?.textContent?.trim();
 
-    const thumbnailUrl = (
-      document.querySelector(
-        ".story-content-wrapper .story-content .story-page-hero img",
-      ) as HTMLImageElement | null
-    )?.src;
+      const pubDate = (
+        document.querySelector(
+          ".story-content-wrapper > div > .story-head .story-metadata-wrapper time",
+        ) as HTMLTimeElement | null
+      )?.dateTime;
 
-    // const content = document
-    //   .querySelector(".story-content-wrapper .story-content > div:nth-child(2)")
-    //   ?.textContent?.trim();
+      const thumbnailUrl = (
+        document.querySelector(
+          ".story-content-wrapper .story-content .story-page-hero img",
+        ) as HTMLImageElement | null
+      )?.src;
 
-    const content = (
-      document.querySelector(
-        "meta[name='description']",
-      ) as HTMLMetaElement | null
-    )?.content?.trim();
+      // const content = document
+      //   .querySelector(".story-content-wrapper .story-content > div:nth-child(2)")
+      //   ?.textContent?.trim();
+
+      const content = (
+        document.querySelector(
+          "meta[name='description']",
+        ) as HTMLMetaElement | null
+      )?.content?.trim();
+
+      return {
+        title,
+        thumbnailUrl,
+        content,
+        pubDate,
+      };
+    });
+
+    if (!parentBrowser) {
+      await browser.close();
+    }
 
     return {
-      title,
-      thumbnailUrl,
-      content,
-      pubDate,
+      title: metadata.title?.trim(),
+      thumbnailUrl: metadata.thumbnailUrl,
+      content: metadata.content?.trim(),
+      publishedAt: metadata.pubDate ? new Date(metadata.pubDate) : null,
     };
-  });
-
-  await browser.close();
-
-  return {
-    title: metadata.title?.trim(),
-    thumbnailUrl: metadata.thumbnailUrl,
-    content: metadata.content?.trim(),
-    publishedAt: metadata.pubDate ? new Date(metadata.pubDate) : null,
   };
-}

@@ -1,15 +1,13 @@
-import { newsPublishers } from "@/constants/publishers";
+import { BASE_URL } from "@/constants";
 import { qstashClient } from "@/lib/qstash-client";
 import { chunkArray } from "@/lib/utils";
+import { publishers } from "@/publishers/publishers";
+import { db } from "@acme/db";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
-import Parser from "rss-parser";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { BASE_URL } from "@/constants";
 
-const parser = new Parser();
-
-export const maxDuration = 30;
+export const maxDuration = 300;
 
 export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   const body = await req.json();
@@ -17,7 +15,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
     .object({ publisherId: z.string() })
     .parseAsync(body);
 
-  const publisher = newsPublishers.find(
+  const publisher = publishers.find(
     (publisher) => publisher.id === publisherId,
   );
 
@@ -26,27 +24,29 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   }
 
   try {
-    const feed = await parser.parseURL(publisher.rssFeedUrl);
+    const links = await publisher.getLatestArticleLinks();
 
-    if (!feed) {
-      throw new Error("Failed to parse feed");
-    }
+    const existingLinks = await db.post.findMany({
+      where: { sourceUrl: { in: links } },
+      select: { sourceUrl: true },
+    });
+    const existingLinksSet = new Set(
+      existingLinks.map((item) => item.sourceUrl),
+    );
 
-    console.log(`${publisher.url} - TOTAL ${feed.items.length} ITEMS`);
+    const uniqueLinks = links.filter((link) => !existingLinksSet.has(link));
 
-    const allUrls = feed.items
-      .map((item) => ({ link: item.link, pubDate: item.pubDate }))
-      .filter((item) => !!item.link);
+    console.log(`${publisher.id} - TOTAL ${uniqueLinks.length} ITEMS`);
 
-    const chunks = chunkArray(allUrls, 10);
+    const chunks = chunkArray(uniqueLinks, 10);
 
     await Promise.all(
       chunks.map((items) =>
         qstashClient.publishJSON({
-          url: `${BASE_URL}/api/tasks/scrape-posts`,
+          url: `${BASE_URL}/api/tasks/scrape-articles`,
           body: {
             publisherId: publisher.id,
-            items,
+            links: items,
           },
           retries: 0,
         }),
