@@ -22,7 +22,8 @@ export const getBrowser = async (): Promise<Browser> => {
   ];
 
   return puppeteer.launch({
-    executablePath: await chromium.executablePath(),
+    executablePath:
+      process.env.CHROME_EXECUTABLE_PATH ?? (await chromium.executablePath()),
     args: chromeArgs,
     headless: true,
   });

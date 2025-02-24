@@ -190,7 +190,7 @@ export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
 
       const thumbnailUrl = (
         document.querySelector(
-          ".story-content-wrapper .story-content .story-page-hero img",
+          ".story-content-wrapper .story-content img",
         ) as HTMLImageElement | null
       )?.src;
 

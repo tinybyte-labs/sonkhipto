@@ -29,12 +29,8 @@ export const POST = async (req: NextRequest) => {
     const values: Prisma.PostCreateInput[] = [];
     for (const link of links) {
       const metadata = await publisher.getArticleMetadata(link, browser);
-      if (
-        metadata &&
-        metadata.title &&
-        metadata.content &&
-        metadata.thumbnailUrl
-      ) {
+      console.log(metadata);
+      if (metadata && metadata.title && metadata.content) {
         values.push({
           sourceUrl: link,
           imageUrl: metadata.thumbnailUrl,
