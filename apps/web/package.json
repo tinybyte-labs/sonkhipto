@@ -17,8 +17,6 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
     "@react-oauth/google": "^0.12.1",
-    "@sparticuz/chromium": "^132.0.0",
-    "@sparticuz/chromium-min": "^132.0.0",
     "@tanstack/react-query": "^5.17.7",
     "@tanstack/react-router": "^1.16.0",
     "@trpc/client": "11.0.0-next-beta.264",
@@ -36,7 +34,6 @@
     "react": "^18",
     "react-dom": "^18",
     "reading-time": "^1.5.0",
-    "rss-parser": "^3.13.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
