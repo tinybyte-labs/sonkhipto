@@ -57,7 +57,9 @@ export const POST = async (req: NextRequest) => {
       });
     }
 
-    return new NextResponse("Success");
+    return NextResponse.json({
+      message: `Total ${values.length} posts created`,
+    });
   } catch (error) {
     console.error(`Failed to scrape posts`, error);
     return NextResponse.json(
