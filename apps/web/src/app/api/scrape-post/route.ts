@@ -1,7 +1,7 @@
 import { newsPublishers } from "@/constants/publishers";
+import { getBrowser } from "@/lib/browser";
 import { scrapePost } from "@/utils/server/scraping";
 import { db } from "@acme/db";
-import chromium from "chrome-aws-lambda";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -23,12 +23,7 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json("Publisher not found!", { status: 404 });
   }
 
-  const browser = await chromium.puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath,
-    headless: chromium.headless,
-  });
+  const browser = await getBrowser();
 
   const data = await scrapePost(postUrl, browser);
 

@@ -1,8 +1,8 @@
 import { newsPublishers } from "@/constants/publishers";
+import { getBrowser } from "@/lib/browser";
 import { scrapePost } from "@/utils/server/scraping";
 import { db, Prisma } from "@acme/db";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
-import chromium from "chrome-aws-lambda";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -34,12 +34,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   }
 
   try {
-    const browser = await chromium.puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
-    });
+    const browser = await getBrowser();
 
     const results = await Promise.allSettled(
       items.map((item) => scrapePost(item.link, browser)),

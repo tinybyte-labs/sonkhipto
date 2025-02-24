@@ -15,7 +15,7 @@ const nextConfig = {
       "cheerio",
       "rss-parser",
       "puppeteer-core",
-      "chrome-aws-lambda",
+      "@sparticuz/chromium",
     ],
   },
   transpilePackages: ["@acme/trpc", "@acme/atuh", "@acme/db"],
