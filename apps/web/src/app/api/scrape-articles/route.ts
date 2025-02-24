@@ -25,6 +25,7 @@ export const POST = async (req: NextRequest) => {
 
   try {
     const browser = await getBrowser();
+    console.log("Browser launched");
 
     const values: Prisma.PostCreateInput[] = [];
     for (const link of links) {
@@ -44,7 +45,10 @@ export const POST = async (req: NextRequest) => {
       }
     }
 
+    console.log(values);
+
     await browser.close();
+    console.log("Browser closed");
 
     if (values.length > 0) {
       await db.post.createMany({
