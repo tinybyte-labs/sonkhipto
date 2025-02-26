@@ -3,6 +3,10 @@ import {
   getArticleMetadataFromPrathamAloBangla,
   getLatestArticleLinksFromPrathamAloBangla,
 } from "./prothomalo-bangla";
+import {
+  getLatestArticleLinksFromPrathamAloEnglish,
+  getArticleMetadataFromProthomAloEnglish
+} from "./prothomalo-english";
 
 export const publishers: Publisher[] = [
   {
@@ -13,5 +17,14 @@ export const publishers: Publisher[] = [
     language: "bn",
     getLatestArticleLinks: getLatestArticleLinksFromPrathamAloBangla,
     getArticleMetadata: getArticleMetadataFromPrathamAloBangla,
+  },
+  {
+    id: "prothomalo-english",
+    name: "Prothomalo",
+    websiteUrl: "https://en.prothomalo.com",
+    countryCode: "BD",
+    language: "en",
+    getLatestArticleLinks: getLatestArticleLinksFromPrathamAloEnglish,
+    getArticleMetadata: getArticleMetadataFromProthomAloEnglish,
   },
 ];

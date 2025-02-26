@@ -104,7 +104,7 @@ async function getLinksFromCategory(browser: Browser, category: string) {
 
     return { category, links: Array.from(new Set(links)), total: links.length };
 }
-export const getLatestArticleLinksFromPrathamAloBangla: GetLatestArticleLinksFn =
+export const getLatestArticleLinksFromPrathamAloEnglish: GetLatestArticleLinksFn =
     async (browser) => {
         const topLevelCategories = categories.filter((c) => !c.includes("/"));
 
@@ -116,7 +116,7 @@ export const getLatestArticleLinksFromPrathamAloBangla: GetLatestArticleLinksFn 
         return links.flatMap((link) => link.links);
     };
 
-export async function getMetadataFromProthomAloEnglish(articleLink: string, browser: Browser) {
+export async function getArticleMetadataFromProthomAloEnglish(articleLink: string, browser: Browser) {
     const page = await browser.newPage();
     const url = new URL(articleLink, baseURL)
     await page.goto(url.href)
