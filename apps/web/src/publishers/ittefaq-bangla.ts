@@ -1,8 +1,7 @@
 import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "@/types";
 import { type Browser } from "puppeteer-core";
+
 const baseUrl = 'https://www.ittefaq.com.bd'
-
-
 const categories = [
     'national',
     'politics',
@@ -14,47 +13,18 @@ const categories = [
     'entertainment',
     'law-and-court',
     'education',
-    'latest-news',
     'lifestyle',
     'news',
     'environment',
     'world-news',
     'tech',
-    'health',
     'jobs',
-    'social-media',
     'projonmo',
     'probash',
     'campus',
     'literature',
     'religion',
     'editorial',
-    'photo',
-    'video',
-    '',
-    'home',
-    'unicode-to-bijoy-converter',
-    'archive',
-    'search',
-    'contact',
-    'privacy-policy',
-    'terms',
-    'topic',
-    'advertisement',
-    'asia',
-    'middle-east',
-    'America',
-    'europe',
-    'africa',
-    'oceania',
-    'cricket',
-    'football',
-    'column',
-    'letter',
-    'reaction',
-    'interview',
-    'memoir',
-    'other-sports',
 ]
 
 async function getCategoriwiseLinkFromIttefaq(browser: Browser, category: string) {
@@ -68,8 +38,10 @@ async function getCategoriwiseLinkFromIttefaq(browser: Browser, category: string
     for (const link of allLinks) {
         if (link.startsWith(`${baseUrl}/`)) {
             const url = new URL(link, baseUrl)
-            if (!categories.includes(url.pathname.slice(1).split('/')[0])) {
-                links.push(url.href)
+            if (!categories.includes(url.pathname.slice(1))) {
+                if (/^-?[\d.]+(?:e-?\d+)?$/.test(url.pathname.slice(1).split('/')[0])) {
+                    links.push(url.href)
+                }
             }
         }
     }
@@ -100,7 +72,7 @@ export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (article
         const pubDate = (
             document.querySelector(".content_detail_outer .content_detail_left .additional_info_container .each_row.time > span"
             ) as HTMLTimeElement | null
-        )?.textContent?.trim();
+        )?.getAttribute('content')?.trim();
 
         const thumbnailUrl = (
             document.querySelector(

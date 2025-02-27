@@ -4,12 +4,7 @@ const baseUrl = 'https://en.ittefaq.com.bd'
 
 
 const categories = [
-    'health',
-    'branded-content',
-    'video',
     'bangladesh',
-    'photo',
-    'podcast',
     'politics',
     'world',
     'sports',
@@ -17,15 +12,11 @@ const categories = [
     'climate-change',
     'art-and-culture',
     'lifestyle',
-    'podcasts',
-    'dont-miss',
     'youth',
     'business',
     'tech',
     'viral-news',
     'opinion',
-    'archive',
-    ''
 ]
 export async function getCategoriwiseLinkFromIttefaq(browser: Browser, category: string) {
     const page = await browser.newPage();
@@ -41,10 +32,11 @@ export async function getCategoriwiseLinkFromIttefaq(browser: Browser, category:
             continue
         }
         const urlp = new URL(link, baseUrl)
-        if (!categories.includes(urlp.pathname.slice(1))) {
-            links.push(urlp.href)
+        if (!categories.includes(url.pathname.slice(1))) {
+            if (/^-?[\d.]+(?:e-?\d+)?$/.test(url.pathname.slice(1).split('/')[0])) {
+                links.push(url.href)
+            }
         }
-
     }
     await page.close()
     return links
