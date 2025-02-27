@@ -15,6 +15,10 @@ import {
   getLatestArticleLinksFromIttefaqEnglish,
   getMetadataFromIttefaqEnglish,
 } from "./ittefaq-english";
+import {
+  getLatestArticleLinksFromKalkerKontho,
+  getMetadataFromKalerKontho,
+} from "./kalerkontho-bangla";
 
 export const publishers: Publisher[] = [
   {
@@ -52,5 +56,14 @@ export const publishers: Publisher[] = [
     language: "en",
     getLatestArticleLinks: getLatestArticleLinksFromIttefaqEnglish,
     getArticleMetadata: getMetadataFromIttefaqEnglish,
+  },
+  {
+    id: "ittefaq-english",
+    name: "The Daily Ittefaq",
+    websiteUrl: "https://en.ittefaq.com.bd/",
+    countryCode: "BD",
+    language: "en",
+    getLatestArticleLinks: getLatestArticleLinksFromKalkerKontho,
+    getArticleMetadata: getMetadataFromKalerKontho,
   },
 ];
