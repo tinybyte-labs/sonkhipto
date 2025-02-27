@@ -53,4 +53,13 @@ export const publishers: Publisher[] = [
     getLatestArticleLinks: getLatestArticleLinksFromIttefaqEnglish,
     getArticleMetadata: getMetadataFromIttefaqEnglish,
   },
+  {
+    id: "kalerkantho-bangla",
+    name: "কালের কণ্ঠ",
+    websiteUrl: "https://www.kalerkantho.com",
+    countryCode: "BD",
+    getLatestArticleLinks: getLatestArticleLinksFromIttefaqEnglish,
+    language: "bn",
+    getArticleMetadata: getMetadataFromIttefaqEnglish,
+  },
 ];

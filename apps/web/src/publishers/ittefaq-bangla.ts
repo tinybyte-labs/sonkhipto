@@ -100,7 +100,7 @@ export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (article
         const pubDate = (
             document.querySelector(".content_detail_outer .content_detail_left .additional_info_container .each_row.time > span"
             ) as HTMLTimeElement | null
-        )?.textContent?.trim();
+        )?.getAttribute('content')?.trim();
 
         const thumbnailUrl = (
             document.querySelector(
