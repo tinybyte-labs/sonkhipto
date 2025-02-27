@@ -1,11 +1,11 @@
-import { Publisher } from "@/types";
+import type { Publisher } from "@/types";
 import {
   getArticleMetadataFromPrathamAloBangla,
   getLatestArticleLinksFromPrathamAloBangla,
 } from "./prothomalo-bangla";
 import {
   getLatestArticleLinksFromPrathamAloEnglish,
-  getArticleMetadataFromProthomAloEnglish
+  getArticleMetadataFromProthomAloEnglish,
 } from "./prothomalo-english";
 
 export const publishers: Publisher[] = [

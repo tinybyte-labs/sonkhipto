@@ -1,5 +1,5 @@
 import type { GetArticleMetadataFn, GetLatestArticleLinksFn } from "@/types";
-import { Browser } from "puppeteer-core";
+import type { Browser } from "puppeteer-core";
 
 const baseUrl = "https://www.prothomalo.com";
 
