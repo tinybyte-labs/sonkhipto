@@ -172,7 +172,7 @@ export const getLatestArticleLinksFromPrathamAloBangla: GetLatestArticleLinksFn 
 export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
   async (articleUrl, browser) => {
     const page = await browser.newPage();
-    await page.goto(articleUrl, { waitUntil: "domcontentloaded" });
+    await page.goto(articleUrl, { waitUntil: "networkidle0" });
     await page.setViewport({ width: 1080, height: 1024 });
 
     const metadata = await page.evaluate(() => {
