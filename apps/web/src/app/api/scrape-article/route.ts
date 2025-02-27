@@ -1,17 +1,16 @@
 import { getBrowser } from "@/lib/browser";
 import { publishers } from "@/publishers/publishers";
-import { db, Prisma } from "@acme/db";
-import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
+import { db } from "@acme/db";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 export const maxDuration = 300;
 
-export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
+export const POST = async (req: NextRequest) => {
   const body = await req.json();
-  const { links, publisherId } = await z
+  const { link, publisherId } = await z
     .object({
-      links: z.array(z.string().url()).min(1).max(10),
+      link: z.string().url(),
       publisherId: z.string(),
     })
     .parseAsync(body);
@@ -25,18 +24,28 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   }
 
   try {
+    const exists = await db.post.findFirst({
+      where: {
+        sourceUrl: link,
+      },
+      select: { sourceUrl: true },
+    });
+    if (exists) {
+      return NextResponse.json(
+        { message: "Post already exist" },
+        { status: 403 },
+      );
+    }
+
     const browser = await getBrowser();
 
-    const values: Prisma.PostCreateInput[] = [];
-    for (const link of links) {
-      const metadata = await publisher.getArticleMetadata(link, browser);
-      if (
-        metadata &&
-        metadata.title &&
-        metadata.content &&
-        metadata.thumbnailUrl
-      ) {
-        values.push({
+    const metadata = await publisher.getArticleMetadata(link, browser);
+
+    await browser.close();
+
+    if (metadata && metadata.title && metadata.content) {
+      const post = await db.post.create({
+        data: {
           sourceUrl: link,
           imageUrl: metadata.thumbnailUrl,
           title: metadata.title,
@@ -45,20 +54,18 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
           language: publisher.language,
           countryCode: publisher.countryCode,
           sourceName: publisher.name,
-        });
-      }
-    }
-
-    await browser.close();
-
-    if (values.length > 0) {
-      await db.post.createMany({
-        data: values,
-        skipDuplicates: true,
+        },
       });
+      return NextResponse.json({ message: "Post created", post });
     }
 
-    return new NextResponse("Success");
+    return NextResponse.json(
+      {
+        message: `Invalid metadata`,
+        metadata,
+      },
+      { status: 400 },
+    );
   } catch (error) {
     console.error(`Failed to scrape posts`, error);
     return NextResponse.json(
@@ -71,4 +78,4 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
       },
     );
   }
-});
+};

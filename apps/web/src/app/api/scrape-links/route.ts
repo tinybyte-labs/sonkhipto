@@ -1,6 +1,5 @@
 import { getBrowser } from "@/lib/browser";
 import { publishers } from "@/publishers/publishers";
-import { db, Prisma } from "@acme/db";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -8,9 +7,8 @@ export const maxDuration = 300;
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
-  const { links, publisherId } = await z
+  const { publisherId } = await z
     .object({
-      links: z.array(z.string().url()).min(1).max(10),
       publisherId: z.string(),
     })
     .parseAsync(body);
@@ -27,38 +25,16 @@ export const POST = async (req: NextRequest) => {
     const browser = await getBrowser();
     console.log("Browser launched");
 
-    const values: Prisma.PostCreateInput[] = [];
-    for (const link of links) {
-      const metadata = await publisher.getArticleMetadata(link, browser);
-      console.log(metadata);
-      if (metadata && metadata.title && metadata.content) {
-        values.push({
-          sourceUrl: link,
-          imageUrl: metadata.thumbnailUrl,
-          title: metadata.title,
-          content: metadata.content,
-          publishedAt: metadata.publishedAt ?? new Date(),
-          language: publisher.language,
-          countryCode: publisher.countryCode,
-          sourceName: publisher.name,
-        });
-      }
-    }
+    const links = await publisher.getLatestArticleLinks(browser);
 
-    console.log(values);
+    console.log(links);
 
     await browser.close();
     console.log("Browser closed");
 
-    if (values.length > 0) {
-      await db.post.createMany({
-        data: values,
-        skipDuplicates: true,
-      });
-    }
-
     return NextResponse.json({
-      message: `Total ${values.length} posts created`,
+      links,
+      total: links.length,
     });
   } catch (error) {
     console.error(`Failed to scrape posts`, error);

@@ -19,5 +19,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
     ),
   );
 
-  return new NextResponse("Success");
+  return NextResponse.json({
+    message: `Total ${publishers.length} publishers sent to scrape`,
+  });
 });

@@ -1,5 +1,5 @@
 import type { GetArticleMetadataFn, GetLatestArticleLinksFn } from "@/types";
-import type { Browser } from "puppeteer-core";
+import { autoPageScroll } from "@/utils/server/puppeteer";
 
 const baseUrl = "https://en.prothomalo.com";
 
@@ -84,43 +84,41 @@ const categories = [
   "corporate/global",
 ];
 
-const getLinksFromCategory = async (browser: Browser, category: string) => {
-  const url = new URL(`/${category}`, baseUrl);
-  const page = await browser.newPage();
-
-  // Navigate the page to a URL.
-  await page.goto(url.href, { waitUntil: "domcontentloaded" });
-  await page.setViewport({ width: 1080, height: 1024 });
-
-  const allLinks = await page.evaluate(() => {
-    return Array.from(document.getElementsByTagName("a")).map((a) => a.href);
-  });
-
-  const links: string[] = [];
-  for (const link of allLinks) {
-    if (link.startsWith(url.href)) {
-      const url = new URL(link, baseUrl);
-      if (!categories.includes(decodeURIComponent(url.pathname).slice(1))) {
-        links.push(url.href);
-      }
-    }
-  }
-
-  await page.close();
-
-  return { category, links, total: links.length };
-};
-
 export const getLatestArticleLinksFromPrathamAloEnglish: GetLatestArticleLinksFn =
   async (browser) => {
-    const topLevelCategories = categories.filter((c) => !c.includes("/"));
+    const page = await browser.newPage();
+    await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
+    await page.setViewport({ width: 1200, height: 800 });
+    await autoPageScroll(page);
 
-    let links = [];
-    for (const category of topLevelCategories) {
-      const l = await getLinksFromCategory(browser, category);
-      links.push(l);
+    const allLinks = await page.evaluate(() => {
+      return Array.from(document.getElementsByTagName("a")).map((a) => a.href);
+    });
+
+    const links: string[] = [];
+
+    for (const link of allLinks) {
+      if (!link.startsWith("/") && !link.startsWith(baseUrl)) {
+        continue;
+      }
+
+      const url = new URL(link, baseUrl);
+      if (
+        !categories.includes(url.pathname.slice(1)) &&
+        !links.includes(url.href)
+      ) {
+        const isPost =
+          categories.findIndex((category) =>
+            url.pathname.startsWith("/" + category + "/"),
+          ) !== -1;
+
+        if (isPost) {
+          links.push(url.href);
+        }
+      }
     }
-    return links.flatMap((link) => link.links);
+
+    return links;
   };
 
 export const getArticleMetadataFromProthomAloEnglish: GetArticleMetadataFn =

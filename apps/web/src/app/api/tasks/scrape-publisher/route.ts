@@ -41,22 +41,22 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
 
     console.log(`${publisher.id} - TOTAL ${uniqueLinks.length} ITEMS`);
 
-    const chunks = chunkArray(uniqueLinks, 5);
-
     await Promise.all(
-      chunks.map((items) =>
+      uniqueLinks.map((link) =>
         qstashClient.publishJSON({
-          url: `${BASE_URL}/api/tasks/scrape-articles`,
+          url: `${BASE_URL}/api/tasks/scrape-article`,
           body: {
             publisherId: publisher.id,
-            links: items,
+            link,
           },
           retries: 0,
         }),
       ),
     );
 
-    return new NextResponse("Success");
+    return NextResponse.json({
+      message: `Total ${uniqueLinks.length} links sent to scrape`,
+    });
   } catch (error) {
     console.error(`Failed to scrape ${publisher.id}`, error);
     return NextResponse.json(
