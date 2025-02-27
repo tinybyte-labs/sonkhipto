@@ -172,8 +172,14 @@ export const getLatestArticleLinksFromPrathamAloBangla: GetLatestArticleLinksFn 
 export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
   async (articleUrl, browser) => {
     const page = await browser.newPage();
-    await page.goto(articleUrl, { waitUntil: "networkidle0" });
+    await page.goto(articleUrl, { waitUntil: "domcontentloaded" });
     await page.setViewport({ width: 1080, height: 1024 });
+
+    const imgElement = await page.waitForSelector(
+      ".story-content-wrapper .story-content .story-page-hero figure picture img.image",
+    );
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    const thumbnailUrl = await imgElement?.evaluate((el) => el.src);
 
     const metadata = await page.evaluate(() => {
       const title = document
@@ -185,12 +191,6 @@ export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
           ".story-content-wrapper > div > .story-head .story-metadata-wrapper time",
         ) as HTMLTimeElement | null
       )?.dateTime;
-
-      const thumbnailUrl = (
-        document.querySelector(
-          ".story-content-wrapper .story-content img",
-        ) as HTMLImageElement | null
-      )?.src;
 
       // const content = document
       //   .querySelector(".story-content-wrapper .story-content > div:nth-child(2)")
@@ -204,15 +204,14 @@ export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
 
       return {
         title,
-        thumbnailUrl,
         content,
         pubDate,
       };
     });
 
     return {
+      thumbnailUrl,
       title: metadata.title?.trim(),
-      thumbnailUrl: metadata.thumbnailUrl,
       content: metadata.content?.trim(),
       publishedAt: metadata.pubDate ? new Date(metadata.pubDate) : null,
     };
