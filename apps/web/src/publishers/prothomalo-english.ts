@@ -84,7 +84,7 @@ const categories = [
   "corporate/global",
 ];
 
-async function getLinksFromCategory(browser: Browser, category: string) {
+const getLinksFromCategory = async (browser: Browser, category: string) => {
   const url = new URL(`/${category}`, baseUrl);
   const page = await browser.newPage();
 
@@ -109,7 +109,7 @@ async function getLinksFromCategory(browser: Browser, category: string) {
   await page.close();
 
   return { category, links, total: links.length };
-}
+};
 
 export const getLatestArticleLinksFromPrathamAloEnglish: GetLatestArticleLinksFn =
   async (browser) => {
