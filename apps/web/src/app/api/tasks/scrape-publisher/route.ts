@@ -1,14 +1,13 @@
 import { BASE_URL } from "@/constants";
 import { getBrowser } from "@/lib/browser";
 import { qstashClient } from "@/lib/qstash-client";
-import { chunkArray } from "@/lib/utils";
 import { publishers } from "@/publishers/publishers";
 import { db } from "@acme/db";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-export const maxDuration = 300;
+export const maxDuration = 60;
 
 export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   const body = await req.json();

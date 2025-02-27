@@ -2,11 +2,11 @@ import { BASE_URL } from "@/constants";
 import { qstashClient } from "@/lib/qstash-client";
 import { publishers } from "@/publishers/publishers";
 import { verifySignatureAppRouter } from "@upstash/qstash/dist/nextjs";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export const maxDuration = 30;
 
-export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
+export const POST = verifySignatureAppRouter(async () => {
   await Promise.all(
     publishers.map((publisher) =>
       qstashClient.publishJSON({
