@@ -43,14 +43,14 @@ export const newsPublishers: NewsPublisher[] = [
   //   countryCode: "BD",
   //   language: "en",
   // },
-  // {
-  //   id: "kalerkantho-bangla",
-  //   name: "কালের কণ্ঠ",
-  //   url: "https://www.kalerkantho.com",
-  //   rssFeedUrl: "https://www.kalerkantho.com/rss.xml",
-  //   countryCode: "BD",
-  //   language: "bn",
-  // },
+  {
+    id: "kalerkantho-bangla",
+    name: "কালের কণ্ঠ",
+    url: "https://www.kalerkantho.com",
+    rssFeedUrl: "https://www.kalerkantho.com/rss.xml",
+    countryCode: "BD",
+    language: "bn",
+  },
   // {
   //   id: "news24bd",
   //   name: "News24 TV",
