@@ -7,6 +7,14 @@ import {
   getLatestArticleLinksFromPrathamAloEnglish,
   getArticleMetadataFromProthomAloEnglish,
 } from "./prothomalo-english";
+import {
+  getLatestArticleLinksFromIttefaqBangla,
+  getMetadataFromIttefaqBangla,
+} from "./ittefaq-bangla";
+import {
+  getLatestArticleLinksFromIttefaqEnglish,
+  getMetadataFromIttefaqEnglish,
+} from "./ittefaq-english";
 
 export const publishers: Publisher[] = [
   {
@@ -26,5 +34,23 @@ export const publishers: Publisher[] = [
     language: "en",
     getLatestArticleLinks: getLatestArticleLinksFromPrathamAloEnglish,
     getArticleMetadata: getArticleMetadataFromProthomAloEnglish,
+  },
+  {
+    id: "ittefaq-bangla",
+    name: "দৈনিক ইত্তেফাক",
+    websiteUrl: "https://www.ittefaq.com.bd/",
+    countryCode: "BD",
+    language: "bn",
+    getLatestArticleLinks: getLatestArticleLinksFromIttefaqBangla,
+    getArticleMetadata: getMetadataFromIttefaqBangla,
+  },
+  {
+    id: "ittefaq-english",
+    name: "The Daily Ittefaq",
+    websiteUrl: "https://en.ittefaq.com.bd/",
+    countryCode: "BD",
+    language: "en",
+    getLatestArticleLinks: getLatestArticleLinksFromIttefaqEnglish,
+    getArticleMetadata: getMetadataFromIttefaqEnglish,
   },
 ];

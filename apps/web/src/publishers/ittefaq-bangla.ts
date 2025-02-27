@@ -1,48 +1,25 @@
+import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "@/types";
 import { type Browser } from "puppeteer-core";
 const baseUrl = 'https://www.ittefaq.com.bd'
 
+
 const categories = [
     'national',
-    'lifestyle',
-    'law-and-court',
-    'opinion',
-    'news',
-    'environment',
-    'capital',
-    'country',
     'politics',
-    'world-news',
+    'country',
+    'capital',
     'sports',
-    'entertainment',
     'business',
-    'tech',
+    'opinion',
+    'entertainment',
+    'law-and-court',
     'education',
-    'health',
-    'jobs',
-    'social-media',
-    'projonmo',
-    'probash',
-    'campus',
-    'literature',
-    'religion',
-]
-const skipcategory = [
     'latest-news',
-    'national',
     'lifestyle',
-    'law-and-court',
-    'opinion',
     'news',
     'environment',
-    'capital',
-    'country',
-    'politics',
     'world-news',
-    'sports',
-    'entertainment',
-    'business',
     'tech',
-    'education',
     'health',
     'jobs',
     'social-media',
@@ -64,32 +41,53 @@ const skipcategory = [
     'terms',
     'topic',
     'advertisement',
+    'asia',
+    'middle-east',
+    'America',
+    'europe',
+    'africa',
+    'oceania',
+    'cricket',
+    'football',
+    'column',
+    'letter',
+    'reaction',
+    'interview',
+    'memoir',
+    'other-sports',
 ]
 
-export async function getLatestArticleLinksFromIttefaqBangla(browser: Browser, category: string) {
+async function getCategoriwiseLinkFromIttefaq(browser: Browser, category: string) {
     const page = await browser.newPage();
     const url = new URL(category, baseUrl)
     await page.goto(url.href)
 
     const allLinks = await page.evaluate(() => Array.from(document.querySelectorAll('a')).map(a => a.href))
 
-
-    let links = []
+    let links: string[] = []
     for (const link of allLinks) {
-        if (!link.startsWith(`${baseUrl}/`)) {
-            continue
+        if (link.startsWith(`${baseUrl}/`)) {
+            const url = new URL(link, baseUrl)
+            if (!categories.includes(url.pathname.slice(1).split('/')[0])) {
+                links.push(url.href)
+            }
         }
-        const urlp = new URL(link, baseUrl)
-        if (!skipcategory.includes(urlp.pathname.slice(1).split('/')[0])) {
-            links.push(urlp.href)
-        }
-
     }
     await page.close()
     return links
 }
 
-export async function getMetadataFromIttefaqBangla(articleLink: string, browser: Browser) {
+
+export const getLatestArticleLinksFromIttefaqBangla: GetLatestArticleLinksFn = async (browser) => {
+    const links: string[] = []
+    for (const category of categories) {
+        const link = await getCategoriwiseLinkFromIttefaq(browser, category)
+        Array.prototype.push.apply(links, link)
+    }
+    return links
+}
+
+export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (articleLink, browser) => {
     const page = await browser.newPage();
     const url = new URL(articleLink, baseUrl)
     await page.goto(url.href)

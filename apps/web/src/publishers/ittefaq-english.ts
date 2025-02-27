@@ -1,3 +1,4 @@
+import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "@/types";
 import { type Browser } from "puppeteer-core";
 const baseUrl = 'https://en.ittefaq.com.bd'
 
@@ -26,7 +27,7 @@ const categories = [
     'archive',
     ''
 ]
-export async function getLatestArticleLinksFromIttefaqEnglish(browser: Browser, category: string) {
+export async function getCategoriwiseLinkFromIttefaq(browser: Browser, category: string) {
     const page = await browser.newPage();
     const url = new URL(category, baseUrl)
     await page.goto(url.href)
@@ -49,7 +50,15 @@ export async function getLatestArticleLinksFromIttefaqEnglish(browser: Browser, 
     return links
 }
 
-export async function getMetadataFromIttefaqEnglish(articleLink: string, browser: Browser) {
+export const getLatestArticleLinksFromIttefaqEnglish: GetLatestArticleLinksFn = async (browser) => {
+    const links: string[] = []
+    for (const category of categories) {
+        const link = await getCategoriwiseLinkFromIttefaq(browser, category)
+        Array.prototype.push.apply(links, link)
+    }
+    return links
+}
+export const getMetadataFromIttefaqEnglish: GetArticleMetadataFn = async (articleLink, browser) => {
     const page = await browser.newPage();
     const url = new URL(articleLink, baseUrl)
     await page.goto(url.href)
