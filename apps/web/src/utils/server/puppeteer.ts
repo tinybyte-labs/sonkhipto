@@ -1,5 +1,6 @@
 import { Page } from "puppeteer-core";
 
+// Auto scrolls down until it hits the bottom of the page or reaches the max scroll limit
 export const autoPageScroll = async (
   page: Page,
   scrollDistance = 800,
