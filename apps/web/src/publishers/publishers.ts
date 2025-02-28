@@ -67,8 +67,8 @@ export const publishers: Publisher[] = [
     websiteUrl: "https://en.ittefaq.com.bd/",
     countryCode: "BD",
     language: "en",
-    getLatestArticleLinks: getLatestArticleLinksFromKalkerKontho,
-    getArticleMetadata: getMetadataFromKalerKontho,
+    getLatestArticleLinks: getLatestArticleLinksFromIttefaqEnglish,
+    getArticleMetadata: getMetadataFromIttefaqEnglish,
   },
   {
     id: "thedailystar",
