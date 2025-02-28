@@ -48,7 +48,7 @@ export const getMetadataFromIttefaqEnglish: GetArticleMetadataFn = async (articl
     const url = new URL(articleLink, baseUrl)
     await page.goto(url.href)
     const imgElement = await page.waitForSelector(
-        ".content_detail_outer .content_detail_left .row.detail_holder .featured_image img",
+        "img#adf-overlay",
     );
     await new Promise((resolve) => setTimeout(resolve, 10));
     const thumbnailUrl = await imgElement?.evaluate((el) => el.srcset);
