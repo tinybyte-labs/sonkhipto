@@ -23,6 +23,15 @@ import {
   getLatestArticleLinksFromDailyStart,
   getArticleMetadataFromDailyStart,
 } from "./daily-star";
+import {
+  getLatestArticleLinksFromNews24live,
+  getArticleMetadataFromNews24live
+
+} from "./news24";
+import {
+  getArticleMetadataFromBd24live,
+  getLatestArticleLinksFromBd24live
+} from "./bd24live-english";
 
 export const publishers: Publisher[] = [
   {
@@ -76,7 +85,25 @@ export const publishers: Publisher[] = [
     websiteUrl: "https://www.thedailystar.net",
     countryCode: "BD",
     language: "en",
+    getLatestArticleLinks: getLatestArticleLinksFromBd24live,
+    getArticleMetadata: getArticleMetadataFromBd24live,
+  },
+  {
+    id: "bd24live",
+    name: "BD 24 Live",
+    websiteUrl: "https://www.bd24live.com",
+    countryCode: "BD",
+    language: "en",
     getLatestArticleLinks: getLatestArticleLinksFromDailyStart,
     getArticleMetadata: getArticleMetadataFromDailyStart,
   },
+  {
+    id: "news24bd",
+    name: "News24 TV",
+    websiteUrl: "https://www.news24bd.tv",
+    countryCode: "BD",
+    language: "bn",
+    getLatestArticleLinks: getLatestArticleLinksFromNews24live,
+    getArticleMetadata: getArticleMetadataFromNews24live,
+  }
 ];
