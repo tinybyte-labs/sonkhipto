@@ -1,5 +1,5 @@
 import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "@/types";
-import { type Browser } from "puppeteer-core";
+import { autoPageScroll } from "@/utils/server/puppeteer";
 
 const baseUrl = 'https://www.ittefaq.com.bd'
 const categories = [
@@ -27,14 +27,17 @@ const categories = [
     'editorial',
 ]
 
-async function getCategoriwiseLinkFromIttefaq(browser: Browser, category: string) {
+export const getLatestArticleLinksFromIttefaqBangla: GetLatestArticleLinksFn = async (browser) => {
     const page = await browser.newPage();
-    const url = new URL(category, baseUrl)
-    await page.goto(url.href)
+    await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
+    await page.setViewport({ width: 1200, height: 800 });
+    await autoPageScroll(page);
 
-    const allLinks = await page.evaluate(() => Array.from(document.querySelectorAll('a')).map(a => a.href))
+    const allLinks = await page.evaluate(() => {
+        return Array.from(document.getElementsByTagName("a")).map((a) => a.href);
+    });
 
-    let links: string[] = []
+    const links: string[] = [];
     for (const link of allLinks) {
         if (link.startsWith(`${baseUrl}/`)) {
             const url = new URL(link, baseUrl)
@@ -45,17 +48,7 @@ async function getCategoriwiseLinkFromIttefaq(browser: Browser, category: string
             }
         }
     }
-    await page.close()
-    return links
-}
 
-
-export const getLatestArticleLinksFromIttefaqBangla: GetLatestArticleLinksFn = async (browser) => {
-    const links: string[] = []
-    for (const category of categories) {
-        const link = await getCategoriwiseLinkFromIttefaq(browser, category)
-        Array.prototype.push.apply(links, link)
-    }
     return links
 }
 
@@ -63,6 +56,12 @@ export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (article
     const page = await browser.newPage();
     const url = new URL(articleLink, baseUrl)
     await page.goto(url.href)
+
+    const imgElement = await page.waitForSelector(
+        ".content_detail_outer .content_detail_left .row.detail_holder .featured_image img",
+    );
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    const thumbnailUrl = await imgElement?.evaluate((el) => el.srcset);
 
     const metadata = await page.evaluate(() => {
         const title = document
@@ -73,12 +72,6 @@ export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (article
             document.querySelector(".content_detail_outer .content_detail_left .additional_info_container .each_row.time > span"
             ) as HTMLTimeElement | null
         )?.getAttribute('content')?.trim();
-
-        const thumbnailUrl = (
-            document.querySelector(
-                ".content_detail_outer .content_detail_left .row.detail_holder .featured_image img",
-            ) as HTMLImageElement | null
-        )?.src;
 
         //      const content = (
         //       document.querySelector('#widget_322 .content_detail_outer .content_detail_content_outer article > div',
@@ -93,15 +86,14 @@ export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (article
 
         return {
             title,
-            thumbnailUrl,
             content,
             pubDate,
         };
     })
     return {
         title: metadata.title?.trim(),
-        thumbnailUrl: metadata.thumbnailUrl,
+        thumbnailUrl,
         content: metadata.content?.trim(),
-        publishedAt: metadata.pubDate ? new Date(metadata.pubDate.replace("Publish : ", "")) : null,
+        publishedAt: metadata.pubDate ? new Date(metadata.pubDate) : null,
     };
 }

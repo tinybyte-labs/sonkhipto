@@ -19,6 +19,10 @@ import {
   getLatestArticleLinksFromKalkerKontho,
   getMetadataFromKalerKontho,
 } from "./kalerkontho-bangla";
+import {
+  getLatestArticleLinksFromDailyStart,
+  getArticleMetadataFromDailyStart,
+} from "./daily-star";
 
 export const publishers: Publisher[] = [
   {
@@ -65,5 +69,14 @@ export const publishers: Publisher[] = [
     language: "en",
     getLatestArticleLinks: getLatestArticleLinksFromKalkerKontho,
     getArticleMetadata: getMetadataFromKalerKontho,
+  },
+  {
+    id: "thedailystar",
+    name: "The Daily Star",
+    websiteUrl: "https://www.thedailystar.net",
+    countryCode: "BD",
+    language: "en",
+    getLatestArticleLinks: getLatestArticleLinksFromDailyStart,
+    getArticleMetadata: getArticleMetadataFromDailyStart,
   },
 ];
