@@ -49,14 +49,14 @@ export const getLatestArticleLinksFromKalkerKontho: GetLatestArticleLinksFn =
             const url = new URL(link, baseUrl)
             if (!categories.includes(url.pathname.slice(1))) {
                 for (let category of categories) {
-                    if (url.pathname.slice(1).startsWith(category)) {
+                    if (url.pathname.slice(1).startsWith(category) && !links.includes(url.href)) {
                         links.push(url.href)
                     }
                 }
             }
         }
 
-        return links
+        return links;
     }
 
 export const getMetadataFromKalerKontho: GetArticleMetadataFn =

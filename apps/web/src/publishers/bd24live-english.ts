@@ -23,7 +23,7 @@ export const getLatestArticleLinksFromBd24live: GetLatestArticleLinksFn =
         for (const link of allLinks) {
             if (link.startsWith(`${baseUrl}/`)) {
                 const url = new URL(link, baseUrl)
-                if (regex.test(url.pathname.slice(1).replace('/', ''))) {
+                if (regex.test(url.pathname.slice(1).replace('/', '')) && !links.includes(url.href)) {
                     links.push(url.href)
                 }
             }

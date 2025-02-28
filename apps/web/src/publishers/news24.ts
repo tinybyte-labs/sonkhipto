@@ -27,7 +27,7 @@ export const getLatestArticleLinksFromNews24live: GetLatestArticleLinksFn =
 
         }
 
-        return links;
+        return Array.from(new Set(links));;
     };
 
 export const getArticleMetadataFromNews24live: GetArticleMetadataFn =
@@ -48,11 +48,24 @@ export const getArticleMetadataFromNews24live: GetArticleMetadataFn =
                 .querySelector(".row.details_detailsArea__mM_eA .details_articleArea__t7HvD > h1")
                 ?.textContent?.trim();
 
-            const pubDate = (
+            const bangladate = (
                 document.querySelector(
                     ".row.details_detailsArea__mM_eA .details_articleArea__t7HvD time",
                 ) as HTMLTimeElement | null
-            )?.textContent;
+            )?.textContent?.trim().replace('আপডেট: ', '').replace('প্রকাশ: ', '').split(',').splice(1).join('').trim();
+
+            function banglaToEnglish(text: string) {
+                const map: Record<string, string> = {
+                    '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
+                    '৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9',
+                    'জানুয়ারি': 'January', 'ফেব্রুয়ারি': 'February', 'মার্চ': 'March',
+                    'এপ্রিল': 'April', 'মে': 'May', 'জুন': 'June',
+                    'জুলাই': 'July', 'আগস্ট': 'August', 'সেপ্টেম্বর': 'September',
+                    'অক্টোবর': 'October', 'নভেম্বর': 'November', 'ডিসেম্বর': 'December'
+                };
+                return text.replace(/[০-৯]|জানুয়ারি|ফেব্রুয়ারি|মার্চ|এপ্রিল|মে|জুন|জুলাই|আগস্ট|সেপ্টেম্বর|অক্টোবর|নভেম্বর|ডিসেম্বর/g, match => map[match]);
+            }
+            const pubDate = bangladate ? banglaToEnglish(bangladate) : null
 
             // For now we can get the description from page metadata. Will use the main article content and ai to generate summery soon.
             // const content = document
@@ -76,6 +89,6 @@ export const getArticleMetadataFromNews24live: GetArticleMetadataFn =
             thumbnailUrl,
             title: metadata.title?.trim(),
             content: metadata.content?.trim(),
-            publishedAt: metadata.pubDate ? new Date(metadata.pubDate.trim().replace('আপডেট: ', '').split(',').splice(1).join('').trim()) : null,
+            publishedAt: metadata.pubDate ? new Date(metadata.pubDate) : null,
         };
     };

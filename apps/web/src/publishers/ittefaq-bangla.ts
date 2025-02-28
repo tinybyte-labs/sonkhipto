@@ -41,15 +41,15 @@ export const getLatestArticleLinksFromIttefaqBangla: GetLatestArticleLinksFn = a
     for (const link of allLinks) {
         if (link.startsWith(`${baseUrl}/`)) {
             const url = new URL(link, baseUrl)
-            if (!categories.includes(url.pathname.slice(1))) {
+            if (!categories.includes(url.pathname.slice(1)) && !links.includes(url.href)) {
                 if (/^-?[\d.]+(?:e-?\d+)?$/.test(url.pathname.slice(1).split('/')[0])) {
                     links.push(url.href)
                 }
             }
         }
     }
-
-    return links
+    await page.close();
+    return links;
 }
 
 export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (articleLink, browser) => {
@@ -58,14 +58,14 @@ export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (article
     await page.goto(url.href)
 
     const imgElement = await page.waitForSelector(
-        "img#adf-overlay",
+        ".content_detail .detail_holder .featured_image img"
     );
     await new Promise((resolve) => setTimeout(resolve, 10));
     const thumbnailUrl = await imgElement?.evaluate((el) => el.srcset);
 
     const metadata = await page.evaluate(() => {
         const title = document
-            .querySelector(".content_detail_outer > .content_detail_inner > .content_detail_left > div > div > div:nth-child(1) > div > h1")
+            .querySelector(".content_detail h1.title")
             ?.textContent?.trim();
 
         const pubDate = (

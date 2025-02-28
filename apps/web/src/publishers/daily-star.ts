@@ -56,7 +56,7 @@ export const getLatestArticleLinksFromDailyStart: GetLatestArticleLinksFn =
             const url = new URL(link, baseUrl)
             if (!categories.includes(url.pathname.slice(1))) {
                 const splitpath = url.pathname.slice(1).split('/')
-                if (/^[a-z0-9-]+-\d+$/.test(splitpath[splitpath.length - 1])) {
+                if (/^[a-z0-9-]+-\d+$/.test(splitpath[splitpath.length - 1]) && !links.includes(url.href)) {
                     links.push(url.href)
                 }
             }
