@@ -82,7 +82,7 @@ export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (
 
     const pubDate = (
       document.querySelector(
-        ".content_detail_outer .content_detail_left .additional_info_container .each_row.time > span",
+        ".content_detail .detail_holder .time .tts_time",
       ) as HTMLTimeElement | null
     )
       ?.getAttribute("content")

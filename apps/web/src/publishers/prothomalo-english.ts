@@ -137,12 +137,12 @@ export const getArticleMetadataFromProthomAloEnglish: GetArticleMetadataFn =
 
     const metadata = await page.evaluate(() => {
       const title = document
-        .querySelector(".story-content-wrapper > div > .story-head h1")
+        .querySelector(".story-content-wrapper .story-head h1")
         ?.textContent?.trim();
 
       const pubDate = (
         document.querySelector(
-          ".story-content-wrapper > div > .story-head .story-metadata-wrapper time",
+          ".story-content-wrapper .story-head .story-metadata-wrapper time",
         ) as HTMLTimeElement | null
       )?.dateTime;
 
