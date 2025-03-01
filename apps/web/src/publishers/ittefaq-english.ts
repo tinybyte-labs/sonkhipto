@@ -48,7 +48,6 @@ export const getLatestArticleLinksFromIttefaqEnglish: GetLatestArticleLinksFn =
       }
     }
 
-    await page.close();
     return links;
   };
 

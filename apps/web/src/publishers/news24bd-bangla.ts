@@ -38,7 +38,7 @@ export const getLatestArticleLinksFromNews24BDBangla: GetLatestArticleLinksFn =
       }
     }
 
-    return Array.from(new Set(links));
+    return links;
   };
 
 export const getArticleMetadataFromNews24BDBangla: GetArticleMetadataFn =
@@ -76,6 +76,8 @@ export const getArticleMetadataFromNews24BDBangla: GetArticleMetadataFn =
         articlePublishedTime,
       };
     });
+
+    await page.close();
 
     return {
       thumbnailUrl,

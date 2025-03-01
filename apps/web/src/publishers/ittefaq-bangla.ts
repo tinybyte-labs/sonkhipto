@@ -57,7 +57,7 @@ export const getLatestArticleLinksFromIttefaqBangla: GetLatestArticleLinksFn =
         }
       }
     }
-    await page.close();
+
     return links;
   };
 

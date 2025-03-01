@@ -221,6 +221,8 @@ export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
       };
     });
 
+    await page.close();
+
     return {
       thumbnailUrl,
       title: metadata.title?.trim(),

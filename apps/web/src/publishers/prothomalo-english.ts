@@ -163,6 +163,8 @@ export const getArticleMetadataFromProthomAloEnglish: GetArticleMetadataFn =
       };
     });
 
+    await page.close();
+
     return {
       thumbnailUrl,
       title: metadata.title?.trim(),
