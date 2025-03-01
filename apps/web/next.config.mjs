@@ -14,8 +14,6 @@ const nextConfig = {
     serverComponentsExternalPackages: [
       "cheerio",
       "puppeteer-core",
-      "puppeteer-extra",
-      "puppeteer-extra-plugin-stealth",
       "@sparticuz/chromium",
     ],
   },
