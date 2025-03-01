@@ -1,5 +1,10 @@
-import puppeteer, { type Browser } from "puppeteer-core";
+// import puppeteer, { type Browser } from "puppeteer-core";
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import chromium from "@sparticuz/chromium";
+import { Browser } from "puppeteer-core";
+
+puppeteer.use(StealthPlugin());
 
 export const getBrowser = async (): Promise<Browser> => {
   // const executablePath = await chromium.executablePath(
