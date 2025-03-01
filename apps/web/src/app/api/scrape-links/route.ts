@@ -3,7 +3,7 @@ import { publishers } from "@/publishers/publishers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
@@ -12,6 +12,8 @@ export const POST = async (req: NextRequest) => {
       publisherId: z.string(),
     })
     .parseAsync(body);
+
+  console.log({ publisherId });
 
   const publisher = publishers.find(
     (publisher) => publisher.id === publisherId,
@@ -27,7 +29,7 @@ export const POST = async (req: NextRequest) => {
 
     const links = await publisher.getLatestArticleLinks(browser);
 
-    console.log(links);
+    console.log({ linkCount: links.length });
 
     await browser.close();
     console.log("Browser closed");
