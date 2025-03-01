@@ -16,21 +16,20 @@ import {
   getMetadataFromIttefaqEnglish,
 } from "./ittefaq-english";
 import {
-  getLatestArticleLinksFromKalkerKontho,
-  getMetadataFromKalerKontho,
-} from "./kalerkontho-bangla";
+  getLatestArticleLinksFromKalerKanthoBangla,
+  getMetadataFromKalerKanthoBangla,
+} from "./kalerkantho-bangla";
 import {
-  getLatestArticleLinksFromDailyStart,
-  getArticleMetadataFromDailyStart,
-} from "./daily-star";
+  getLatestArticleLinksFromTheDailyStartEnglish,
+  getArticleMetadataFromTheDailyStartEnglish,
+} from "./thedailystar-english";
 import {
-  getLatestArticleLinksFromNews24live,
-  getArticleMetadataFromNews24live
-
-} from "./news24";
+  getLatestArticleLinksFromNews24BDBangla,
+  getArticleMetadataFromNews24BDBangla,
+} from "./news24bd-bangla";
 import {
-  getArticleMetadataFromBd24live,
-  getLatestArticleLinksFromBd24live
+  getArticleMetadataFromBD24LiveEnglish,
+  getLatestArticleLinksFromBD24LiveEnglish,
 } from "./bd24live-english";
 
 export const publishers: Publisher[] = [
@@ -67,34 +66,45 @@ export const publishers: Publisher[] = [
     websiteUrl: "https://en.ittefaq.com.bd/",
     countryCode: "BD",
     language: "en",
-    getLatestArticleLinks: getLatestArticleLinksFromKalkerKontho,
-    getArticleMetadata: getMetadataFromKalerKontho,
+    getLatestArticleLinks: getLatestArticleLinksFromIttefaqEnglish,
+    getArticleMetadata: getMetadataFromIttefaqEnglish,
   },
   {
-    id: "thedailystar",
-    name: "The Daily Star",
-    websiteUrl: "https://www.thedailystar.net",
+    id: "kalerkantho-bangla",
+    name: "কালের কণ্ঠ",
+    websiteUrl: "https://www.kalerkantho.com",
     countryCode: "BD",
-    language: "en",
-    getLatestArticleLinks: getLatestArticleLinksFromDailyStart,
-    getArticleMetadata: getArticleMetadataFromDailyStart,
+    language: "bn",
+    getLatestArticleLinks: getLatestArticleLinksFromKalerKanthoBangla,
+    getArticleMetadata: getMetadataFromKalerKanthoBangla,
   },
+  // Has some issues
+  // {
+  //   id: "thedailystar-english",
+  //   name: "The Daily Star",
+  //   websiteUrl: "https://www.thedailystar.net",
+  //   countryCode: "BD",
+  //   language: "en",
+  //   getLatestArticleLinks: getLatestArticleLinksFromTheDailyStartEnglish,
+  //   getArticleMetadata: getArticleMetadataFromTheDailyStartEnglish,
+  // },
+  // Hard to match article url. Will take a look later
+  // {
+  //   id: "bd24live-english",
+  //   name: "BD24Live",
+  //   websiteUrl: "https://www.bd24live.com",
+  //   countryCode: "BD",
+  //   language: "en",
+  //   getLatestArticleLinks: getLatestArticleLinksFromBD24LiveEnglish,
+  //   getArticleMetadata: getArticleMetadataFromBD24LiveEnglish,
+  // },
   {
-    id: "bd24live",
-    name: "BD 24 Live",
-    websiteUrl: "https://www.bd24live.com",
-    countryCode: "BD",
-    language: "en",
-    getLatestArticleLinks: getLatestArticleLinksFromBd24live,
-    getArticleMetadata: getArticleMetadataFromBd24live,
-  },
-  {
-    id: "news24bd",
-    name: "News24 TV",
+    id: "news24bd-bangla",
+    name: "News24BD",
     websiteUrl: "https://www.news24bd.tv",
     countryCode: "BD",
     language: "bn",
-    getLatestArticleLinks: getLatestArticleLinksFromNews24live,
-    getArticleMetadata: getArticleMetadataFromNews24live,
-  }
+    getLatestArticleLinks: getLatestArticleLinksFromNews24BDBangla,
+    getArticleMetadata: getArticleMetadataFromNews24BDBangla,
+  },
 ];
