@@ -3,36 +3,83 @@ import { autoPageScroll } from "@/utils/server/puppeteer";
 
 const baseUrl = "https://www.thedailystar.net";
 const categories = [
-  "news",
-  "news/bangladesh",
-  "news/investigative-stories",
-  "news/asia",
-  "news/world",
-  "opinion",
-  "health",
-  "sports",
-  "business",
-  "entertainment",
-  "culture",
-  "life-living",
-  "youth",
-  "tech-startup",
-  "lifestyle",
-  "rising-stars",
-  "showbiz",
-  "my-dhaka",
-  "satireday",
-  "campus",
-  "star-literature",
-  "star-youth",
-  "roundtables",
-  "star-holiday",
-  "environment",
-  "environment",
-  "nrb",
-  "law-our-rights",
+  'news',
+  'news/investigative-stories',
+  'news/bangladesh',
+  'news/investigative-stories',
+  'news/asia',
+  'news/world',
+  'opinion',
+  'opinion/rebuilding-bangladesh',
+  'opinion/views',
+  'opinion/quota-carnage',
+  'opinion/16-days-activism',
+  'opinion/budget-analysis-2024-25',
+  'opinion/editorial',
+  'opinion/geopolitical-insights',
+  'opinion/focus',
+  'opinion/readers-voice',
+  'opinion/letters-the-editor',
+  'opinion/interviews',
+  'sports',
+  'sports/cricket',
+  'sports/afa-bkash-partnership',
+  'sports/football',
+  'sports/more-sports',
+  'sports/sports-special',
+  'business',
+  'business/bangladesh-national-budget-fy2024-25',
+  'business/banking',
+  'business/business-special-events',
+  'business/column',
+  'business/economy',
+  'business/export',
+  'business/global-business',
+  'business/global-economy',
+  'business/infographics',
+  'business/interview',
+  'business/monetary-policy-january-june-24',
+  'business/organisation-news',
+  'business/port-and-shipping',
+  'business/real-estate',
+  'business/retail',
+  'business/start-ups',
+  'business/tax-and-customs',
+  'business/telecom',
+  'entertainment',
+  'entertainment/tv-film',
+  'entertainment/music',
+  'entertainment/theatre-arts',
+  'entertainment/satire',
+  'entertainment/featured',
+  'entertainment/heritage',
+  'life-living',
+  'life-living/eid-magazine-2024',
+  'life-living/fashion-beauty',
+  'life-living/food-recipes',
+  'life-living/health-fitness',
+  'life-living/lifehacks',
+  'life-living/relationships-family',
+  'life-living/travel',
+  'youth',
+  'youth/careers',
+  'youth/education',
+  'youth/young-icons',
+  'tech-startup/apps',
+  'tech-startup',
+  'tech-startup/editors-pick',
+  'tech-startup/gadgets',
+  'tech-startup/gaming',
+  'tech-startup/guides',
+  'tech-startup/latest',
+  'tech-startup/startups-0',
+  'star-multimedia',
+  'star-multimedia',
+  'environment',
+  'nrb',
+  'law-our-rights',
+  'brnad-stories'
 ];
-
 export const getLatestArticleLinksFromTheDailyStartEnglish: GetLatestArticleLinksFn =
   async (browser) => {
     const page = await browser.newPage();
@@ -60,8 +107,9 @@ export const getLatestArticleLinksFromTheDailyStartEnglish: GetLatestArticleLink
         !categories.includes(url.pathname.slice(1)) &&
         !links.includes(url.href)
       ) {
-        const splitpath = url.pathname.slice(1).split("/");
-        if (/^[a-z0-9-]+-\d+$/.test(splitpath[splitpath.length - 1])) {
+        const isPost =
+          categories.findIndex((category) => url.pathname.startsWith("/" + category + "/"),) !== -1;
+        if (isPost) {
           links.push(url.href);
         }
       }
@@ -90,9 +138,9 @@ export const getArticleMetadataFromTheDailyStartEnglish: GetArticleMetadataFn =
 
       const pubDate = (
         document.querySelector(
-          "#inner-wrap .byline-wrapper .date",
-        ) as HTMLTimeElement | null
-      )?.textContent;
+          "meta[property='article:published_time']",
+        ) as HTMLMetaElement | null
+      )?.content?.trim()
 
       // For now we can get the description from page metadata. Will use the main article content and ai to generate summery soon.
       // const content = document
@@ -117,7 +165,7 @@ export const getArticleMetadataFromTheDailyStartEnglish: GetArticleMetadataFn =
       title: metadata.title?.trim(),
       content: metadata.content?.trim(),
       publishedAt: metadata.pubDate
-        ? new Date(metadata.pubDate.trim().split("Last update on:")[0].trim())
+        ? new Date(metadata.pubDate)
         : null,
     };
   };
