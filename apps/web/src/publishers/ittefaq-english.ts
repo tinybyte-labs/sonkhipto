@@ -20,6 +20,10 @@ const categories = [
 export const getLatestArticleLinksFromIttefaqEnglish: GetLatestArticleLinksFn =
   async (browser) => {
     const page = await browser.newPage();
+    await page.setUserAgent(
+      "Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0",
+    );
+
     console.log("Page Created");
     await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
     console.log("Page Loaded");
