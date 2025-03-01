@@ -20,15 +20,20 @@ const categories = [
 export const getLatestArticleLinksFromIttefaqEnglish: GetLatestArticleLinksFn =
   async (browser) => {
     const page = await browser.newPage();
+    console.log("Page Created");
     await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
+    console.log("Page Loaded");
     await page.setViewport({ width: 1200, height: 800 });
     await autoPageScroll(page);
+    console.log("Page Scrolled");
 
     const allLinks = await page.evaluate(() => {
       return Array.from(document.getElementsByTagName("a")).map((a) => a.href);
     });
+    console.log("Got All Links");
 
     await page.close();
+    console.log("Page Closed");
 
     let links: string[] = [];
 
