@@ -30,7 +30,7 @@ export default function FancyGrid<T>({
       const minRowStartIndex = i * totalSplitsInAGroup;
       const minRowItemWidth = Math.max(
         0,
-        Math.floor((width - (minSplit - 1) * spacing) / minSplit)
+        Math.floor((width - (minSplit - 1) * spacing) / minSplit),
       );
 
       for (let j = minRowStartIndex; j < minRowStartIndex + minSplit; j++) {
@@ -40,7 +40,7 @@ export default function FancyGrid<T>({
       const maxRowStartIndex = minRowStartIndex + minSplit;
       const maxRowItemWidth = Math.max(
         0,
-        Math.floor((width - (maxSplit - 1) * spacing) / maxSplit)
+        Math.floor((width - (maxSplit - 1) * spacing) / maxSplit),
       );
 
       for (let j = maxRowStartIndex; j < maxRowStartIndex + maxSplit; j++) {

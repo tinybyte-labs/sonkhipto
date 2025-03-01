@@ -1,13 +1,5 @@
 import type { Publisher } from "@/types";
 import {
-  getArticleMetadataFromPrathamAloBangla,
-  getLatestArticleLinksFromPrathamAloBangla,
-} from "./prothomalo-bangla";
-import {
-  getLatestArticleLinksFromPrathamAloEnglish,
-  getArticleMetadataFromProthomAloEnglish,
-} from "./prothomalo-english";
-import {
   getLatestArticleLinksFromIttefaqBangla,
   getMetadataFromIttefaqBangla,
 } from "./ittefaq-bangla";
@@ -20,17 +12,17 @@ import {
   getMetadataFromKalerKanthoBangla,
 } from "./kalerkantho-bangla";
 import {
-  getLatestArticleLinksFromTheDailyStartEnglish,
-  getArticleMetadataFromTheDailyStartEnglish,
-} from "./thedailystar-english";
-import {
-  getLatestArticleLinksFromNews24BDBangla,
   getArticleMetadataFromNews24BDBangla,
+  getLatestArticleLinksFromNews24BDBangla,
 } from "./news24bd-bangla";
 import {
-  getArticleMetadataFromBD24LiveEnglish,
-  getLatestArticleLinksFromBD24LiveEnglish,
-} from "./bd24live-english";
+  getArticleMetadataFromPrathamAloBangla,
+  getLatestArticleLinksFromPrathamAloBangla,
+} from "./prothomalo-bangla";
+import {
+  getArticleMetadataFromProthomAloEnglish,
+  getLatestArticleLinksFromPrathamAloEnglish,
+} from "./prothomalo-english";
 
 export const publishers: Publisher[] = [
   {
