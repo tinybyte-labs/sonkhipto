@@ -95,6 +95,8 @@ export const getLatestArticleLinksFromPrathamAloEnglish: GetLatestArticleLinksFn
       return Array.from(document.getElementsByTagName("a")).map((a) => a.href);
     });
 
+    await page.close();
+
     const links: string[] = [];
 
     for (const link of allLinks) {
