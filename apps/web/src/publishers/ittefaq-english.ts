@@ -31,6 +31,7 @@ export const getLatestArticleLinksFromIttefaqEnglish: GetLatestArticleLinksFn =
       return Array.from(document.getElementsByTagName("a")).map((a) => a.href);
     });
     console.log("Got All Links");
+    console.log(allLinks);
 
     await page.close();
     console.log("Page Closed");
