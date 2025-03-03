@@ -69,11 +69,9 @@ fastify.register(routes);
 
 const start = async () => {
   try {
-    const port = process.env.PORT ? Number(process.env.PORT) : 8000;
-    const host = "RENDER" in process.env ? `0.0.0.0` : `localhost`;
-    console.log({ port, host });
+    const port = process.env.PORT ? Number(process.env.PORT) : 8080;
 
-    await fastify.listen({ port, host });
+    await fastify.listen({ port });
     console.log("listening on port", port);
     // fastify.cron.startAllJobs();
   } catch (err) {
