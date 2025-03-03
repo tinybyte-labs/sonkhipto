@@ -1,5 +1,3 @@
-import fastifyCookie from "@fastify/cookie";
-import fastifyEnv from "@fastify/env";
 import "dotenv/config";
 import Fastify from "fastify";
 import { routes } from "./routes";
@@ -30,25 +28,25 @@ listeners.forEach((signal) => {
 //     cb(null, true);
 //   },
 // });
-fastify.register(fastifyEnv, {
-  confKey: "config",
-  schema: {
-    type: "object",
-    required: ["PORT", "DATABASE_URL"],
-    properties: {
-      PORT: {
-        type: "string",
-        default: 8000,
-      },
-      DATABASE_URL: {
-        type: "string",
-      },
-    },
-  },
-  dotenv: true,
-  data: process.env,
-});
-fastify.register(fastifyCookie);
+// fastify.register(fastifyEnv, {
+//   confKey: "config",
+//   schema: {
+//     type: "object",
+//     required: ["PORT", "DATABASE_URL"],
+//     properties: {
+//       PORT: {
+//         type: "string",
+//         default: 8080,
+//       },
+//       DATABASE_URL: {
+//         type: "string",
+//       },
+//     },
+//   },
+//   dotenv: true,
+//   data: process.env,
+// });
+// fastify.register(fastifyCookie);
 // fastify.register(fastifyJwt, {
 //     secret: process.env.JWT_SECRET!,
 //     cookie: {
