@@ -2,13 +2,12 @@
   "name": "@acme/server",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "build": "esbuild src/server.ts --bundle --packages=external --platform=node --format=esm --outdir=dist --sourcemap",
+    "build": "tsc -p tsconfig.json",
+    "start": "node build/server.js",
     "dev": "tsx watch src/server.ts",
     "lint": "eslint --cache --ext \".js,.ts,.tsx\" src",
     "type-check": "tsc",
-    "start": "node dist/server.js",
     "test-dev": "start-server-and-test 'tsx src'",
     "test-start": "start-server-and-test 'node dist'"
   },
