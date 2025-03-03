@@ -1,5 +1,4 @@
 import fastifyCookie from "@fastify/cookie";
-import fastifyCors from "@fastify/cors";
 import fastifyEnv from "@fastify/env";
 import "dotenv/config";
 import Fastify from "fastify";
@@ -15,22 +14,22 @@ listeners.forEach((signal) => {
   });
 });
 
-fastify.register(fastifyCors, {
-  origin: (origin, cb) => {
-    const allowedOrigins = [
-      ...(process.env.NODE_ENV === "development"
-        ? ["http://localhost:3000"]
-        : []),
-      "https://sonkhipto.com",
-      "https://www.sonkhipto.com",
-    ];
-    if (origin && !allowedOrigins.includes(origin)) {
-      cb(new Error("Not Allowed"), false);
-      return;
-    }
-    cb(null, true);
-  },
-});
+// fastify.register(fastifyCors, {
+//   origin: (origin, cb) => {
+//     const allowedOrigins = [
+//       ...(process.env.NODE_ENV === "development"
+//         ? ["http://localhost:3000"]
+//         : []),
+//       "https://sonkhipto.com",
+//       "https://www.sonkhipto.com",
+//     ];
+//     if (origin && !allowedOrigins.includes(origin)) {
+//       cb(new Error("Not Allowed"), false);
+//       return;
+//     }
+//     cb(null, true);
+//   },
+// });
 fastify.register(fastifyEnv, {
   confKey: "config",
   schema: {
