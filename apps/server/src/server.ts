@@ -1,7 +1,5 @@
 import "dotenv/config";
 import Fastify from "fastify";
-import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
-import { appRouter, createContext } from "@acme/trpc";
 import fastifyCors from "@fastify/cors";
 import fastifyEnv from "@fastify/env";
 import fastifyJwt from "@fastify/jwt";
@@ -11,6 +9,9 @@ import {
     SCRAPE_NEWS_FEEDS_JOB_NAME,
     scrapeNewsFeedsJob,
 } from "./jobs/scrape-news-feeds";
+import { publishers } from "./publishers/publishers";
+import { scrapeLinks } from "./routes/api/scrape-link";
+import { scrapeArtickle } from "./routes/api/scrape-article";
 
 const fastify = Fastify({ logger: process.env.NODE_ENV === "development" });
 
@@ -67,24 +68,15 @@ fastify.register(fastifyJwt, {
         signed: false,
     },
 });
-fastify.register(fastifyCron, {
-    jobs: [scrapeNewsFeedsJob],
-});
+// fastify.register(fastifyCron, {
+//     jobs: [scrapeNewsFeedsJob],
+// });
 
-fastify.get("/scrape-news-feeds", async (res, reply) => {
-    const job = fastify.cron.getJobByName(SCRAPE_NEWS_FEEDS_JOB_NAME);
-    if (job) {
-        job.fireOnTick();
-        reply.send("Scraping started");
-    } else {
-        reply.code(404).send("Job not found!");
-    }
-});
-
-fastify.register(fastifyTRPCPlugin, {
-    prefix: "/trpc",
-    trpcOptions: { router: appRouter, createContext },
-});
+// fastify.get("/scrape-news-feeds", async (res, reply) => {
+//     // 
+// });
+fastify.post('/api/scrape-link', scrapeLinks)
+fastify.post('/api/scrape-article', scrapeArtickle)
 
 const start = async () => {
     try {
@@ -94,7 +86,7 @@ const start = async () => {
 
         await fastify.listen({ port, host });
         console.log("listening on port", port);
-        fastify.cron.startAllJobs();
+        // fastify.cron.startAllJobs();
     } catch (err) {
         console.error(err);
         process.exit(1);
