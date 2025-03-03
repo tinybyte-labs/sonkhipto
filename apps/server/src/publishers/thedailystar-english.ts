@@ -1,7 +1,6 @@
 import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
 import { autoPageScroll } from "../utils/puppeteer";
 
-
 const baseUrl = "https://www.thedailystar.net";
 const categories = [
   "news",

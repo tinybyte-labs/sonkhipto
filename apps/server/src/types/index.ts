@@ -1,4 +1,4 @@
-import { Browser } from "puppeteer-core";
+import type { Browser } from "puppeteer";
 
 export type NewsPublisher = {
   id: string;
@@ -36,27 +36,27 @@ export const scrapeLinksOpts = {
   schema: {
     response: {
       200: {
-        type: 'object',
+        type: "object",
         properties: {
-          links: { type: ['string'] },
-          length: { type: 'integer' }
-        }
-      }
-    }
-  }
-}
+          links: { type: ["string"] },
+          length: { type: "integer" },
+        },
+      },
+    },
+  },
+};
 export const scrapeArticleOpts = {
   schema: {
     response: {
       200: {
-        type: 'object',
+        type: "object",
         properties: {
-          thumbnailUrl: { type: 'string' },
-          title: { type: 'string' },
-          content: { type: 'string' },
-          publishedAt: { type: 'string' }
-        }
-      }
-    }
-  }
-}
+          thumbnailUrl: { type: "string" },
+          title: { type: "string" },
+          content: { type: "string" },
+          publishedAt: { type: "string" },
+        },
+      },
+    },
+  },
+};

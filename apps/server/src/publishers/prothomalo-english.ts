@@ -1,7 +1,6 @@
 import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
 import { autoPageScroll } from "../utils/puppeteer";
 
-
 const baseUrl = "https://en.prothomalo.com";
 
 const categories = [
