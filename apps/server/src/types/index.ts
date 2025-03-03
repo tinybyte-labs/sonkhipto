@@ -31,3 +31,32 @@ export interface Publisher {
   getLatestArticleLinks: GetLatestArticleLinksFn;
   getArticleMetadata: GetArticleMetadataFn;
 }
+
+export const scrapeLinksOpts = {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          links: { type: ['string'] },
+          length: { type: 'integer' }
+        }
+      }
+    }
+  }
+}
+export const scrapeArticleOpts = {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          thumbnailUrl: { type: 'string' },
+          title: { type: 'string' },
+          content: { type: 'string' },
+          publishedAt: { type: 'string' }
+        }
+      }
+    }
+  }
+}

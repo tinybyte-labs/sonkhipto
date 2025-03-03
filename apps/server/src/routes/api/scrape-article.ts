@@ -2,7 +2,6 @@ import { z } from "zod";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { publishers } from "../../publishers/publishers";
 import { getBrowser } from "../../lib/browser";
-export const maxDuration = 300;
 
 export const scrapeArtickle = async (req: FastifyRequest, reply: FastifyReply) => {
     const body = await req.body;

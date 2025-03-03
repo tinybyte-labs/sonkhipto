@@ -4,8 +4,6 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { publishers } from "../../publishers/publishers";
 import { getBrowser } from "../../lib/browser";
 
-export const maxDuration = 300;
-
 export const scrapeLinks = async (req: FastifyRequest, reply: FastifyReply) => {
     const body = await req.body;
     const { publisherId } = await z

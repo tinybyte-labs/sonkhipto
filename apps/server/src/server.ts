@@ -4,14 +4,13 @@ import fastifyCors from "@fastify/cors";
 import fastifyEnv from "@fastify/env";
 import fastifyJwt from "@fastify/jwt";
 import fastifyCookie from "@fastify/cookie";
-import fastifyCron from "fastify-cron";
-import {
-    SCRAPE_NEWS_FEEDS_JOB_NAME,
-    scrapeNewsFeedsJob,
-} from "./jobs/scrape-news-feeds";
-import { publishers } from "./publishers/publishers";
-import { scrapeLinks } from "./routes/api/scrape-link";
-import { scrapeArtickle } from "./routes/api/scrape-article";
+// import fastifyCron from "fastify-cron";
+// import {
+//     SCRAPE_NEWS_FEEDS_JOB_NAME,
+//     scrapeNewsFeedsJob,
+// } from "./jobs/scrape-news-feeds";
+// import { publishers } from "./publishers/publishers";
+import { scrapeRoutes } from "./routes";
 
 const fastify = Fastify({ logger: process.env.NODE_ENV === "development" });
 
@@ -75,8 +74,8 @@ fastify.register(fastifyJwt, {
 // fastify.get("/scrape-news-feeds", async (res, reply) => {
 //     // 
 // });
-fastify.post('/api/scrape-link', scrapeLinks)
-fastify.post('/api/scrape-article', scrapeArtickle)
+
+fastify.register(scrapeRoutes, { prefix: '/api' })
 
 const start = async () => {
     try {
