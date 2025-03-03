@@ -4,13 +4,13 @@ import { routes } from "./routes";
 
 const fastify = Fastify({ logger: process.env.NODE_ENV === "development" });
 
-const listeners = ["SIGINT", "SIGTERM"];
-listeners.forEach((signal) => {
-  process.on(signal, async () => {
-    await fastify.close();
-    process.exit(0);
-  });
-});
+// const listeners = ["SIGINT", "SIGTERM"];
+// listeners.forEach((signal) => {
+//   process.on(signal, async () => {
+//     await fastify.close();
+//     process.exit(0);
+//   });
+// });
 
 // fastify.register(fastifyCors, {
 //   origin: (origin, cb) => {
@@ -67,9 +67,10 @@ fastify.register(routes);
 const start = async () => {
   try {
     const port = process.env.PORT ? Number(process.env.PORT) : 8080;
-
-    await fastify.listen({ port });
-    console.log("listening on port", port);
+    const host =
+      process.env.NODE_ENV === "production" ? "127.0.0.1" : "localhost";
+    await fastify.listen({ port, host });
+    console.log(`URL: http://${host}:${port}`);
     // fastify.cron.startAllJobs();
   } catch (err) {
     console.error(err);
