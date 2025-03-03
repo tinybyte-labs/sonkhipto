@@ -23,6 +23,14 @@ import {
   getArticleMetadataFromProthomAloEnglish,
   getLatestArticleLinksFromPrathamAloEnglish,
 } from "./prothomalo-english";
+import {
+  getLatestArticleLinksFromDhakatribuneEnglish,
+  getArticleMetadataFromDhakatribuneEnglish
+} from "./dhakatribune-english";
+import {
+  getLatestArticleLinksFromDhakatribuneBangla,
+  getArticleMetadataFromDhakatribuneBangla
+} from "./dhakatribune-bangla";
 
 export const publishers: Publisher[] = [
   {
@@ -98,5 +106,23 @@ export const publishers: Publisher[] = [
     language: "bn",
     getLatestArticleLinks: getLatestArticleLinksFromNews24BDBangla,
     getArticleMetadata: getArticleMetadataFromNews24BDBangla,
+  },
+  {
+    id: "dhakatribune-english",
+    name: "Dhaka Tribune",
+    websiteUrl: "https://www.dhakatribune.com",
+    countryCode: "BD",
+    language: "en",
+    getLatestArticleLinks: getLatestArticleLinksFromDhakatribuneEnglish,
+    getArticleMetadata: getArticleMetadataFromDhakatribuneEnglish,
+  },
+  {
+    id: "dhakatribune-bangla",
+    name: "Dhaka Tribune Bangla",
+    websiteUrl: "https://bangla.dhakatribune.com",
+    countryCode: "BD",
+    language: "bn",
+    getLatestArticleLinks: getLatestArticleLinksFromDhakatribuneBangla,
+    getArticleMetadata: getArticleMetadataFromDhakatribuneBangla,
   },
 ];
