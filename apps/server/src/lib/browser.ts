@@ -19,7 +19,8 @@ export const getBrowser = async (): Promise<Browser> => {
 
   return puppeteer.launch({
     executablePath:
-      process.env.CHROME_EXECUTABLE_PATH ?? "/usr/bin/chromium-browser",
+      process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD ??
+      "/usr/bin/chromium-browser",
     args: chromeArgs,
     headless: true,
   });
