@@ -1,4 +1,4 @@
-import type { Browser } from "puppeteer";
+import type { Browser } from "puppeteer-core";
 
 export type NewsPublisher = {
   id: string;
