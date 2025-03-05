@@ -1,8 +1,6 @@
-import puppeteer, { type Browser } from "puppeteer-core";
-import chromium from "@sparticuz/chromium";
+import puppeteer, { type Browser } from "puppeteer";
 
 export const getBrowser = async (): Promise<Browser> => {
-  chromium.setGraphicsMode = false;
   const chromeArgs = [
     "--no-sandbox",
     "--disable-setuid-sandbox",
@@ -15,13 +13,11 @@ export const getBrowser = async (): Promise<Browser> => {
   ];
 
   return puppeteer.launch({
-    executablePath:
-      process.env.CHROME_EXECUTABLE_PATH ?? (await chromium.executablePath()),
+    headless: true,
     args: chromeArgs,
     defaultViewport: {
       width: 1280,
       height: 800,
     },
-    headless: true,
   });
 };
