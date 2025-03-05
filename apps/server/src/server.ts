@@ -68,9 +68,9 @@ const start = async () => {
   try {
     const port = process.env.PORT ? Number(process.env.PORT) : 8080;
     const host =
-      process.env.NODE_ENV === "production" ? "127.0.0.1" : "localhost";
-    await fastify.listen({ port, host });
-    console.log(`URL: http://${host}:${port}`);
+      process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
+    const instance = await fastify.listen({ port, host });
+    console.log(`URL: ${instance}`);
     // fastify.cron.startAllJobs();
   } catch (err) {
     console.error(err);
