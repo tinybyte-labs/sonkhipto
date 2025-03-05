@@ -1,10 +1,8 @@
-import puppeteer, { type Browser } from "puppeteer";
+import puppeteer, { type Browser } from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 
 export const getBrowser = async (): Promise<Browser> => {
-  // const executablePath = await chromium.executablePath(
-  //   "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar",
-  // );
-
+  chromium.setGraphicsMode = false;
   const chromeArgs = [
     "--font-render-hinting=none", // Improves font-rendering quality and spacing
     "--no-sandbox",
@@ -20,6 +18,8 @@ export const getBrowser = async (): Promise<Browser> => {
   ];
 
   return puppeteer.launch({
+    executablePath:
+      process.env.CHROME_EXECUTABLE_PATH ?? "/usr/bin/chromium-browser",
     args: chromeArgs,
     headless: true,
   });
