@@ -22,6 +22,8 @@ export const POST = async (req: NextRequest) => {
     await page.setUserAgent(userAgent);
     await page.goto(url, { waitUntil: "networkidle2" });
 
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+
     const screenshot = await page.screenshot();
     console.log("Took screenshot");
 
