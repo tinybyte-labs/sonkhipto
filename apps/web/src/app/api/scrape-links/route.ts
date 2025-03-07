@@ -1,4 +1,3 @@
-import { getBrowser } from "@/lib/browser";
 import { publishers } from "@acme/core/publishers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -24,15 +23,9 @@ export const POST = async (req: NextRequest) => {
   }
 
   try {
-    const browser = await getBrowser();
-    console.log("Browser launched");
-
-    const links = await publisher.getLatestArticleLinks(browser);
+    const links = await publisher.getLatestArticleLinks();
 
     console.log({ linkCount: links.length });
-
-    await browser.close();
-    console.log("Browser closed");
 
     return NextResponse.json({
       links,

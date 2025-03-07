@@ -1,5 +1,5 @@
 import type { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
-import { autoPageScroll } from "../utils/server/puppeteer";
+import { getPage } from "../utils/server/helpers";
 
 const baseUrl = "https://en.prothomalo.com";
 
@@ -85,22 +85,16 @@ const categories = [
 ];
 
 export const getLatestArticleLinksFromPrathamAloEnglish: GetLatestArticleLinksFn =
-  async (browser) => {
-    const page = await browser.newPage();
-    await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-    await page.setViewport({ width: 1200, height: 800 });
-    await autoPageScroll(page);
-
-    const allLinks = await page.evaluate(() => {
-      return Array.from(document.getElementsByTagName("a")).map((a) => a.href);
-    });
-
-    await page.close();
+  async () => {
+    const $ = await getPage(baseUrl);
+    const allLinks = $("a")
+      .toArray()
+      .map((el) => $(el).attr()?.["href"]);
 
     const links: string[] = [];
 
     for (const link of allLinks) {
-      if (!link.startsWith("/") && !link.startsWith(baseUrl)) {
+      if (!link || (!link.startsWith("/") && !link.startsWith(baseUrl))) {
         continue;
       }
 
@@ -124,51 +118,25 @@ export const getLatestArticleLinksFromPrathamAloEnglish: GetLatestArticleLinksFn
   };
 
 export const getArticleMetadataFromProthomAloEnglish: GetArticleMetadataFn =
-  async (articleUrl, browser) => {
-    const page = await browser.newPage();
-    await page.goto(articleUrl, { waitUntil: "domcontentloaded" });
-    await page.setViewport({ width: 1080, height: 1024 });
+  async (articleUrl) => {
+    const url = new URL(articleUrl);
+    if (url.origin !== baseUrl) {
+      throw new Error("Invalid url");
+    }
 
-    const imgElement = await page.waitForSelector(
-      ".story-content-wrapper .story-content .story-page-hero figure picture img.image",
-    );
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    const thumbnailUrl = await imgElement?.evaluate((el) => el.src);
+    const $ = await getPage(articleUrl);
 
-    const metadata = await page.evaluate(() => {
-      const title = document
-        .querySelector(".story-content-wrapper .story-head h1")
-        ?.textContent?.trim();
-
-      const pubDate = (
-        document.querySelector(
-          ".story-content-wrapper .story-head .story-metadata-wrapper time",
-        ) as HTMLTimeElement | null
-      )?.dateTime;
-
-      // const content = document
-      //   .querySelector(".story-content-wrapper .story-content > div:nth-child(2)")
-      //   ?.textContent?.trim();
-
-      const content = (
-        document.querySelector(
-          "meta[name='description']",
-        ) as HTMLMetaElement | null
-      )?.content?.trim();
-
-      return {
-        title,
-        content,
-        pubDate,
-      };
-    });
-
-    await page.close();
+    const title = $(".story-content-wrapper .story-head h1").text().trim();
+    const pubDate = $(
+      ".story-content-wrapper .story-head .story-metadata-wrapper time",
+    ).attr()?.["datetime"];
+    const content = $("meta[name='description']").attr()?.["content"]?.trim();
+    const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
 
     return {
       thumbnailUrl,
-      title: metadata.title?.trim(),
-      content: metadata.content?.trim(),
-      publishedAt: metadata.pubDate ? new Date(metadata.pubDate) : null,
+      title,
+      content,
+      publishedAt: pubDate ? new Date(pubDate) : null,
     };
   };

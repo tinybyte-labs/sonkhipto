@@ -16,7 +16,7 @@
     "generate": "prisma generate"
   },
   "dependencies": {
-    "puppeteer-core": "24.2.1"
+    "cheerio": "^1.0.0"
   },
   "devDependencies": {
     "@acme/typescript-config": "workspace:*",

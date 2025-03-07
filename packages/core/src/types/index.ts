@@ -1,5 +1,3 @@
-import type { Browser } from "puppeteer-core";
-
 export type NewsPublisher = {
   id: string;
   name: string;
@@ -18,9 +16,8 @@ export interface ArticleMetadata {
 
 export type GetArticleMetadataFn = (
   articleUrl: string,
-  browser: Browser,
 ) => Promise<ArticleMetadata | null>;
-export type GetLatestArticleLinksFn = (browser: Browser) => Promise<string[]>;
+export type GetLatestArticleLinksFn = () => Promise<string[]>;
 
 export interface Publisher {
   id: string;

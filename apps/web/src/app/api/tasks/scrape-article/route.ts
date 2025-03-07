@@ -1,4 +1,3 @@
-import { getBrowser } from "@/lib/browser";
 import { publishers } from "@acme/core/publishers";
 import { db } from "@acme/db";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
@@ -38,9 +37,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
       );
     }
 
-    const browser = await getBrowser();
-    const metadata = await publisher.getArticleMetadata(link, browser);
-    await browser.close();
+    const metadata = await publisher.getArticleMetadata(link);
 
     if (metadata && metadata.title && metadata.content) {
       await db.post.create({

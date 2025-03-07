@@ -1,4 +1,3 @@
-import { getBrowser } from "@/lib/browser";
 import { publishers } from "@acme/core/publishers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -23,11 +22,7 @@ export const POST = async (req: NextRequest) => {
   }
 
   try {
-    const browser = await getBrowser();
-
-    const metadata = await publisher.getArticleMetadata(link, browser);
-
-    await browser.close();
+    const metadata = await publisher.getArticleMetadata(link);
 
     return NextResponse.json(metadata);
   } catch (error) {

@@ -11,13 +11,9 @@ const nextConfig = {
     ],
   },
   experimental: {
-    serverComponentsExternalPackages: [
-      "cheerio",
-      "puppeteer-core",
-      "@sparticuz/chromium",
-    ],
+    serverComponentsExternalPackages: ["cheerio"],
   },
-  transpilePackages: ["@acme/trpc", "@acme/atuh", "@acme/db"],
+  transpilePackages: ["@acme/trpc", "@acme/core", "@acme/atuh", "@acme/db"],
 };
 
 export default withContentlayer(nextConfig);

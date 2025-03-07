@@ -1,21 +1,5 @@
 import type { Publisher } from "../types";
 import {
-  getLatestArticleLinksFromIttefaqBangla,
-  getMetadataFromIttefaqBangla,
-} from "./ittefaq-bangla";
-import {
-  getLatestArticleLinksFromIttefaqEnglish,
-  getMetadataFromIttefaqEnglish,
-} from "./ittefaq-english";
-import {
-  getLatestArticleLinksFromKalerKanthoBangla,
-  getMetadataFromKalerKanthoBangla,
-} from "./kalerkantho-bangla";
-import {
-  getArticleMetadataFromNews24BDBangla,
-  getLatestArticleLinksFromNews24BDBangla,
-} from "./news24bd-bangla";
-import {
   getArticleMetadataFromPrathamAloBangla,
   getLatestArticleLinksFromPrathamAloBangla,
 } from "./prothomalo-bangla";
@@ -23,14 +7,6 @@ import {
   getArticleMetadataFromProthomAloEnglish,
   getLatestArticleLinksFromPrathamAloEnglish,
 } from "./prothomalo-english";
-import {
-  getLatestArticleLinksFromDhakatribuneEnglish,
-  getArticleMetadataFromDhakatribuneEnglish
-} from "./dhakatribune-english";
-import {
-  getLatestArticleLinksFromDhakatribuneBangla,
-  getArticleMetadataFromDhakatribuneBangla
-} from "./dhakatribune-bangla";
 
 export const publishers: Publisher[] = [
   {
@@ -51,33 +27,33 @@ export const publishers: Publisher[] = [
     getLatestArticleLinks: getLatestArticleLinksFromPrathamAloEnglish,
     getArticleMetadata: getArticleMetadataFromProthomAloEnglish,
   },
-  {
-    id: "ittefaq-bangla",
-    name: "দৈনিক ইত্তেফাক",
-    websiteUrl: "https://www.ittefaq.com.bd/",
-    countryCode: "BD",
-    language: "bn",
-    getLatestArticleLinks: getLatestArticleLinksFromIttefaqBangla,
-    getArticleMetadata: getMetadataFromIttefaqBangla,
-  },
-  {
-    id: "ittefaq-english",
-    name: "The Daily Ittefaq",
-    websiteUrl: "https://en.ittefaq.com.bd/",
-    countryCode: "BD",
-    language: "en",
-    getLatestArticleLinks: getLatestArticleLinksFromIttefaqEnglish,
-    getArticleMetadata: getMetadataFromIttefaqEnglish,
-  },
-  {
-    id: "kalerkantho-bangla",
-    name: "কালের কণ্ঠ",
-    websiteUrl: "https://www.kalerkantho.com",
-    countryCode: "BD",
-    language: "bn",
-    getLatestArticleLinks: getLatestArticleLinksFromKalerKanthoBangla,
-    getArticleMetadata: getMetadataFromKalerKanthoBangla,
-  },
+  // {
+  //   id: "ittefaq-bangla",
+  //   name: "দৈনিক ইত্তেফাক",
+  //   websiteUrl: "https://www.ittefaq.com.bd/",
+  //   countryCode: "BD",
+  //   language: "bn",
+  //   getLatestArticleLinks: getLatestArticleLinksFromIttefaqBangla,
+  //   getArticleMetadata: getMetadataFromIttefaqBangla,
+  // },
+  // {
+  //   id: "ittefaq-english",
+  //   name: "The Daily Ittefaq",
+  //   websiteUrl: "https://en.ittefaq.com.bd/",
+  //   countryCode: "BD",
+  //   language: "en",
+  //   getLatestArticleLinks: getLatestArticleLinksFromIttefaqEnglish,
+  //   getArticleMetadata: getMetadataFromIttefaqEnglish,
+  // },
+  // {
+  //   id: "kalerkantho-bangla",
+  //   name: "কালের কণ্ঠ",
+  //   websiteUrl: "https://www.kalerkantho.com",
+  //   countryCode: "BD",
+  //   language: "bn",
+  //   getLatestArticleLinks: getLatestArticleLinksFromKalerKanthoBangla,
+  //   getArticleMetadata: getMetadataFromKalerKanthoBangla,
+  // },
   // Has some issues
   // {
   //   id: "thedailystar-english",
@@ -98,31 +74,31 @@ export const publishers: Publisher[] = [
   //   getLatestArticleLinks: getLatestArticleLinksFromBD24LiveEnglish,
   //   getArticleMetadata: getArticleMetadataFromBD24LiveEnglish,
   // },
-  {
-    id: "news24bd-bangla",
-    name: "News24BD",
-    websiteUrl: "https://www.news24bd.tv",
-    countryCode: "BD",
-    language: "bn",
-    getLatestArticleLinks: getLatestArticleLinksFromNews24BDBangla,
-    getArticleMetadata: getArticleMetadataFromNews24BDBangla,
-  },
-  {
-    id: "dhakatribune-english",
-    name: "Dhaka Tribune",
-    websiteUrl: "https://www.dhakatribune.com",
-    countryCode: "BD",
-    language: "en",
-    getLatestArticleLinks: getLatestArticleLinksFromDhakatribuneEnglish,
-    getArticleMetadata: getArticleMetadataFromDhakatribuneEnglish,
-  },
-  {
-    id: "dhakatribune-bangla",
-    name: "Dhaka Tribune Bangla",
-    websiteUrl: "https://bangla.dhakatribune.com",
-    countryCode: "BD",
-    language: "bn",
-    getLatestArticleLinks: getLatestArticleLinksFromDhakatribuneBangla,
-    getArticleMetadata: getArticleMetadataFromDhakatribuneBangla,
-  },
+  // {
+  //   id: "news24bd-bangla",
+  //   name: "News24BD",
+  //   websiteUrl: "https://www.news24bd.tv",
+  //   countryCode: "BD",
+  //   language: "bn",
+  //   getLatestArticleLinks: getLatestArticleLinksFromNews24BDBangla,
+  //   getArticleMetadata: getArticleMetadataFromNews24BDBangla,
+  // },
+  // {
+  //   id: "dhakatribune-english",
+  //   name: "Dhaka Tribune",
+  //   websiteUrl: "https://www.dhakatribune.com",
+  //   countryCode: "BD",
+  //   language: "en",
+  //   getLatestArticleLinks: getLatestArticleLinksFromDhakatribuneEnglish,
+  //   getArticleMetadata: getArticleMetadataFromDhakatribuneEnglish,
+  // },
+  // {
+  //   id: "dhakatribune-bangla",
+  //   name: "Dhaka Tribune Bangla",
+  //   websiteUrl: "https://bangla.dhakatribune.com",
+  //   countryCode: "BD",
+  //   language: "bn",
+  //   getLatestArticleLinks: getLatestArticleLinksFromDhakatribuneBangla,
+  //   getArticleMetadata: getArticleMetadataFromDhakatribuneBangla,
+  // },
 ];
