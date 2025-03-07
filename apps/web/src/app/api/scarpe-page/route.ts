@@ -1,6 +1,7 @@
 import { getBrowser } from "@/lib/browser";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import randomUserAgent from "random-useragent";
 
 export const maxDuration = 300;
 
@@ -16,7 +17,9 @@ export const POST = async (req: NextRequest) => {
     const browser = await getBrowser();
     console.log("Browser Opened");
 
+    const userAgent = randomUserAgent.getRandom();
     const page = await browser.newPage();
+    await page.setUserAgent(userAgent);
     await page.goto(url, { waitUntil: "networkidle2" });
 
     const screenshot = await page.screenshot();

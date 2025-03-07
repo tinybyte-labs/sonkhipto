@@ -26,5 +26,9 @@ export const getBrowser = async (): Promise<Browser> => {
       process.env.CHROME_EXECUTABLE_PATH ?? (await chromium.executablePath()),
     args: chromeArgs,
     headless: true,
+    defaultViewport: {
+      width: 1280,
+      height: 800,
+    },
   });
 };
