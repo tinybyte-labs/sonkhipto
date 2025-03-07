@@ -1,5 +1,5 @@
 import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
-import { autoPageScroll } from "../utils/server/puppeteer";
+import { getPage } from "../utils/server/helpers";
 
 const baseUrl = "https://www.dhakatribune.com";
 
@@ -67,17 +67,13 @@ const categories = [
 ];
 
 export const getLatestArticleLinksFromDhakatribuneEnglish: GetLatestArticleLinksFn =
-  async (browser) => {
-    const page = await browser.newPage();
-    await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-    await page.setViewport({ width: 1200, height: 800 });
-    await autoPageScroll(page);
+  async () => {
+    const $ = await getPage(baseUrl);
 
-    const allLinks = await page.evaluate(() => {
-      return Array.from(document.getElementsByTagName("a")).map((a) => a.href);
-    });
-
-    await page.close();
+    const allLinks = $("a")
+      .toArray()
+      .map((el) => $(el).attr()?.["href"])
+      .filter((link) => !!link) as string[];
 
     const links: string[] = [];
 
@@ -105,53 +101,25 @@ export const getLatestArticleLinksFromDhakatribuneEnglish: GetLatestArticleLinks
   };
 
 export const getArticleMetadataFromDhakatribuneEnglish: GetArticleMetadataFn =
-  async (articleUrl, browser) => {
-    const page = await browser.newPage();
-    await page.goto(articleUrl, { waitUntil: "domcontentloaded" });
-    await page.setViewport({ width: 1080, height: 1024 });
-    const imgElement = await page.waitForSelector(
-      ".content_detail .featured_image span img",
-    );
+  async (articleUrl) => {
+    const url = new URL(articleUrl);
+    if (url.origin !== baseUrl) {
+      throw new Error("Invalid url");
+    }
 
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    const thumbnailUrl = await imgElement?.evaluate((el) => el.src);
+    const $ = await getPage(articleUrl);
 
-    const metadata = await page.evaluate(() => {
-      const title = (
-        document.querySelector(
-          ".content_detail h1.title",
-        ) as HTMLHeadElement | null
-      )?.textContent?.trim();
-
-      const pubDate = (
-        document.querySelector(
-          ".content_detail .time span.published_time",
-        ) as HTMLSpanElement | null
-      )?.getAttribute("content");
-
-      // const content = document
-      //   .querySelector(".story-content-wrapper .story-content > div:nth-child(2)")
-      //   ?.textContent?.trim();
-
-      const content = (
-        document.querySelector(
-          "meta[name='description']",
-        ) as HTMLMetaElement | null
-      )?.content?.trim();
-
-      return {
-        title,
-        content,
-        pubDate,
-      };
-    });
-
-    await page.close();
+    const title = $(".content_detail h1.title").text().trim();
+    const pubDate = $(".content_detail .time span.published_time")
+      .attr()
+      ?.["content"]?.trim();
+    const content = $("meta[name='description']").attr()?.["content"]?.trim();
+    const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
 
     return {
       thumbnailUrl,
-      title: metadata.title?.trim(),
-      content: metadata.content?.trim(),
-      publishedAt: metadata.pubDate ? new Date(metadata.pubDate) : null,
+      title,
+      content,
+      publishedAt: pubDate ? new Date(pubDate) : null,
     };
   };

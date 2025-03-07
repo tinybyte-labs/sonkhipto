@@ -87,14 +87,16 @@ const categories = [
 export const getLatestArticleLinksFromPrathamAloEnglish: GetLatestArticleLinksFn =
   async () => {
     const $ = await getPage(baseUrl);
+
     const allLinks = $("a")
       .toArray()
-      .map((el) => $(el).attr()?.["href"]);
+      .map((el) => $(el).attr()?.["href"])
+      .filter((link) => !!link) as string[];
 
     const links: string[] = [];
 
     for (const link of allLinks) {
-      if (!link || (!link.startsWith("/") && !link.startsWith(baseUrl))) {
+      if (!link.startsWith("/") && !link.startsWith(baseUrl)) {
         continue;
       }
 

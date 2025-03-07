@@ -1,5 +1,8 @@
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import type { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
-import { autoPageScroll } from "../utils/server/puppeteer";
+import { getPage } from "../utils/server/helpers";
+dayjs.extend(customParseFormat);
 
 const baseUrl = "https://www.thedailystar.net";
 const categories = [
@@ -34,21 +37,16 @@ const categories = [
 ];
 
 export const getLatestArticleLinksFromTheDailyStartEnglish: GetLatestArticleLinksFn =
-  async (browser) => {
-    const page = await browser.newPage();
-    // Make sure we waitUntil `documentloaded`
-    await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-    await page.setViewport({ width: 1200, height: 800 });
+  async () => {
+    const $ = await getPage(baseUrl);
 
-    // Auto scrolls down so the contents at the bottom could load before we pull all the links.
-    await autoPageScroll(page);
-
-    // Get all the links from the page
-    const allLinks = await page.evaluate(() => {
-      return Array.from(document.getElementsByTagName("a")).map((a) => a.href);
-    });
+    const allLinks = $("a")
+      .toArray()
+      .map((el) => $(el).attr()?.["href"])
+      .filter((link) => !!link) as string[];
 
     const links: string[] = [];
+
     for (const link of allLinks) {
       // Ignore any link which does not start with `baseUrl` or `/`.
       if (!link.startsWith("/") && !link.startsWith(baseUrl)) {
@@ -56,6 +54,11 @@ export const getLatestArticleLinksFromTheDailyStartEnglish: GetLatestArticleLink
       }
 
       const url = new URL(link, baseUrl);
+
+      if (url.pathname.startsWith("/multimedia")) {
+        continue;
+      }
+
       if (
         !categories.includes(url.pathname.slice(1)) &&
         !links.includes(url.href)
@@ -66,58 +69,31 @@ export const getLatestArticleLinksFromTheDailyStartEnglish: GetLatestArticleLink
         }
       }
     }
-    await page.close();
     return links;
   };
 
 export const getArticleMetadataFromTheDailyStartEnglish: GetArticleMetadataFn =
-  async (articleUrl, browser) => {
-    const page = await browser.newPage();
-    await page.goto(articleUrl, { waitUntil: "domcontentloaded" });
-    await page.setViewport({ width: 1080, height: 1024 });
+  async (articleUrl) => {
+    const url = new URL(articleUrl);
+    if (url.origin !== baseUrl) {
+      throw new Error("Invalid url");
+    }
 
-    // On prothomalo images loads after the document gets loaded. So We need to wait for the image load too.
-    const imgElement = await page.waitForSelector(".section-media img");
+    const $ = await getPage(articleUrl);
 
-    // Some extra delay to make sure the src get's applied correctly.
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    const thumbnailUrl = await imgElement?.evaluate((el) => el.src);
-
-    const metadata = await page.evaluate(() => {
-      const title = document
-        .querySelector("#inner-wrap .container .detailed-content h1")
-        ?.textContent?.trim();
-
-      const pubDate = (
-        document.querySelector(
-          "#inner-wrap .byline-wrapper .date",
-        ) as HTMLTimeElement | null
-      )?.textContent;
-
-      // For now we can get the description from page metadata. Will use the main article content and ai to generate summery soon.
-      // const content = document
-      //   .querySelector(".story-content-wrapper .story-content > div:nth-child(2)")
-      //   ?.textContent?.trim();
-
-      const content = (
-        document.querySelector(
-          "meta[name='description']",
-        ) as HTMLMetaElement | null
-      )?.content?.trim();
-
-      return {
-        title,
-        content,
-        pubDate,
-      };
-    });
+    const title = $("#inner-wrap .container .detailed-content h1")
+      .text()
+      .trim();
+    const pubDate = $("#inner-wrap .byline-wrapper .date").text()?.trim();
+    const content = $("meta[name='description']").attr()?.["content"]?.trim();
+    const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
 
     return {
       thumbnailUrl,
-      title: metadata.title?.trim(),
-      content: metadata.content?.trim(),
-      publishedAt: metadata.pubDate
-        ? new Date(metadata.pubDate.trim().split("Last update on:")[0]!.trim())
+      title,
+      content,
+      publishedAt: pubDate
+        ? new Date(pubDate.trim().split("Last update on:")[0]!.trim())
         : null,
     };
   };

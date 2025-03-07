@@ -1,8 +1,8 @@
-import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
-import { autoPageScroll } from "../utils/server/puppeteer";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
 import { bengaliMonthMap, convertBengaliDigits } from "../utils/helpers";
+import { getPage } from "../utils/server/helpers";
 
 dayjs.extend(customParseFormat);
 
@@ -37,17 +37,13 @@ const categories = [
 ];
 
 export const getLatestArticleLinksFromKalerKanthoBangla: GetLatestArticleLinksFn =
-  async (browser) => {
-    const page = await browser.newPage();
-    await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-    await page.setViewport({ width: 1200, height: 800 });
-    await autoPageScroll(page);
+  async () => {
+    const $ = await getPage(baseUrl);
 
-    const allLinks = await page.evaluate(() => {
-      return Array.from(document.getElementsByTagName("a")).map((a) => a.href);
-    });
-
-    await page.close();
+    const allLinks = $("a")
+      .toArray()
+      .map((el) => $(el).attr()?.["href"])
+      .filter((link) => !!link) as string[];
 
     const links: string[] = [];
 
@@ -77,51 +73,25 @@ export const getLatestArticleLinksFromKalerKanthoBangla: GetLatestArticleLinksFn
   };
 
 export const getMetadataFromKalerKanthoBangla: GetArticleMetadataFn = async (
-  articleLink,
-  browser,
+  articleUrl,
 ) => {
-  const page = await browser.newPage();
-  const url = new URL(articleLink, baseUrl);
-  await page.goto(url.href);
+  const url = new URL(articleUrl);
+  if (url.origin !== baseUrl) {
+    throw new Error("Invalid url");
+  }
 
-  const imgElement = await page.waitForSelector(".single_news .figure img");
-  const thumbnailUrl = await imgElement?.evaluate((el) => el.src);
+  const $ = await getPage(articleUrl);
 
-  const metadata = await page.evaluate(() => {
-    const title = document
-      .querySelector(".container .single_news h1")
-      ?.textContent?.trim();
-    const publishedDate = document
-      .querySelector(".container .single_news time")
-      ?.textContent?.trim();
-
-    //      const content = (
-    //       document.querySelector('#widget_322 .content_detail_outer .content_detail_content_outer article > div',
-    //     ) as HTMLMetaElement | null
-    //   )?.textContent?.trim();
-
-    const content = (
-      document.querySelector(
-        "meta[name='description']",
-      ) as HTMLMetaElement | null
-    )?.content?.trim();
-
-    return {
-      title,
-      content,
-      publishedDate,
-    };
-  });
-
-  await page.close();
+  const title = $(".container .single_news h1").text().trim();
+  const pubDate = $(".container .single_news time").text()?.trim();
+  const content = $("meta[name='description']").attr()?.["content"]?.trim();
+  const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
 
   return {
     thumbnailUrl,
-    publishedAt: metadata.publishedDate
-      ? getDateFromBanglaDateTime(metadata.publishedDate)
-      : null,
-    title: metadata.title?.trim(),
-    content: metadata.content?.trim(),
+    title,
+    content,
+    publishedAt: pubDate ? getDateFromBanglaDateTime(pubDate) : null,
   };
 };
 

@@ -1,5 +1,5 @@
 import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
-import { autoPageScroll } from "../utils/server/puppeteer";
+import { getPage } from "../utils/server/helpers";
 
 const baseUrl = "https://en.ittefaq.com.bd";
 
@@ -19,27 +19,13 @@ const categories = [
   "opinion",
 ];
 export const getLatestArticleLinksFromIttefaqEnglish: GetLatestArticleLinksFn =
-  async (browser) => {
-    const page = await browser.newPage();
-    await page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0",
-    );
+  async () => {
+    const $ = await getPage(baseUrl);
 
-    console.log("Page Created");
-    await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-    console.log("Page Loaded");
-    await page.setViewport({ width: 1200, height: 800 });
-    await autoPageScroll(page);
-    console.log("Page Scrolled");
-
-    const allLinks = await page.evaluate(() => {
-      return Array.from(document.getElementsByTagName("a")).map((a) => a.href);
-    });
-    console.log("Got All Links");
-    console.log(allLinks);
-
-    await page.close();
-    console.log("Page Closed");
+    const allLinks = $("a")
+      .toArray()
+      .map((el) => $(el).attr()?.["href"])
+      .filter((link) => !!link) as string[];
 
     let links: string[] = [];
 
@@ -65,57 +51,26 @@ export const getLatestArticleLinksFromIttefaqEnglish: GetLatestArticleLinksFn =
   };
 
 export const getMetadataFromIttefaqEnglish: GetArticleMetadataFn = async (
-  articleLink,
-  browser,
+  articleUrl,
 ) => {
-  const page = await browser.newPage();
-  const url = new URL(articleLink, baseUrl);
-  await page.goto(url.href);
-  const imgElement = await page.waitForSelector(
-    ".content_detail .detail_holder .featured_image img",
-  );
-  await new Promise((resolve) => setTimeout(resolve, 10));
-  //   Do not use srcset
-  const thumbnailUrl = await imgElement?.evaluate((el) => el.src);
+  const url = new URL(articleUrl);
+  if (url.origin !== baseUrl) {
+    throw new Error("Invalid url");
+  }
 
-  const metadata = await page.evaluate(() => {
-    const title = document
-      // Use simpler selector
-      .querySelector(".content_detail h1.title")
-      ?.textContent?.trim();
+  const $ = await getPage(articleUrl);
 
-    const pubDate = (
-      document.querySelector(
-        ".content_detail .detail_holder .time .tts_time",
-      ) as HTMLTimeElement | null
-    )
-      ?.getAttribute("content")
-      ?.trim();
-
-    //      const content = (
-    //       document.querySelector('#widget_322 .content_detail_outer .content_detail_content_outer article > div',
-    //     ) as HTMLMetaElement | null
-    //   )?.textContent?.trim();
-
-    const content = (
-      document.querySelector(
-        "meta[name='description']",
-      ) as HTMLMetaElement | null
-    )?.content?.trim();
-
-    return {
-      title,
-      content,
-      pubDate,
-    };
-  });
-
-  await page.close();
+  const title = $(".content_detail h1.title").text().trim();
+  const pubDate = $(".content_detail .detail_holder .time .tts_time")
+    .attr()
+    ?.["content"]?.trim();
+  const content = $("meta[name='description']").attr()?.["content"]?.trim();
+  const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
 
   return {
-    title: metadata.title?.trim(),
     thumbnailUrl,
-    content: metadata.content?.trim(),
-    publishedAt: metadata.pubDate ? new Date(metadata.pubDate) : null,
+    title,
+    content,
+    publishedAt: pubDate ? new Date(pubDate) : null,
   };
 };

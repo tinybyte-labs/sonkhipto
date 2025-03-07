@@ -1,5 +1,5 @@
 import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
-import { autoPageScroll } from "../utils/server/puppeteer";
+import { getPage } from "../utils/server/helpers";
 
 const baseUrl = "https://www.ittefaq.com.bd";
 const categories = [
@@ -28,17 +28,13 @@ const categories = [
 ];
 
 export const getLatestArticleLinksFromIttefaqBangla: GetLatestArticleLinksFn =
-  async (browser) => {
-    const page = await browser.newPage();
-    await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-    await page.setViewport({ width: 1200, height: 800 });
-    await autoPageScroll(page);
+  async () => {
+    const $ = await getPage(baseUrl);
 
-    const allLinks = await page.evaluate(() => {
-      return Array.from(document.getElementsByTagName("a")).map((a) => a.href);
-    });
-
-    await page.close();
+    const allLinks = $("a")
+      .toArray()
+      .map((el) => $(el).attr()?.["href"])
+      .filter((link) => !!link) as string[];
 
     const links: string[] = [];
 
@@ -64,56 +60,26 @@ export const getLatestArticleLinksFromIttefaqBangla: GetLatestArticleLinksFn =
   };
 
 export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (
-  articleLink,
-  browser,
+  articleUrl,
 ) => {
-  const page = await browser.newPage();
-  const url = new URL(articleLink, baseUrl);
-  await page.goto(url.href);
+  const url = new URL(articleUrl);
+  if (url.origin !== baseUrl) {
+    throw new Error("Invalid url");
+  }
 
-  const imgElement = await page.waitForSelector(
-    ".content_detail .detail_holder .featured_image img",
-  );
-  await new Promise((resolve) => setTimeout(resolve, 10));
-  const thumbnailUrl = await imgElement?.evaluate((el) => el.src);
+  const $ = await getPage(articleUrl);
 
-  const metadata = await page.evaluate(() => {
-    const title = document
-      .querySelector(".content_detail h1.title")
-      ?.textContent?.trim();
-
-    const pubDate = (
-      document.querySelector(
-        ".content_detail .detail_holder .time .tts_time",
-      ) as HTMLTimeElement | null
-    )
-      ?.getAttribute("content")
-      ?.trim();
-
-    //      const content = (
-    //       document.querySelector('#widget_322 .content_detail_outer .content_detail_content_outer article > div',
-    //     ) as HTMLMetaElement | null
-    //   )?.textContent?.trim();
-
-    const content = (
-      document.querySelector(
-        "meta[name='description']",
-      ) as HTMLMetaElement | null
-    )?.content?.trim();
-
-    return {
-      title,
-      content,
-      pubDate,
-    };
-  });
-
-  await page.close();
+  const title = $(".content_detail h1.title").text().trim();
+  const pubDate = $(".content_detail .detail_holder .time .tts_time")
+    .attr()
+    ?.["content"]?.trim();
+  const content = $("meta[name='description']").attr()?.["content"]?.trim();
+  const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
 
   return {
-    title: metadata.title?.trim(),
     thumbnailUrl,
-    content: metadata.content?.trim(),
-    publishedAt: metadata.pubDate ? new Date(metadata.pubDate) : null,
+    title,
+    content,
+    publishedAt: pubDate ? new Date(pubDate) : null,
   };
 };
