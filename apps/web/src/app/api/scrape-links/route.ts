@@ -2,8 +2,6 @@ import { publishers } from "@acme/core/publishers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-export const maxDuration = 300;
-
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
   const { publisherId } = await z

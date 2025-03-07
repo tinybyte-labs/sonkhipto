@@ -4,8 +4,6 @@ import { publishers } from "@acme/core/publishers";
 import { verifySignatureAppRouter } from "@upstash/qstash/dist/nextjs";
 import { NextResponse } from "next/server";
 
-export const maxDuration = 30;
-
 export const POST = verifySignatureAppRouter(async () => {
   await Promise.all(
     publishers.map((publisher) =>

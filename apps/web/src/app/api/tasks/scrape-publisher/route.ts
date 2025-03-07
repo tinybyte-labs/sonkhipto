@@ -6,8 +6,6 @@ import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-export const maxDuration = 60;
-
 export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   const body = await req.json();
   const { publisherId } = await z

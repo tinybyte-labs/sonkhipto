@@ -4,8 +4,6 @@ import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-export const maxDuration = 60;
-
 export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   const body = await req.json();
   const { link, publisherId } = await z
@@ -39,7 +37,13 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
 
     const metadata = await publisher.getArticleMetadata(link);
 
-    if (metadata && metadata.title && metadata.content) {
+    if (
+      metadata &&
+      metadata.title &&
+      metadata.content &&
+      metadata.publishedAt &&
+      metadata.thumbnailUrl
+    ) {
       await db.post.create({
         data: {
           sourceUrl: link,
