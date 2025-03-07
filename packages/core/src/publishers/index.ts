@@ -55,6 +55,7 @@ export const publishers: Publisher[] = [
     getLatestArticleLinks: getLatestArticleLinksFromPrathamAloEnglish,
     getArticleMetadata: getArticleMetadataFromProthomAloEnglish,
   },
+  // NEED TO FIX: Not working on production
   {
     id: "ittefaq-bangla",
     name: "দৈনিক ইত্তেফাক",
@@ -64,6 +65,7 @@ export const publishers: Publisher[] = [
     getLatestArticleLinks: getLatestArticleLinksFromIttefaqBangla,
     getArticleMetadata: getMetadataFromIttefaqBangla,
   },
+  // NEED TO FIX: Not working on production
   {
     id: "ittefaq-english",
     name: "The Daily Ittefaq",
@@ -73,6 +75,7 @@ export const publishers: Publisher[] = [
     getLatestArticleLinks: getLatestArticleLinksFromIttefaqEnglish,
     getArticleMetadata: getMetadataFromIttefaqEnglish,
   },
+  // NEED TO FIX: Not working on production
   {
     id: "kalerkantho-bangla",
     name: "কালের কণ্ঠ",
@@ -100,6 +103,7 @@ export const publishers: Publisher[] = [
     getLatestArticleLinks: getLatestArticleLinksFromBD24LiveEnglish,
     getArticleMetadata: getArticleMetadataFromBD24LiveEnglish,
   },
+  // NEED TO FIX: Not working on production
   {
     id: "dhakatribune-english",
     name: "Dhaka Tribune",
@@ -109,6 +113,7 @@ export const publishers: Publisher[] = [
     getLatestArticleLinks: getLatestArticleLinksFromDhakatribuneEnglish,
     getArticleMetadata: getArticleMetadataFromDhakatribuneEnglish,
   },
+  // NEED TO FIX: Not working on production
   {
     id: "dhakatribune-bangla",
     name: "Dhaka Tribune Bangla",
