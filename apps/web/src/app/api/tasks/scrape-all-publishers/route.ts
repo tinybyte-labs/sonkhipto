@@ -1,6 +1,6 @@
 import { BASE_URL } from "@/constants";
 import { qstashClient } from "@/lib/qstash-client";
-import { publishers } from "@/publishers/publishers";
+import { publishers } from "@acme/core/publishers";
 import { verifySignatureAppRouter } from "@upstash/qstash/dist/nextjs";
 import { NextResponse } from "next/server";
 

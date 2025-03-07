@@ -1,10 +1,12 @@
 {
-  "name": "@acme/db",
+  "name": "@acme/core",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    "./publishers": "./src/publishers/index.ts",
+    "./types": "./src/types/index.ts",
+    "./utils/*": "./src/utils/*"
   },
   "scripts": {
     "clean": "git clean -xdf dist .turbo node_modules",
@@ -14,11 +16,10 @@
     "generate": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^5.9.1"
+    "puppeteer-core": "24.2.1"
   },
   "devDependencies": {
     "@acme/typescript-config": "workspace:*",
-    "prisma": "^5.9.1",
     "@types/node": "^20.11.13",
     "esbuild": "^0.20.0",
     "eslint": "^8.56.0",

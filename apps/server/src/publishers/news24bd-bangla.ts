@@ -93,11 +93,11 @@ export const getArticleMetadataFromNews24BDBangla: GetArticleMetadataFn =
 const getDateFromBanglaDateTime = (banglaDate: string) => {
   console.log(banglaDate);
   // Extract Bengali parts
-  const parts: string[] = banglaDate.split(": ")[1].split(", ");
-  const day: string = convertBengaliDigits(parts[1].split(" ")[0]); // ২৮ -> 28
-  const month: string | undefined = bengaliMonthMap[parts[1].split(" ")[1]]; // ফেব্রুয়ারি -> February
-  const year: string = convertBengaliDigits(parts[2]); // ২০২৫ -> 2025
-  const time: string = convertBengaliDigits(parts[3]); // ০০:৩৫ -> 00:35
+  const parts: string[] = banglaDate.split(": ")[1]!.split(", ");
+  const day: string = convertBengaliDigits(parts[1]!.split(" ")[0]!); // ২৮ -> 28
+  const month: string | undefined = bengaliMonthMap[parts[1]!.split(" ")[1]!]; // ফেব্রুয়ারি -> February
+  const year: string = convertBengaliDigits(parts[2]!); // ২০২৫ -> 2025
+  const time: string = convertBengaliDigits(parts[3]!); // ০০:৩৫ -> 00:35
 
   if (!month) {
     throw new Error("Invalid month name in Bengali date string.");

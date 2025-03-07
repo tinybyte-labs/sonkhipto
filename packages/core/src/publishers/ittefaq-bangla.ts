@@ -1,46 +1,46 @@
-import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "@/types";
-import { autoPageScroll } from "@/utils/server/puppeteer";
-const baseUrl = "https://en.ittefaq.com.bd";
+import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
+import { autoPageScroll } from "../utils/server/puppeteer";
 
+const baseUrl = "https://www.ittefaq.com.bd";
 const categories = [
-  "bangladesh",
+  "national",
   "politics",
-  "world",
+  "country",
+  "capital",
   "sports",
-  "entertainment",
-  "climate-change",
-  "art-and-culture",
-  "lifestyle",
-  "youth",
   "business",
-  "tech",
-  "viral-news",
   "opinion",
+  "entertainment",
+  "law-and-court",
+  "education",
+  "lifestyle",
+  "news",
+  "environment",
+  "world-news",
+  "tech",
+  "jobs",
+  "projonmo",
+  "probash",
+  "campus",
+  "literature",
+  "religion",
+  "editorial",
 ];
-export const getLatestArticleLinksFromIttefaqEnglish: GetLatestArticleLinksFn =
+
+export const getLatestArticleLinksFromIttefaqBangla: GetLatestArticleLinksFn =
   async (browser) => {
     const page = await browser.newPage();
-    await page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0",
-    );
-
-    console.log("Page Created");
     await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-    console.log("Page Loaded");
     await page.setViewport({ width: 1200, height: 800 });
     await autoPageScroll(page);
-    console.log("Page Scrolled");
 
     const allLinks = await page.evaluate(() => {
       return Array.from(document.getElementsByTagName("a")).map((a) => a.href);
     });
-    console.log("Got All Links");
-    console.log(allLinks);
 
     await page.close();
-    console.log("Page Closed");
 
-    let links: string[] = [];
+    const links: string[] = [];
 
     for (const link of allLinks) {
       if (!link.startsWith("/") && !link.startsWith(baseUrl)) {
@@ -52,7 +52,9 @@ export const getLatestArticleLinksFromIttefaqEnglish: GetLatestArticleLinksFn =
         !categories.includes(url.pathname.slice(1)) &&
         !links.includes(url.href)
       ) {
-        if (/^-?[\d.]+(?:e-?\d+)?$/.test(url.pathname.slice(1).split("/")[0])) {
+        if (
+          /^-?[\d.]+(?:e-?\d+)?$/.test(url.pathname.slice(1).split("/")[0]!)
+        ) {
           links.push(url.href);
         }
       }
@@ -61,23 +63,22 @@ export const getLatestArticleLinksFromIttefaqEnglish: GetLatestArticleLinksFn =
     return links;
   };
 
-export const getMetadataFromIttefaqEnglish: GetArticleMetadataFn = async (
+export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (
   articleLink,
   browser,
 ) => {
   const page = await browser.newPage();
   const url = new URL(articleLink, baseUrl);
   await page.goto(url.href);
+
   const imgElement = await page.waitForSelector(
     ".content_detail .detail_holder .featured_image img",
   );
   await new Promise((resolve) => setTimeout(resolve, 10));
-  //   Do not use srcset
   const thumbnailUrl = await imgElement?.evaluate((el) => el.src);
 
   const metadata = await page.evaluate(() => {
     const title = document
-      // Use simpler selector
       .querySelector(".content_detail h1.title")
       ?.textContent?.trim();
 

@@ -1,5 +1,5 @@
-import type { GetArticleMetadataFn, GetLatestArticleLinksFn } from "@/types";
-import { autoPageScroll } from "@/utils/server/puppeteer";
+import type { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
+import { autoPageScroll } from "../utils/server/puppeteer";
 
 const baseUrl = "https://www.prothomalo.com";
 

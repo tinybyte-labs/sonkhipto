@@ -5,6 +5,7 @@
     "build": "pnpm db:generate && pnpm db:push && turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
+    "clean": "turbo clean && git clean -xdf .turbo node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "studio": "pnpm -F db studio",
     "db:studio": "pnpm -F db studio",

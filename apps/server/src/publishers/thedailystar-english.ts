@@ -61,7 +61,7 @@ export const getLatestArticleLinksFromTheDailyStartEnglish: GetLatestArticleLink
         !links.includes(url.href)
       ) {
         const splitpath = url.pathname.slice(1).split("/");
-        if (/^[a-z0-9-]+-\d+$/.test(splitpath[splitpath.length - 1])) {
+        if (/^[a-z0-9-]+-\d+$/.test(splitpath[splitpath.length - 1]!)) {
           links.push(url.href);
         }
       }
@@ -117,7 +117,7 @@ export const getArticleMetadataFromTheDailyStartEnglish: GetArticleMetadataFn =
       title: metadata.title?.trim(),
       content: metadata.content?.trim(),
       publishedAt: metadata.pubDate
-        ? new Date(metadata.pubDate.trim().split("Last update on:")[0].trim())
+        ? new Date(metadata.pubDate.trim().split("Last update on:")[0]!.trim())
         : null,
     };
   };

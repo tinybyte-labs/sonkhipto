@@ -1,5 +1,5 @@
 import { getBrowser } from "@/lib/browser";
-import { publishers } from "@/publishers/publishers";
+import { publishers } from "@acme/core/publishers";
 import { db } from "@acme/db";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
 import { NextRequest, NextResponse } from "next/server";

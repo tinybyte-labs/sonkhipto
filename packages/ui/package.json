@@ -2,14 +2,14 @@
   "name": "@acme/ui",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "exports": {
     "./button": "./src/button.tsx",
     "./card": "./src/card.tsx",
     "./code": "./src/code.tsx"
   },
   "scripts": {
-    "lint": "eslint . --max-warnings 0",
-    "generate:component": "turbo gen react-component"
+    "clean": "git clean -xdf dist .turbo node_modules"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

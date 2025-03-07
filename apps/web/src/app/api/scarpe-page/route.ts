@@ -1,5 +1,4 @@
 import { getBrowser } from "@/lib/browser";
-import { publishers } from "@acme/core/publishers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -7,36 +6,27 @@ export const maxDuration = 300;
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
-  const { publisherId } = await z
+  const { url } = await z
     .object({
-      publisherId: z.string(),
+      url: z.string().url(),
     })
     .parseAsync(body);
 
-  console.log({ publisherId });
-
-  const publisher = publishers.find(
-    (publisher) => publisher.id === publisherId,
-  );
-
-  if (!publisher) {
-    return NextResponse.json("Publisher not found!", { status: 404 });
-  }
-
   try {
     const browser = await getBrowser();
-    console.log("Browser launched");
+    console.log("Browser Opened");
 
-    const links = await publisher.getLatestArticleLinks(browser);
+    const page = await browser.newPage();
+    await page.goto(url, { waitUntil: "networkidle2" });
 
-    console.log({ linkCount: links.length });
+    const screenshot = await page.screenshot();
+    console.log("Took screenshot");
 
     await browser.close();
-    console.log("Browser closed");
+    console.log("Browser Closed");
 
-    return NextResponse.json({
-      links,
-      total: links.length,
+    return new NextResponse(screenshot, {
+      headers: { "Content-Type": "image/jpeg; charset=UTF-8" },
     });
   } catch (error) {
     console.error(`Failed to scrape posts`, error);

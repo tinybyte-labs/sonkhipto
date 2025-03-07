@@ -1,72 +1,90 @@
-import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "@/types";
-import { autoPageScroll } from "@/utils/server/puppeteer";
+import type { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
+import { autoPageScroll } from "../utils/server/puppeteer";
 
-const baseUrl = "https://www.dhakatribune.com";
+const baseUrl = "https://en.prothomalo.com";
 
 const categories = [
+  // bangladesh
   "bangladesh",
-  "bangladesh/dhaka",
-  "bangladesh/education",
-  "bangladesh/election",
-  "bangladesh/foreign-affairs",
-  "bangladesh/nation",
   "bangladesh/politics",
-  "bangladesh/government-affairs",
-  "bangladesh/crime",
-  "bangladesh/laws-rights",
+  "bangladesh/accident",
+  "bangladesh/good-day-bangladesh",
+  "bangladesh/crime-and-law",
+  "bangladesh/government",
+  "bangladesh/city",
+  "bangladesh/local-news",
+  "bangladesh/parliament",
+  "bangladesh/bangladesh-in-world-media",
+  "bangladesh/roundtable",
 
+  // international
+  "international",
+  "international/asia",
+  "international/europe",
+  "international/americas",
+  "international/middle-east",
+  "international/india",
+  "international/china",
+  "international/africa",
+  "international/australia",
+  "international/south-asia",
+
+  // sports
+  "sports",
+  "sports/cricket",
+  "sports/football",
+  "sports/local-sports",
+
+  // business,
   "business",
-  "business/economy",
-  "business/banks",
-  "business/commerce",
-  "business/stock",
-  "business/real-estate",
+  "business/local",
+  "business/global",
+  "topic/national-budget-2024-25",
 
-  "world",
-  "world/asia",
-  "world/south-asia",
-  "world/africa",
-  "world/middle-east",
-  "world/europe",
-  "world/north-america",
-
-  "sport",
-  "sport/cricket",
-  "sport/football",
-  "sport/tennis",
-  "sport/athletics",
-  "sport/formula-one",
-  "sport/other-sports",
-
+  // opinion
   "opinion",
-  "opinion/op-ed",
   "opinion/editorial",
-  "opinion/longform",
+  "opinion/interview",
+  "opinion/op-ed",
 
-  "feature",
+  // youth
+  "youth",
+  "youth/education",
+  "youth/employment",
 
-  "showtime",
+  // entertainment
+  "entertainment",
+  "entertainment/music",
+  "entertainment/movies",
+  "entertainment/television",
+  "entertainment/ott",
 
-  "financial-markets",
+  // lifestyle
+  "lifestyle",
+  "lifestyle/fashion",
+  "lifestyle/health",
+  "lifestyle/beauty",
+  "lifestyle/travel",
 
-  "others",
+  // environment
+  "environment",
+  "environment/climate-change",
+  "environment/pollution",
 
-  "tribune-z",
+  // science-technology
+  "science-technology",
+  "science-technology/gadgets",
+  "science-technology/social-media",
+  "science-technology/it",
+  "science-technology/science",
 
-  "magazine",
-
-  "science-technology-environment",
-
-  "around-the-web",
-
-  "seminars-and-interviews",
-
-  "brief",
-
-  "photo-gallery",
+  // corporate
+  "corporate",
+  "corporate/local",
+  "corporate/global",
 ];
 
-export const getLatestArticleLinksFromDhakatribuneEnglish: GetLatestArticleLinksFn =
+export const getLatestArticleLinksFromPrathamAloEnglish: GetLatestArticleLinksFn =
   async (browser) => {
     const page = await browser.newPage();
     await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
@@ -101,33 +119,32 @@ export const getLatestArticleLinksFromDhakatribuneEnglish: GetLatestArticleLinks
         }
       }
     }
+
     return links;
   };
 
-export const getArticleMetadataFromDhakatribuneEnglish: GetArticleMetadataFn =
+export const getArticleMetadataFromProthomAloEnglish: GetArticleMetadataFn =
   async (articleUrl, browser) => {
     const page = await browser.newPage();
     await page.goto(articleUrl, { waitUntil: "domcontentloaded" });
     await page.setViewport({ width: 1080, height: 1024 });
-    const imgElement = await page.waitForSelector(
-      ".content_detail .featured_image span img",
-    );
 
+    const imgElement = await page.waitForSelector(
+      ".story-content-wrapper .story-content .story-page-hero figure picture img.image",
+    );
     await new Promise((resolve) => setTimeout(resolve, 10));
     const thumbnailUrl = await imgElement?.evaluate((el) => el.src);
 
     const metadata = await page.evaluate(() => {
-      const title = (
-        document.querySelector(
-          ".content_detail h1.title",
-        ) as HTMLHeadElement | null
-      )?.textContent?.trim();
+      const title = document
+        .querySelector(".story-content-wrapper .story-head h1")
+        ?.textContent?.trim();
 
       const pubDate = (
         document.querySelector(
-          ".content_detail .time span.published_time",
-        ) as HTMLSpanElement | null
-      )?.getAttribute("content");
+          ".story-content-wrapper .story-head .story-metadata-wrapper time",
+        ) as HTMLTimeElement | null
+      )?.dateTime;
 
       // const content = document
       //   .querySelector(".story-content-wrapper .story-content > div:nth-child(2)")

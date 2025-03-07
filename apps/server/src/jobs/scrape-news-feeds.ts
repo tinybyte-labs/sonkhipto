@@ -62,7 +62,7 @@ const scrapePublisherFeed = async (publisher: NewsPublisher) => {
 
   for (let i = 0; i < chunks.length; i++) {
     try {
-      const chunk = chunks[i];
+      const chunk = chunks[i]!;
       const results = await Promise.allSettled(chunk.map(scrapeFeedItem));
       results.forEach((result) => {
         if (result.status === "fulfilled") {
@@ -89,7 +89,7 @@ const startScrapingNewsFeeds = async () => {
     const data: Prisma.PostCreateInput[] = [];
 
     for (let i = 0; i < newsPublishers.length; i++) {
-      const publisher = newsPublishers[i];
+      const publisher = newsPublishers[i]!;
       try {
         console.log(`${publisher.url} - SCRAPE STARTED`);
         const newPosts = await scrapePublisherFeed(publisher);

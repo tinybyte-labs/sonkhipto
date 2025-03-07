@@ -1,17 +1,13 @@
 {
   "name": "@acme/trpc",
-  "version": "1.0.0",
-  "description": "",
-  "type": "module",
+  "version": "0.0.0",
   "private": true,
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "main": "./dist/index.js",
-  "types": "./src/index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "pnpm build --watch"
+    "clean": "git clean -xdf dist .turbo node_modules"
   },
   "dependencies": {
     "@acme/auth": "workspace:*",

@@ -53,7 +53,9 @@ export const getLatestArticleLinksFromIttefaqEnglish: GetLatestArticleLinksFn =
         !categories.includes(url.pathname.slice(1)) &&
         !links.includes(url.href)
       ) {
-        if (/^-?[\d.]+(?:e-?\d+)?$/.test(url.pathname.slice(1).split("/")[0])) {
+        if (
+          /^-?[\d.]+(?:e-?\d+)?$/.test(url.pathname.slice(1).split("/")[0]!)
+        ) {
           links.push(url.href);
         }
       }

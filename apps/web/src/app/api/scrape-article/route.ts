@@ -1,5 +1,5 @@
 import { getBrowser } from "@/lib/browser";
-import { publishers } from "@/publishers/publishers";
+import { publishers } from "@acme/core/publishers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
