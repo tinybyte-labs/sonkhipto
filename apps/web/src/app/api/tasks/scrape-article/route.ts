@@ -45,20 +45,29 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
       metadata.publishedAt &&
       metadata.thumbnailUrl
     ) {
-      const content = await summerizeDescription(metadata.content);
+      const { content, category } = await summerizeDescription(metadata.content);
+      const findCategory = await db.category.findFirst({ where: { name: category } });
 
-      await db.post.create({
+      const post = await db.post.create({
         data: {
           sourceUrl: link,
           imageUrl: metadata.thumbnailUrl,
           title: metadata.title,
-          content,
+          content: content,
           publishedAt: metadata.publishedAt ?? new Date(),
           language: publisher.language,
           countryCode: publisher.countryCode,
           sourceName: publisher.name,
         },
       });
+      if (findCategory) {
+        await db.postCategory.create({
+          data: {
+            categoryId: findCategory.id,
+            postId: post.id
+          }
+        })
+      }
       return NextResponse.json({ message: "Post created" });
     }
 
