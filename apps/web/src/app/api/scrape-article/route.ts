@@ -1,3 +1,4 @@
+import { summerizeDescription } from "@/utils/ai-helper";
 import { publishers } from "@acme/core/publishers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -21,8 +22,18 @@ export const POST = async (req: NextRequest) => {
 
   try {
     const metadata = await publisher.getArticleMetadata(link);
+    if (
+      !metadata ||
+      !metadata.content ||
+      !metadata.title ||
+      !metadata.thumbnailUrl
+    ) {
+      throw new Error("Invalid metadata");
+    }
 
-    return NextResponse.json(metadata);
+    const content = await summerizeDescription(metadata.content);
+
+    return NextResponse.json({ ...metadata, content });
   } catch (error) {
     console.error(`Failed to scrape posts`, error);
     return NextResponse.json(
