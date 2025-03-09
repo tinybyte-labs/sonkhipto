@@ -66,11 +66,11 @@ model Post {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   publishedAt DateTime?
-  title       String    @db.VarChar(100)
+  title       String
   content     String
   authorId    String?   @db.Uuid
   imageUrl    String?
-  sourceName  String    @db.VarChar(100)
+  sourceName  String
   sourceUrl   String    @unique
   language    String    @db.VarChar(6)
   countryCode String    @db.VarChar(6)
