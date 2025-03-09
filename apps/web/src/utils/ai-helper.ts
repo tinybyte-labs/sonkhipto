@@ -1,25 +1,34 @@
 "use server";
+import { allCategories } from "@/constants";
 import { openai } from "@ai-sdk/openai";
-import { generateText } from "ai";
+import { generateObject } from "ai";
+import { z } from 'zod'
 
-export const summerizeDescription = async (text: string): Promise<string> => {
+export const summerizeDescription = async (text: string): Promise<{
+  content: string;
+  category: string;
+}> => {
   try {
-    const summeryGen = await generateText({
+    const summeryGen = await generateObject({
       model: openai("gpt-4o-mini"),
+      output: 'object',
+
+      schema: z.object({
+        content: z.string(),
+        category: z.string()
+      }),
       messages: [
         {
           role: "system",
           content:
-            "You are a helpful AI assistant that summarizes articles under 400 characters. The end summarized article should be in the same language as the main article.",
+            `You are a helpful AI assistant that summarizes articles under 400 characters. The end summarized article should be in the same language as the main article. And also by analyzing the description you have to define the category from ${allCategories} array. `,
         },
         { role: "user", content: `Article:\n\n ${text}` },
       ],
     });
-
-    const result = await summeryGen.text;
-    return result;
+    return { ...summeryGen.object };
   } catch (error: any) {
     console.log(error.message);
-    return error.message;
+    throw new Error(error)
   }
 };
