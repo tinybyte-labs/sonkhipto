@@ -22,7 +22,16 @@ export const POST = async (req: NextRequest) => {
 
   try {
     const metadata = await publisher.getArticleMetadata(link);
-    const content = await summerizeDescription(metadata?.content)
+    if (
+      !metadata ||
+      !metadata.content ||
+      !metadata.title ||
+      !metadata.thumbnailUrl
+    ) {
+      throw new Error("Invalid metadata");
+    }
+
+    const content = await summerizeDescription(metadata.content);
 
     return NextResponse.json({ ...metadata, content });
   } catch (error) {

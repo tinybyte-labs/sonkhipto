@@ -67,7 +67,7 @@ model Post {
   updatedAt   DateTime  @updatedAt
   publishedAt DateTime?
   title       String    @db.VarChar(100)
-  content     String    @db.VarChar(500)
+  content     String
   authorId    String?   @db.Uuid
   imageUrl    String?
   sourceName  String    @db.VarChar(100)

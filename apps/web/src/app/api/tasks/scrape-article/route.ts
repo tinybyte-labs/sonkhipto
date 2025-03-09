@@ -1,3 +1,4 @@
+import { summerizeDescription } from "@/utils/ai-helper";
 import { publishers } from "@acme/core/publishers";
 import { db } from "@acme/db";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
@@ -44,12 +45,14 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
       metadata.publishedAt &&
       metadata.thumbnailUrl
     ) {
+      const content = await summerizeDescription(metadata.content);
+
       await db.post.create({
         data: {
           sourceUrl: link,
           imageUrl: metadata.thumbnailUrl,
           title: metadata.title,
-          content: metadata.content,
+          content,
           publishedAt: metadata.publishedAt ?? new Date(),
           language: publisher.language,
           countryCode: publisher.countryCode,
