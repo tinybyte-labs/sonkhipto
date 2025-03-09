@@ -73,8 +73,14 @@ export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (
   const pubDate = $(".content_detail .detail_holder .time .tts_time")
     .attr()
     ?.["content"]?.trim();
-  const content = $("meta[name='description']").attr()?.["content"]?.trim();
   const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
+
+  const paragraphArr: string[] = []
+  $(".jw_article_body").each((_, el) => {
+    paragraphArr.push($(el).text().trim())
+  })
+
+  const content = paragraphArr.join()
 
   return {
     thumbnailUrl,

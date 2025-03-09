@@ -65,8 +65,14 @@ export const getArticleMetadataFromDhakatribuneBangla: GetArticleMetadataFn =
     const pubDate = $(".content_detail .time span.published_time")
       .attr()
       ?.["content"]?.trim();
-    const content = $("meta[name='description']").attr()?.["content"]?.trim();
+
     const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
+
+    const paragraphArr: string[] = []
+    $(".jw_article_body p").each((_, el) => {
+      paragraphArr.push($(el).text().trim())
+    })
+    const content = paragraphArr.join()
 
     return {
       thumbnailUrl,

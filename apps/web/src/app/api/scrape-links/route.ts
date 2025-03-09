@@ -30,10 +30,10 @@ export const POST = async (req: NextRequest) => {
       total: links.length,
     });
   } catch (error) {
-    console.error(`Failed to scrape posts`, error);
+    console.error(`Failed to scrape links`, error);
     return NextResponse.json(
       {
-        message: `Failed to scrape posts`,
+        message: `Failed to scrape links`,
         error,
       },
       {

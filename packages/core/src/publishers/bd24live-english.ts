@@ -46,8 +46,13 @@ export const getArticleMetadataFromBD24LiveEnglish: GetArticleMetadataFn =
     const pubDate = $(".header-standard .post-box-meta-single time")
       .attr()
       ?.["datetime"]?.trim();
-    const content = $("meta[name='description']").attr()?.["content"]?.trim();
     const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
+
+    const paragraphArr: string[] = []
+    $("#penci-post-entry-inner p").each((_, el) => {
+      paragraphArr.push($(el).text().trim())
+    })
+    const content = paragraphArr.join()
 
     return {
       thumbnailUrl,

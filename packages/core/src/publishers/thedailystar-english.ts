@@ -84,16 +84,22 @@ export const getArticleMetadataFromTheDailyStartEnglish: GetArticleMetadataFn =
     const title = $("#inner-wrap .container .detailed-content h1")
       .text()
       .trim();
-    const pubDate = $("#inner-wrap .byline-wrapper .date").text()?.trim();
-    const content = $("meta[name='description']").attr()?.["content"]?.trim();
+
     const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
+
+    const pubDate = $("#inner-wrap .byline-wrapper .date").text()?.trim();
+
+    const paragraphArr: string[] = []
+    $(".article-section .clearfix p").each((_, el) => {
+      paragraphArr.push($(el).text().trim())
+    })
+    const content = paragraphArr.join()
 
     return {
       thumbnailUrl,
       title,
       content,
       publishedAt: pubDate
-        ? new Date(pubDate.trim().split("Last update on:")[0]!.trim())
-        : null,
+        ? new Date(pubDate.trim().split("Last update on:")[0]!.trim()) : null,
     };
   };
