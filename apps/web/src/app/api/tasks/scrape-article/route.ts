@@ -38,13 +38,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
 
     const metadata = await publisher.getArticleMetadata(link);
 
-    if (
-      metadata &&
-      metadata.title &&
-      metadata.content &&
-      metadata.publishedAt &&
-      metadata.thumbnailUrl
-    ) {
+    if (metadata && metadata.title && metadata.content) {
       const { content, category } = await summerizeDescription(
         metadata.content,
       );
