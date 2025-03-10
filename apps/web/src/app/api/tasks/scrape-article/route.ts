@@ -39,12 +39,9 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
     const metadata = await publisher.getArticleMetadata(link);
 
     if (metadata && metadata.title && metadata.content) {
-      const { content, category } = await summerizeDescription(
+      const { content, category: categroyName } = await summerizeDescription(
         metadata.content,
       );
-      const findCategory = await db.category.findFirst({
-        where: { name: category },
-      });
 
       const post = await db.post.create({
         data: {
@@ -58,24 +55,25 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
           sourceName: publisher.name,
         },
       });
-      if (findCategory) {
-        await db.postCategory.create({
-          data: {
-            categoryId: findCategory.id,
-            postId: post.id,
-          },
-        });
-      } else {
-        const newCategory = await db.category.create({
-          data: { name: category },
-        });
-        await db.postCategory.create({
-          data: {
-            categoryId: newCategory.id,
-            postId: post.id,
-          },
+
+      let category = await db.category.findFirst({
+        where: { name: categroyName },
+        select: { id: true },
+      });
+
+      if (!category) {
+        category = await db.category.create({
+          data: { name: categroyName },
+          select: { id: true },
         });
       }
+
+      await db.postCategory.create({
+        data: {
+          categoryId: category.id,
+          postId: post.id,
+        },
+      });
       return NextResponse.json({ message: "Post created" });
     }
 
