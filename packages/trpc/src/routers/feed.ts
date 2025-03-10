@@ -71,6 +71,7 @@ export const feedRouter = router({
           PostBookmark: {
             where: { userId: opts.ctx.user.id },
           },
+          PostCategory: true,
           _count: { select: { FavoritePost: true, PostBookmark: true } },
         },
         where: {

@@ -53,7 +53,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
           sourceUrl: link,
           imageUrl: metadata.thumbnailUrl,
           title: metadata.title,
-          content: content,
+          content,
           publishedAt: metadata.publishedAt ?? new Date(),
           language: publisher.language,
           countryCode: publisher.countryCode,
@@ -64,6 +64,14 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
         await db.postCategory.create({
           data: {
             categoryId: findCategory.id,
+            postId: post.id
+          }
+        })
+      } else {
+        const newCategory = await db.category.create({ data: { name: category } })
+        await db.postCategory.create({
+          data: {
+            categoryId: newCategory.id,
             postId: post.id
           }
         })

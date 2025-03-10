@@ -1,4 +1,4 @@
-import { allCategories, BASE_URL } from "@/constants";
+import { BASE_URL } from "@/constants";
 import { qstashClient } from "@/lib/qstash-client";
 import { publishers } from "@acme/core/publishers";
 import { db } from "@acme/db";
@@ -47,15 +47,6 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
         }),
       ),
     );
-
-    // for category generation
-    for (let i = 0; i < allCategories.length; i++) {
-      const category = allCategories[i];
-      const exist = await db.category.findFirst({ where: { name: category } })
-      if (!exist) {
-        await db.category.create({ data: { name: category } })
-      }
-    }
 
     return NextResponse.json({
       message: `Total ${uniqueLinks.length} links sent to scrape`,
