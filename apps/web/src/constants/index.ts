@@ -82,5 +82,5 @@ export const allCategories: string[] = [
   "viral",
   "it",
   "holiday",
-  "roundtable"
+  "roundtable",
 ];

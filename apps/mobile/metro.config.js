@@ -1,10 +1,10 @@
 // Learn more: https://docs.expo.dev/guides/monorepos/
 const { getDefaultConfig } = require("expo/metro-config");
 const { FileStore } = require("metro-cache");
-
 const path = require("path");
 
 module.exports = withTurborepoManagedCache(
+  // eslint-disable-next-line no-undef
   withMonorepoPaths(getDefaultConfig(__dirname)),
 );
 
@@ -17,6 +17,7 @@ module.exports = withTurborepoManagedCache(
  * @returns {import('expo/metro-config').MetroConfig}
  */
 function withMonorepoPaths(config) {
+  // eslint-disable-next-line no-undef
   const projectRoot = __dirname;
   const workspaceRoot = path.resolve(projectRoot, "../..");
 
@@ -43,6 +44,7 @@ function withMonorepoPaths(config) {
  */
 function withTurborepoManagedCache(config) {
   config.cacheStores = [
+    // eslint-disable-next-line no-undef
     new FileStore({ root: path.join(__dirname, "node_modules/.cache/metro") }),
   ];
   return config;

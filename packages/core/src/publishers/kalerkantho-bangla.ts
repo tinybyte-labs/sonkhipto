@@ -87,11 +87,11 @@ export const getMetadataFromKalerKanthoBangla: GetArticleMetadataFn = async (
 
   const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
 
-  const paragraphArr: string[] = []
+  const paragraphArr: string[] = [];
   $(".newsArticle article").each((_, el) => {
-    paragraphArr.push($(el).text().trim())
-  })
-  const content = paragraphArr.join()
+    paragraphArr.push($(el).text().trim());
+  });
+  const content = paragraphArr.join();
 
   return {
     thumbnailUrl,

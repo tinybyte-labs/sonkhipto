@@ -184,11 +184,11 @@ export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
       ".story-content-wrapper .story-head .story-metadata-wrapper time",
     ).attr()?.["datetime"];
 
-    const paragraphArr: string[] = []
+    const paragraphArr: string[] = [];
     $(".story-element .story-element-text").each((_, el) => {
-      paragraphArr.push($(el).text().trim())
-    })
-    const content = paragraphArr.join()
+      paragraphArr.push($(el).text().trim());
+    });
+    const content = paragraphArr.join();
 
     const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
 

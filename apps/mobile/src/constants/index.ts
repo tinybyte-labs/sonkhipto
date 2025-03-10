@@ -1,5 +1,4 @@
 import * as Application from "expo-application";
-import * as Device from "expo-device";
 import { Platform } from "react-native";
 
 export const APP_NAME = "Sonkhipto";

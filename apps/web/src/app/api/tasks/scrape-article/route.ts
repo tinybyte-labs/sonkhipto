@@ -45,8 +45,12 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
       metadata.publishedAt &&
       metadata.thumbnailUrl
     ) {
-      const { content, category } = await summerizeDescription(metadata.content);
-      const findCategory = await db.category.findFirst({ where: { name: category } });
+      const { content, category } = await summerizeDescription(
+        metadata.content,
+      );
+      const findCategory = await db.category.findFirst({
+        where: { name: category },
+      });
 
       const post = await db.post.create({
         data: {
@@ -64,17 +68,19 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
         await db.postCategory.create({
           data: {
             categoryId: findCategory.id,
-            postId: post.id
-          }
-        })
+            postId: post.id,
+          },
+        });
       } else {
-        const newCategory = await db.category.create({ data: { name: category } })
+        const newCategory = await db.category.create({
+          data: { name: category },
+        });
         await db.postCategory.create({
           data: {
             categoryId: newCategory.id,
-            postId: post.id
-          }
-        })
+            postId: post.id,
+          },
+        });
       }
       return NextResponse.json({ message: "Post created" });
     }
