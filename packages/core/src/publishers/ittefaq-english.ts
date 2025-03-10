@@ -66,12 +66,12 @@ export const getMetadataFromIttefaqEnglish: GetArticleMetadataFn = async (
     ?.["content"]?.trim();
   const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
 
-  const paragraphArr: string[] = []
+  const paragraphArr: string[] = [];
   $(".jw_article_body").each((_, el) => {
-    paragraphArr.push($(el).text().trim())
-  })
+    paragraphArr.push($(el).text().trim());
+  });
 
-  const content = paragraphArr.join()
+  const content = paragraphArr.join();
 
   return {
     thumbnailUrl,

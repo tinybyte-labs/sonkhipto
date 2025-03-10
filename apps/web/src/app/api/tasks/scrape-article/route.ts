@@ -45,9 +45,14 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
       metadata.publishedAt &&
       metadata.thumbnailUrl
     ) {
-      const content = await summerizeDescription(metadata.content);
+      const { content, category } = await summerizeDescription(
+        metadata.content,
+      );
+      const findCategory = await db.category.findFirst({
+        where: { name: category },
+      });
 
-      await db.post.create({
+      const post = await db.post.create({
         data: {
           sourceUrl: link,
           imageUrl: metadata.thumbnailUrl,
@@ -59,6 +64,24 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
           sourceName: publisher.name,
         },
       });
+      if (findCategory) {
+        await db.postCategory.create({
+          data: {
+            categoryId: findCategory.id,
+            postId: post.id,
+          },
+        });
+      } else {
+        const newCategory = await db.category.create({
+          data: { name: category },
+        });
+        await db.postCategory.create({
+          data: {
+            categoryId: newCategory.id,
+            postId: post.id,
+          },
+        });
+      }
       return NextResponse.json({ message: "Post created" });
     }
 

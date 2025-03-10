@@ -31,9 +31,9 @@ export const POST = async (req: NextRequest) => {
       throw new Error("Invalid metadata");
     }
 
-    const content = await summerizeDescription(metadata.content);
+    const { category, content } = await summerizeDescription(metadata.content);
 
-    return NextResponse.json({ ...metadata, content });
+    return NextResponse.json({ ...metadata, content, category });
   } catch (error) {
     console.error(`Failed to scrape posts`, error);
     return NextResponse.json(
