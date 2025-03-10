@@ -55,7 +55,11 @@ export const getLatestArticleLinksFromTheDailyStartEnglish: GetLatestArticleLink
 
       const url = new URL(link, baseUrl);
 
-      if (url.pathname.startsWith("/multimedia")) {
+      if (
+        url.pathname.startsWith("/multimedia") ||
+        url.pathname.startsWith("/campus") ||
+        url.pathname.startsWith("/life-living")
+      ) {
         continue;
       }
 
