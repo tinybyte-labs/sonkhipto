@@ -39,21 +39,9 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
     const metadata = await publisher.getArticleMetadata(link);
 
     if (metadata && metadata.title && metadata.content) {
-      const { content, category: categroyName } = await summerizeDescription(
+      const { content, category } = await summerizeDescription(
         metadata.content,
       );
-
-      let category = await db.category.findFirst({
-        where: { name: categroyName },
-        select: { id: true },
-      });
-
-      if (!category) {
-        category = await db.category.create({
-          data: { name: categroyName },
-          select: { id: true },
-        });
-      }
 
       await db.post.create({
         data: {
@@ -65,7 +53,18 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
           language: publisher.language,
           countryCode: publisher.countryCode,
           sourceName: publisher.name,
-          categoryId: category.id,
+          category: category
+            ? {
+                connectOrCreate: {
+                  where: { slug: category.slug },
+                  create: {
+                    slug: category.slug,
+                    name: category.english,
+                    nameBengali: category.bengali,
+                  },
+                },
+              }
+            : undefined,
         },
       });
 

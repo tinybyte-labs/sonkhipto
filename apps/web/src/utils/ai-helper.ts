@@ -1,15 +1,20 @@
 "use server";
-import { allCategories } from "@/constants";
 import { openai } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { z } from "zod";
+import { categories } from "@acme/core/constants/categories";
 
 export const summerizeDescription = async (
   text: string,
 ): Promise<{
   content: string;
-  category: string;
+  category: {
+    slug: string;
+    english: string;
+    bengali: string;
+  } | null;
 }> => {
+  const categoryList = Object.keys(categories);
   const summeryGen = await generateObject({
     model: openai("gpt-4o-mini"),
     schema: z.object({
@@ -27,10 +32,25 @@ export const summerizeDescription = async (
     messages: [
       {
         role: "system",
-        content: `You are a helpful AI assistant that generates concise summaries for news and articles. Your task is to summarize the given article in 400 characters or less while preserving its key points. The summary must be in the same language as the original article. Additionally, analyze the content and assign a category from the following list:\n\nCategories: ${allCategories.join(", ")}`,
+        content: `You are a helpful AI assistant that generates concise summaries for news and articles. Your task is to summarize the given article in 400 characters or less while preserving its key points. The summary must be in the same language as the original article. Additionally, analyze the content and assign a category from the following list:\n\nCategories: ${categoryList.join(", ")}`,
       },
       { role: "user", content: `Article:\n\n ${text}` },
     ],
   });
-  return summeryGen.object;
+
+  const content = summeryGen.object.content;
+  let category: {
+    slug: string;
+    english: string;
+    bengali: string;
+  } | null = null;
+
+  if (categories[summeryGen.object.category]) {
+    category = {
+      slug: summeryGen.object.category,
+      ...categories[summeryGen.object.category],
+    };
+  }
+
+  return { content, category };
 };

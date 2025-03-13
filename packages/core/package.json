@@ -6,7 +6,8 @@
   "exports": {
     "./publishers": "./src/publishers/index.ts",
     "./types": "./src/types/index.ts",
-    "./utils/*": "./src/utils/*"
+    "./utils/*": "./src/utils/*",
+    "./constants/*": "./src/constants/*.ts"
   },
   "scripts": {
     "clean": "git clean -xdf dist .turbo node_modules",
