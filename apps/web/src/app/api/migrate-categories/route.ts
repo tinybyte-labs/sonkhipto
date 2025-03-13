@@ -3,7 +3,8 @@ import { db } from "@acme/db";
 import { NextResponse } from "next/server";
 
 export const GET = async () => {
-  Object.entries(categories).forEach(async ([slug, { bengali, english }]) => {
+  for (const category of Object.entries(categories)) {
+    const [slug, { bengali, english }] = category;
     await db.category.upsert({
       where: { slug },
       create: {
@@ -16,7 +17,7 @@ export const GET = async () => {
         nameBengali: bengali,
       },
     });
-  });
+  }
 
   return new NextResponse("Done");
 };
