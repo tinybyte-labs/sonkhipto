@@ -75,6 +75,9 @@ model Post {
   language    String    @db.VarChar(6)
   countryCode String    @db.VarChar(6)
   type        PostType  @default(NEWS)
+  categoryId  String?   @db.Uuid
+
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
   author User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
 
@@ -116,6 +119,7 @@ model Category {
 
   PostCategory   PostCategory[]
   CategoryFollow CategoryFollow[]
+  Post           Post[]
 }
 
 model PostCategory {
