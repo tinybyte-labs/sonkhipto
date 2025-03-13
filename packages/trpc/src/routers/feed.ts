@@ -65,13 +65,13 @@ export const feedRouter = router({
         cursor: opts.input.cursor ? { id: opts.input.cursor } : undefined,
         include: {
           author: { select: { name: true } },
+          category: true,
           FavoritePost: {
             where: { userId: opts.ctx.user.id },
           },
           PostBookmark: {
             where: { userId: opts.ctx.user.id },
           },
-          PostCategory: true,
           _count: { select: { FavoritePost: true, PostBookmark: true } },
         },
         where: {

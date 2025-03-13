@@ -28,7 +28,7 @@ export const postRouter = router({
         orderBy,
         include: {
           author: true,
-          PostCategory: true,
+          category: true,
           _count: {
             select: { FavoritePost: true, PostBookmark: true, PostView: true },
           },

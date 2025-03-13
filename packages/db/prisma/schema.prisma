@@ -83,7 +83,6 @@ model Post {
 
   PostBookmark PostBookmark[]
   FavoritePost FavoritePost[]
-  PostCategory PostCategory[]
   PostView     PostView[]
 }
 
@@ -117,20 +116,8 @@ model Category {
   name        String   @unique
   description String?
 
-  PostCategory   PostCategory[]
   CategoryFollow CategoryFollow[]
   Post           Post[]
-}
-
-model PostCategory {
-  postId     String   @db.Uuid
-  categoryId String   @db.Uuid
-  createdAt  DateTime @default(now())
-
-  post     Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  @@unique([postId, categoryId])
 }
 
 model CategoryFollow {
