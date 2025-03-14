@@ -26,12 +26,13 @@ export interface FeedAdItem {
 export type FeedItem = FeedNewsItem | FeedAdItem;
 export type ExtraData = Record<
   string,
-  {
-    favoriteCount?: number;
-    bookmarkCount?: number;
-    isFavorite?: boolean;
-    isBookmarked?: boolean;
-  }
+  | {
+      favoriteCount?: number;
+      bookmarkCount?: number;
+      isFavorite?: boolean;
+      isBookmarked?: boolean;
+    }
+  | undefined
 >;
 
 export type FeedListProps = Omit<
@@ -56,13 +57,16 @@ const FeedList = forwardRef<FlashList<FeedItem>, FeedListProps>(
         const _data = { ...extraData };
         _data[data.id] = {
           ...item,
-          favoriteCount: (item.favoriteCount ?? 0) + 1,
+          favoriteCount: (item?.favoriteCount ?? 0) + 1,
           isFavorite: true,
         };
         setExtraData(_data);
         void Haptics.notificationAsync(
           Haptics.NotificationFeedbackType.Success,
         );
+      },
+      onError: (error) => {
+        Alert.alert("Error", error.message);
       },
     });
 
@@ -72,7 +76,7 @@ const FeedList = forwardRef<FlashList<FeedItem>, FeedListProps>(
         const _data = { ...extraData };
         _data[data.id] = {
           ...item,
-          favoriteCount: (item.favoriteCount ?? 0) - 1,
+          favoriteCount: (item?.favoriteCount ?? 0) - 1,
           isFavorite: false,
         };
         setExtraData(_data);
@@ -85,7 +89,7 @@ const FeedList = forwardRef<FlashList<FeedItem>, FeedListProps>(
         const _data = { ...extraData };
         _data[data.id] = {
           ...item,
-          bookmarkCount: (item.bookmarkCount ?? 0) + 1,
+          bookmarkCount: (item?.bookmarkCount ?? 0) + 1,
           isBookmarked: true,
         };
         setExtraData(_data);
@@ -108,6 +112,9 @@ const FeedList = forwardRef<FlashList<FeedItem>, FeedListProps>(
           },
         });
       },
+      onError: (error) => {
+        Alert.alert("Failed to bookmark", error.message);
+      },
     });
 
     const removeBookmarkMut = trpc.post.removeBookmark.useMutation({
@@ -116,7 +123,7 @@ const FeedList = forwardRef<FlashList<FeedItem>, FeedListProps>(
         const _data = { ...extraData };
         _data[data.id] = {
           ...item,
-          bookmarkCount: (item.bookmarkCount ?? 0) - 1,
+          bookmarkCount: (item?.bookmarkCount ?? 0) - 1,
           isBookmarked: false,
         };
         setExtraData(_data);
