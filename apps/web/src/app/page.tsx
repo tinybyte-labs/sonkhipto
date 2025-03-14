@@ -1,4 +1,4 @@
-import { APPSTORE_URL, GOOGLE_PLAY_URL } from "@/constants";
+import { APPSTORE_URL, GOOGLE_PLAY_URL } from "@acme/core/constants";
 import Link from "next/link";
 
 export default function HomePage() {
@@ -12,16 +12,12 @@ export default function HomePage() {
         Bangla and English. Spend less time scrolling, more time knowing.
       </p>
       <ul>
-        {GOOGLE_PLAY_URL && (
-          <li>
-            <Link href={GOOGLE_PLAY_URL}>Get it on Google Play</Link>
-          </li>
-        )}
-        {APPSTORE_URL && (
-          <li>
-            <Link href={APPSTORE_URL}>Download on the AppStore</Link>
-          </li>
-        )}
+        <li>
+          <Link href={GOOGLE_PLAY_URL}>Get it on Google Play</Link>
+        </li>
+        <li>
+          <Link href={APPSTORE_URL}>Download on the AppStore</Link>
+        </li>
         <li>
           <Link href="/legal/privacy">Privacy Policy</Link>
         </li>

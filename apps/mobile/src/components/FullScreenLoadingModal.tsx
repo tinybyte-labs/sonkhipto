@@ -1,4 +1,4 @@
-import { Modal, ActivityIndicator, View, StyleSheet } from "react-native";
+import { ActivityIndicator, Modal, StyleSheet,View } from "react-native";
 
 import { useColors } from "@/hooks/useColors";
 

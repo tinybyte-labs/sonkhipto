@@ -14,11 +14,12 @@
     "generate": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^5.9.1"
+    "@prisma/client": "^6.5.0"
   },
   "devDependencies": {
-    "@acme/typescript-config": "workspace:*",
-    "prisma": "^5.9.1",
+    "@acme/eslint-config": "workspace:*",
+    "@acme/tsconfig": "workspace:*",
+    "prisma": "^6.5.0",
     "@types/node": "^20.11.13",
     "esbuild": "^0.20.0",
     "eslint": "^8.56.0",

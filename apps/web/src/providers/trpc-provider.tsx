@@ -2,7 +2,8 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/react-query";
-import { ReactNode, useState } from "react";
+import type { ReactNode} from "react";
+import { useState } from "react";
 import superjson from "superjson";
 
 import { trpc } from "@/utils/trpc";
@@ -13,7 +14,7 @@ export const setToken = (tk: string) => {
   token = tk;
 };
 
-export type TRPCProviderProps = { children: ReactNode };
+export interface TRPCProviderProps { children: ReactNode }
 
 export default function TRPCProvider({ children }: TRPCProviderProps) {
   const [queryClient] = useState(

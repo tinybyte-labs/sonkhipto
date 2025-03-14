@@ -1,6 +1,6 @@
-import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { EdgeInsets } from "react-native-safe-area-context";
+import type { EdgeInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
 
@@ -40,9 +40,7 @@ export default function TabBar({
           const label =
             typeof options.tabBarLabel === "string"
               ? options.tabBarLabel
-              : options.title !== undefined
-                ? options.title
-                : route.name;
+              : (options.title ?? route.name);
 
           const icon = options.tabBarIcon;
 

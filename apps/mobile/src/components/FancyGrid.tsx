@@ -1,5 +1,6 @@
-import React, { ReactNode, useMemo, useState } from "react";
-import { View, useWindowDimensions } from "react-native";
+import type { ReactNode} from "react";
+import React, { useMemo, useState } from "react";
+import { useWindowDimensions,View } from "react-native";
 
 export default function FancyGrid<T>({
   data,

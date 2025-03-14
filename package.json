@@ -19,11 +19,12 @@
     "build:ios": "pnpm -F mobile build:ios",
     "build:android": "pnpm -F mobile build:android",
     "submit:ios": "pnpm -F mobile submit:ios",
-    "submit:android": "pnpm -F mobile submit:android"
+    "submit:android": "pnpm -F mobile submit:android",
+    "upstash": "npx @upstash/qstash-cli dev"
   },
   "devDependencies": {
-    "@acme/typescript-config": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
+    "@acme/eslint-config": "workspace:*",
+    "@acme/tsconfig": "workspace:*",
     "prettier": "^3.1.1",
     "tsup": "^8.0.1",
     "turbo": "^1.12.3"

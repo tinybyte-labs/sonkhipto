@@ -1,20 +1,22 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
+import type {
+  StyleProp,
+  ViewStyle} from "react-native";
 import {
   Pressable,
-  StyleProp,
   StyleSheet,
   Text,
-  View,
-  ViewStyle,
+  View
 } from "react-native";
-import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
+import type { EdgeInsets} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useColors } from "@/hooks/useColors";
 
-export type CustomHeaderProps = {
+export interface CustomHeaderProps {
   children: ReactNode;
   hideInset?: boolean;
-};
+}
 
 export const getAppBarHeight = (insets: EdgeInsets) => {
   return 58 + insets.top;

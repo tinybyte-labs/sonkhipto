@@ -2,13 +2,21 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@/assets/*": ["./assets/*"],
       "@acme/db": ["../../packages/db/src/index.ts"],
-      "@acme/trpc": ["../../packages/trpc/src/index.ts"]
+      "@acme/trpc": ["../../packages/trpc/src/index.ts"],
+      "@acme/trpc/types": ["../../packages/trpc/src/types.ts"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "index.js"
+  ],
   "exclude": ["node_modules"]
 }

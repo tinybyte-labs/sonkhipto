@@ -1,7 +1,9 @@
-import { Language } from "@/types/language";
+import type { Language } from "@/types/language";
 
 export const englishTranslations = {
   chooseLanguage: "Choose Language",
+  updateInterests: "Update Interests",
+  interests: "Interests",
   english: "English",
   en: "English",
   bangla: "Bangla",
@@ -53,12 +55,19 @@ export const englishTranslations = {
   home: "Home",
   addedToBookmarks: "Added to bookmarks",
   manageBookmarks: "Manage Bookmarks",
+  interestScreenTitle: "What do you want to see on Sonkhipto?",
+  interestScreenSubtitle:
+    "Select at least 3 interests to personalize your feed.",
+  update: "Update",
+  interesetUpdateSuccessMessage: "Interest updated successfully",
 };
 
 export type TranslationKey = keyof typeof englishTranslations;
 
 export const banglaTranslations: Record<TranslationKey, string> = {
   chooseLanguage: "ভাষা নির্বাচন করুন",
+  updateInterests: "আগ্রহ আপডেট করুন",
+  interests: "আগ্রহ",
   english: "ইংরেজি",
   en: "ইংরেজি",
   bangla: "বাংলা",
@@ -110,6 +119,11 @@ export const banglaTranslations: Record<TranslationKey, string> = {
   home: "হোম",
   addedToBookmarks: "বুকমার্ক যোগ করা হয়েছে",
   manageBookmarks: "বুকমার্ক ম্যানেজ করুন",
+  interestScreenTitle: "আপনি সোনখিপ্টোতে কী দেখতে চান?",
+  interestScreenSubtitle:
+    "আপনার ফিড ব্যক্তিগতকৃত করতে কমপক্ষে 3টি আগ্রহ নির্বাচন করুন৷",
+  update: "আপডেট",
+  interesetUpdateSuccessMessage: "আগ্রহ সফলভাবে আপডেট করা হয়েছে",
 };
 
 export const languageTranslations: Record<

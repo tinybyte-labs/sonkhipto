@@ -1,15 +1,16 @@
+import type { PublicPost } from "@acme/trpc/types";
 import { useScrollToTop } from "@react-navigation/native";
-import { FlashList } from "@shopify/flash-list";
+import type { FlashList } from "@shopify/flash-list";
 import { useLocalSearchParams } from "expo-router";
+import type { RefObject } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ViewToken } from "react-native";
+import type { FlatList, ViewToken } from "react-native";
 import { ActivityIndicator, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { FeedItem } from "@/components/FeedList";
 import FeedList from "@/components/FeedList";
 import { useColors } from "@/hooks/useColors";
-import { useAuth } from "@/providers/AuthProvider";
 import { useLanguage } from "@/providers/LanguageProvider";
 import { trpc } from "@/utils/trpc";
 
@@ -17,11 +18,19 @@ export type FeedType = Parameters<
   typeof trpc.feed.myFeed.useInfiniteQuery
 >["0"]["feedType"];
 
-export type FeedViewProps = {
-  feedType: FeedType;
-};
+export interface FeedViewProps {
+  data: PublicPost[];
+  onRefresh?: () => Promise<void>;
+  onFetchNextPage?: () => Promise<void>;
+  isFetchingNextPage?: boolean;
+}
 
-export default function FeedView({ feedType }: FeedViewProps) {
+export default function FeedView({
+  data,
+  isFetchingNextPage,
+  onFetchNextPage,
+  onRefresh,
+}: FeedViewProps) {
   const { translate, language } = useLanguage();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const colors = useColors();
@@ -30,59 +39,33 @@ export default function FeedView({ feedType }: FeedViewProps) {
   const [height, setHeight] = useState(-1);
   const { index } = useLocalSearchParams<{ index?: string }>();
   const insets = useSafeAreaInsets();
-  const { user } = useAuth();
 
-  useScrollToTop(listRef as any);
+  useScrollToTop(listRef as unknown as RefObject<FlatList<FeedItem>>);
 
-  const feedQuery = trpc.feed.myFeed.useInfiniteQuery(
-    {
-      language,
-      feedType,
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    },
-  );
   const feed = useMemo(
     (): FeedItem[] =>
-      feedQuery.data?.pages
-        .flatMap((page) => page.posts)
-        .map((post) => ({
-          type: "post",
-          data: {
-            id: post.id,
-            title: post.title,
-            content: post.content,
-            imageUrl: post.imageUrl,
-            authorName: post.author?.name,
-            createdAt: post.createdAt,
-            sourceName: post.sourceName,
-            sourceUrl: post.sourceUrl,
-            bookmarkCount: post._count.PostBookmark,
-            favoriteCount: post._count.FavoritePost,
-            isBookmarked: !!user && post.PostBookmark?.[0]?.userId === user.id,
-            isFavorite: !!user && post.FavoritePost?.[0]?.userId === user.id,
-            publishedAt: post.publishedAt,
-          },
-          key: post.id,
-        })) ?? [],
-    [feedQuery.data?.pages, user],
+      data.map((post) => ({
+        type: "post",
+        key: post.id,
+        data: post,
+      })),
+    [data],
   );
 
   const addViewMut = trpc.post.addView.useMutation();
 
-  const handleEndReached = useCallback(() => {
-    if (!feedQuery.isFetchingNextPage) {
-      feedQuery.fetchNextPage();
+  const handleEndReached = useCallback(async () => {
+    if (!isFetchingNextPage) {
+      await onFetchNextPage?.();
     }
-  }, [feedQuery]);
+  }, [isFetchingNextPage, onFetchNextPage]);
 
   const onViewableItemsChanged = useCallback(
-    async (info: { viewableItems: ViewToken[]; changed: ViewToken[] }) => {
+    (info: { viewableItems: ViewToken[]; changed: ViewToken[] }) => {
       const changedItem = info.changed[0];
-      if (changedItem && changedItem.isViewable) {
+      if (changedItem.isViewable) {
         const item = changedItem.item as FeedItem;
-        if (item && item.type === "post") {
+        if (item.type === "post") {
           const index = viewedPostIds.findIndex((id) => id === item.data.id);
           if (index === -1) {
             addViewMut.mutate({ postId: item.data.id });
@@ -96,9 +79,9 @@ export default function FeedView({ feedType }: FeedViewProps) {
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    await feedQuery.refetch();
+    await onRefresh?.();
     setIsRefreshing(false);
-  }, [feedQuery]);
+  }, [onRefresh]);
 
   useEffect(() => {
     listRef.current?.scrollToIndex({ index: 0, animated: false });
@@ -107,7 +90,7 @@ export default function FeedView({ feedType }: FeedViewProps) {
   useEffect(() => {
     if (index) {
       listRef.current?.scrollToIndex({
-        index: Number(index) ?? 0,
+        index: Number(index),
         animated: false,
       });
     }
@@ -120,17 +103,11 @@ export default function FeedView({ feedType }: FeedViewProps) {
         setHeight(ev.nativeEvent.layout.height);
       }}
     >
-      {feedQuery.isPending || height < 0 ? (
+      {height < 0 ? (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
           <ActivityIndicator color={colors.foreground} />
-        </View>
-      ) : feedQuery.isError ? (
-        <View>
-          <Text style={{ color: colors.foreground }}>
-            Error: {feedQuery.error.message}
-          </Text>
         </View>
       ) : (
         <FeedList
@@ -158,7 +135,7 @@ export default function FeedView({ feedType }: FeedViewProps) {
             </View>
           )}
           ListFooterComponent={() =>
-            feed.length === 0 ? null : feedQuery.isFetchingNextPage ? (
+            feed.length === 0 ? null : isFetchingNextPage ? (
               <View
                 style={{
                   height,

@@ -1,7 +1,9 @@
-import { summerizeDescription } from "@/utils/ai-helper";
 import { publishers } from "@acme/core/publishers";
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
+
+import { summerizeDescription } from "@/utils/ai-helper";
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
@@ -22,12 +24,7 @@ export const POST = async (req: NextRequest) => {
 
   try {
     const metadata = await publisher.getArticleMetadata(link);
-    if (
-      !metadata ||
-      !metadata.content ||
-      !metadata.title ||
-      !metadata.thumbnailUrl
-    ) {
+    if (!metadata?.content || !metadata.title || !metadata.thumbnailUrl) {
       throw new Error("Invalid metadata");
     }
 

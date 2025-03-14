@@ -1,5 +1,6 @@
 import { publishers } from "@acme/core/publishers";
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest} from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 
 export const POST = async (req: NextRequest) => {

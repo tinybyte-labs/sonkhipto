@@ -1,10 +1,12 @@
+import "@/styles/globals.css";
+
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "@/styles/globals.css";
+
+import { Toaster } from "@/components/ui/toaster";
 import AuthProvider from "@/providers/auth-provider";
 import TRPCProvider from "@/providers/trpc-provider";
-import { Toaster } from "@/components/ui/toaster";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const inter = Inter({ subsets: ["latin"] });
 

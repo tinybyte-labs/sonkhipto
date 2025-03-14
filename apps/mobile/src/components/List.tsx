@@ -1,5 +1,5 @@
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react-native";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { useColors } from "@/hooks/useColors";

@@ -8,7 +8,7 @@ export const LOCALHOST = Platform.OS === "android" ? "10.0.2.2" : "localhost";
 export const PROD_API = "https://sonkhipto.com";
 export const DEV_API = `http://${LOCALHOST}:3000`;
 
-export const API_URL = PROD_API;
+export const API_URL = __DEV__ ? DEV_API : PROD_API;
 
 export const ITUNE_ITEM_ID = 6477333889;
 export const ANDROID_PACKAGE_NAME = "com.tinybytelabs.sonkhipto";

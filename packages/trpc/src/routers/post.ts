@@ -1,7 +1,9 @@
-import { z } from "zod";
-import { protectedProcedure, router } from "../trpc";
+import type { Prisma } from "@acme/db";
 import { TRPCError } from "@trpc/server";
-import { Prisma } from "@acme/db";
+import { z } from "zod";
+
+import { protectedProcedure, router } from "../trpc";
+import type { PublicPost } from "../types";
 
 export const postRouter = router({
   findMany: protectedProcedure
@@ -34,7 +36,7 @@ export const postRouter = router({
           },
         },
       });
-      let nextCursor = posts[opts.input.limit - 1]?.id;
+      const nextCursor = posts[opts.input.limit - 1]?.id;
       return {
         nextCursor,
         posts,
@@ -132,7 +134,8 @@ export const postRouter = router({
         include: {
           post: {
             include: {
-              author: { select: { name: true } },
+              author: true,
+              category: true,
               FavoritePost: {
                 where: { userId: ctx.user.id },
               },
@@ -143,6 +146,7 @@ export const postRouter = router({
                 select: {
                   FavoritePost: true,
                   PostBookmark: true,
+                  PostView: true,
                 },
               },
             },
@@ -165,19 +169,50 @@ export const postRouter = router({
 
       return {
         nextCursor,
-        bookmarks,
+        bookmarks: bookmarks.map(
+          ({
+            post: { _count, PostBookmark, FavoritePost, ...post },
+            ...rest
+          }) => ({
+            ...rest,
+            post: {
+              ...post,
+              _count: {
+                bookmarks: _count.PostBookmark,
+                favorites: _count.FavoritePost,
+                views: _count.PostView,
+              },
+              viewer: {
+                bookmarked: PostBookmark.length > 0,
+                favorite: FavoritePost.length > 0,
+              },
+            } satisfies PublicPost,
+          }),
+        ),
       };
     }),
   addView: protectedProcedure
     .input(z.object({ postId: z.string() }))
     .mutation(async (opts) => {
       try {
-        await opts.ctx.db.postView.create({
-          data: {
+        await opts.ctx.db.postView.upsert({
+          create: {
             postId: opts.input.postId,
             userId: opts.ctx.user.id,
           },
+          where: {
+            userId_postId: {
+              postId: opts.input.postId,
+              userId: opts.ctx.user.id,
+            },
+          },
+          update: {},
         });
-      } catch (error: any) {}
+      } catch (error: unknown) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error instanceof Error ? error.message : String(error),
+        });
+      }
     }),
 });

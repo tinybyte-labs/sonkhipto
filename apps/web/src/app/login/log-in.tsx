@@ -1,12 +1,13 @@
 "use client";
 
-import { trpc } from "@/utils/trpc";
-import { useToast } from "@/components/ui/use-toast";
 import { GoogleLogin } from "@react-oauth/google";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "@/providers/auth-provider";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+
+import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/providers/auth-provider";
+import { trpc } from "@/utils/trpc";
 
 export default function LogIn({ redirect }: { redirect?: string }) {
   const { toast } = useToast();
@@ -31,7 +32,7 @@ export default function LogIn({ redirect }: { redirect?: string }) {
     if (state === "authenticated") {
       router.replace(redirect ?? "/");
     }
-  }, [state, redirect]);
+  }, [state, redirect, router]);
 
   if (state === "loading") {
     return <p>Loading...</p>;

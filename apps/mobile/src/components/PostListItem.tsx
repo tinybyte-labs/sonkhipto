@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { View, Text, Pressable } from "react-native";
+import { Pressable,Text, View } from "react-native";
 
 import { useColors } from "@/hooks/useColors";
 

@@ -1,9 +1,11 @@
-import { summerizeDescription } from "@/utils/ai-helper";
 import { publishers } from "@acme/core/publishers";
 import { db } from "@acme/db";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest} from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
+
+import { summerizeDescription } from "@/utils/ai-helper";
 
 export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
   const body = await req.json();
@@ -38,7 +40,7 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
 
     const metadata = await publisher.getArticleMetadata(link);
 
-    if (metadata && metadata.title && metadata.content) {
+    if (metadata?.title && metadata.content) {
       const { content, category } = await summerizeDescription(
         metadata.content,
       );

@@ -1,6 +1,7 @@
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { httpBatchLink } from "@trpc/react-query";
-import { ReactNode, useState } from "react";
+import type { ReactNode } from "react";
+import { useState } from "react";
 import superjson from "superjson";
 
 import { API_URL } from "@/constants";
@@ -20,7 +21,7 @@ export default function TRPcProvider({ children }: { children: ReactNode }) {
         httpBatchLink({
           url: `${API_URL}/api/trpc`,
           transformer: superjson,
-          headers(opts) {
+          headers() {
             return {
               authorization: token ? `Bearer ${token}` : undefined,
             };

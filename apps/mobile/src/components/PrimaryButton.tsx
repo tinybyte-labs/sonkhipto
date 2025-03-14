@@ -1,4 +1,4 @@
-import { Text, StyleSheet, ActivityIndicator, Pressable } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 
 import { useColors } from "@/hooks/useColors";
 
@@ -21,10 +21,10 @@ export default function PrimaryButton({
         styles.container,
         {
           backgroundColor: pressed ? colors.primaryActive : colors.primary,
-          opacity: disabled || isLoading ? 0.5 : 1,
+          opacity: (disabled ?? isLoading) ? 0.5 : 1,
         },
       ]}
-      disabled={disabled || isLoading}
+      disabled={disabled ?? isLoading}
       onPress={onPress}
     >
       {isLoading ? (

@@ -1,8 +1,9 @@
-import { BASE_URL } from "@/constants";
-import { qstashClient } from "@/lib/qstash-client";
+import { BASE_URL } from "@acme/core/constants";
 import { publishers } from "@acme/core/publishers";
 import { verifySignatureAppRouter } from "@upstash/qstash/dist/nextjs";
 import { NextResponse } from "next/server";
+
+import { qstashClient } from "@/lib/qstash-client";
 
 export const POST = verifySignatureAppRouter(async () => {
   await Promise.all(

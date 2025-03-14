@@ -1,5 +1,5 @@
 export const convertBengaliDigits = (str: string): string => {
-  const bengaliNumbers: string = "০১২৩৪৫৬৭৮৯";
+  const bengaliNumbers = "০১২৩৪৫৬৭৮৯";
   return str.replace(/[০-৯]/g, (digit) =>
     bengaliNumbers.indexOf(digit).toString(),
   );

@@ -1,4 +1,5 @@
 import { defineDocumentType } from "contentlayer/source-files";
+
 import { SEO } from "../nested/SEO";
 
 export const Page = defineDocumentType(() => ({

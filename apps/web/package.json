@@ -6,7 +6,8 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix"
   },
   "dependencies": {
     "@acme/auth": "workspace:*",
@@ -41,7 +42,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@acme/typescript-config": "workspace:*",
+    "@acme/eslint-config": "workspace:*",
+    "@acme/tsconfig": "workspace:*",
     "@tailwindcss/typography": "^0.5.10",
     "@types/node": "^20",
     "@types/random-useragent": "^0.3.3",

@@ -1,11 +1,11 @@
-import { NewsItem } from "./news-item";
-import { WithId } from "./with-id";
+import type { NewsItem } from "./news-item";
+import type { WithId } from "./with-id";
 
-export type NewsBookmark = {
+export interface NewsBookmark {
   type: "news";
   id: string;
   createdAt: string;
   data: WithId<NewsItem>;
-};
+}
 
 export type Bookmark = NewsBookmark;

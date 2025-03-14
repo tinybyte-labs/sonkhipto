@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import type { ReactNode } from "react";
 import {
-  ReactNode,
   createContext,
   useCallback,
   useContext,
@@ -9,10 +9,11 @@ import {
 } from "react";
 
 import { EVENT_KEYS } from "@/constants/event-keys";
-import { TranslationKey, languageTranslations } from "@/constants/translations";
-import { Language } from "@/types/language";
+import type { TranslationKey } from "@/constants/translations";
+import { languageTranslations } from "@/constants/translations";
+import type { Language } from "@/types/language";
 
-export type LanguageContextType = {
+export interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   translate: (
@@ -21,7 +22,7 @@ export type LanguageContextType = {
   ) => string;
   hasSelectedLanguage: boolean;
   changeLanguage: (lang: Language) => Promise<void>;
-};
+}
 
 export const LanguageContext = createContext<LanguageContextType | null>(null);
 
@@ -38,8 +39,7 @@ export default function LanguageProvider({
 
   const translate: LanguageContextType["translate"] = useCallback(
     (id, replacements) => {
-      let value =
-        languageTranslations[language][id] ?? languageTranslations["en"][id];
+      let value = languageTranslations[language][id];
       if (replacements) {
         Object.entries(replacements).forEach((replacement) => {
           value = value.replaceAll(`{${replacement[0]}}`, replacement[1]);
@@ -73,14 +73,13 @@ export default function LanguageProvider({
           setHasSelectedLanguage(true);
           setLanguage(languageStr as Language);
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (error: any) {
+      } catch (error: unknown) {
         /* empty */
       } finally {
         setIsLoaded(true);
       }
     };
-    load();
+    void load();
   }, []);
 
   if (!isLoaded) {

@@ -1,8 +1,9 @@
 import analytics from "@react-native-firebase/analytics";
 import { usePathname } from "expo-router";
-import { ReactNode, useEffect } from "react";
+import type { ReactNode } from "react";
+import { useEffect } from "react";
 
-analytics().setAnalyticsCollectionEnabled(!__DEV__);
+void analytics().setAnalyticsCollectionEnabled(!__DEV__);
 
 export default function Analytics({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -14,11 +15,11 @@ export default function Analytics({ children }: { children: ReactNode }) {
           screen_name: pathname,
           screen_class: pathname,
         });
-      } catch (err: any) {
-        console.error(err);
+      } catch (error: unknown) {
+        console.error(error);
       }
     };
-    logScreenView();
+    void logScreenView();
   }, [pathname]);
 
   return <>{children}</>;

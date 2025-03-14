@@ -1,8 +1,9 @@
-import Mdx from "@/components/Mdx";
 import { allPages } from "contentlayer/generated";
 import { notFound } from "next/navigation";
 
-export const generateStaticParams = async () =>
+import Mdx from "@/components/Mdx";
+
+export const generateStaticParams = () =>
   allPages.map((item) => ({ slug: item.slug.split("/") }));
 
 export const generateMetadata = ({

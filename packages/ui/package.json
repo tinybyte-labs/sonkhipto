@@ -12,8 +12,8 @@
     "clean": "git clean -xdf dist .turbo node_modules"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@acme/typescript-config": "workspace:*",
+    "@acme/eslint-config": "workspace:*",
+    "@acme/tsconfig": "workspace:*",
     "@turbo/gen": "^1.11.3",
     "@types/node": "^20.10.6",
     "@types/eslint": "^8.56.1",

@@ -1,5 +1,6 @@
 import { defineDocumentType } from "contentlayer/source-files";
 import readingTime from "reading-time";
+
 import { Image } from "../nested/Image";
 import { SEO } from "../nested/SEO";
 

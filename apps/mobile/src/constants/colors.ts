@@ -1,4 +1,4 @@
-export type Colors = {
+export interface Colors {
   primary: string;
   primaryActive: string;
   primaryForeground: string;
@@ -12,7 +12,7 @@ export type Colors = {
   card: string;
   border: string;
   transparent: string;
-};
+}
 
 const darkColors: Colors = {
   primary: "#FF3F48",

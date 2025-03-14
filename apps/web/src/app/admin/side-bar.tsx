@@ -1,11 +1,12 @@
-import { Button } from "@/components/ui/button";
-import { APP_NAME } from "@/constants";
-import { cn } from "@/lib/utils";
-import { useAuth } from "@/providers/auth-provider";
+import { APP_NAME } from "@acme/core/constants";
 import { LayoutDashboard, ListIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/providers/auth-provider";
 
 export default function SideBar() {
   const { signOut } = useAuth();

@@ -1,6 +1,6 @@
-import { MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
+import type { MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
 import { LinearGradient } from "expo-linear-gradient";
-import { Animated, Pressable, View, useWindowDimensions } from "react-native";
+import { Animated, Pressable, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const BAR_WIDTH = 32;
@@ -50,9 +50,7 @@ const TopTabs = ({
           const label =
             typeof options.tabBarLabel === "string"
               ? options.tabBarLabel
-              : options.title !== undefined
-                ? options.title
-                : route.name;
+              : (options.title ?? route.name);
 
           const isFocused = state.index === index;
 

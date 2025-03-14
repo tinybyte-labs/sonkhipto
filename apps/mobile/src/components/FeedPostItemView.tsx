@@ -4,10 +4,10 @@ import millify from "millify";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { FeedNewsItem } from "./FeedList";
-
 import { useColors } from "@/hooks/useColors";
 import { useLanguage } from "@/providers/LanguageProvider";
+
+import type { FeedNewsItem } from "./FeedList";
 
 export default function FeedPostItemView({
   post,
@@ -40,10 +40,13 @@ export default function FeedPostItemView({
   const colors = useColors();
   const insets = useSafeAreaInsets();
 
+  const isSmallHeight = height < 678;
+
   return (
     <View
       style={{
         backgroundColor: colors.background,
+
         height,
       }}
     >
@@ -63,11 +66,12 @@ export default function FeedPostItemView({
         <View style={{ padding: 16 }}>
           <Text
             style={{
-              fontSize: 18,
-              fontWeight: "700",
-              lineHeight: 24,
+              fontSize: isSmallHeight ? 16 : 20,
+              fontWeight: "800",
+              lineHeight: isSmallHeight ? 24 : 28,
               color: colors.foreground,
             }}
+            numberOfLines={3}
           >
             {post.title}
           </Text>
@@ -77,24 +81,26 @@ export default function FeedPostItemView({
               marginTop: 4,
               color: colors.secondaryForeground,
             }}
+            numberOfLines={1}
           >
             {post.sourceName} •{" "}
             {dayjs(post.publishedAt ?? post.createdAt, {
               locale: language === "bn" ? "bn-bd" : "en",
             }).fromNow()}
-            {post.authorName
+            {post.author?.name
               ? ` • ${translate("byPublisher", {
-                  name: post.authorName,
+                  name: post.author.name,
                 })}`
               : ``}
           </Text>
           <Text
             style={{
               color: colors.foreground,
-              fontSize: 16,
-              lineHeight: 24,
-              marginTop: 16,
+              fontSize: isSmallHeight ? 14 : 16,
+              lineHeight: isSmallHeight ? 22 : 26,
+              marginTop: isSmallHeight ? 12 : 16,
             }}
+            numberOfLines={isSmallHeight ? 14 : 18}
           >
             {post.content}
           </Text>

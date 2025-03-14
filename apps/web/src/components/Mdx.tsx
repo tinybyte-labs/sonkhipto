@@ -1,11 +1,11 @@
-import { useMDXComponent } from "next-contentlayer/hooks";
-import Link from "next/link";
 import type { MDXComponents } from "mdx/types";
 import Image from "next/image";
+import Link from "next/link";
+import { useMDXComponent } from "next-contentlayer/hooks";
 
 const components: MDXComponents = {
-  a: ({ href, children }) => <Link href={href as string}>{children}</Link>,
-  // eslint-disable-next-line jsx-a11y/alt-text
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  a: ({ href, children }) => <Link href={href!}>{children}</Link>,
   Image: (props: any) => <Image {...props} />,
 };
 

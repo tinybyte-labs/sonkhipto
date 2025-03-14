@@ -1,8 +1,8 @@
 "use server";
+import { categories } from "@acme/core/constants/categories";
 import { openai } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { z } from "zod";
-import { categories } from "@acme/core/constants/categories";
 
 export const summerizeDescription = async (
   text: string,
@@ -45,10 +45,11 @@ export const summerizeDescription = async (
     bengali: string;
   } | null = null;
 
-  if (categories[summeryGen.object.category]) {
+  const c = categories[summeryGen.object.category];
+  if (c) {
     category = {
       slug: summeryGen.object.category,
-      ...categories[summeryGen.object.category],
+      ...c,
     };
   }
 

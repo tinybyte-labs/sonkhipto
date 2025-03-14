@@ -1,9 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { trpc } from "@/utils/trpc";
 import Link from "next/link";
 import { useMemo } from "react";
+
+import { Button } from "@/components/ui/button";
+import { trpc } from "@/utils/trpc";
 
 export default function PostsPage() {
   const postsQuery = trpc.post.findMany.useInfiniteQuery(
@@ -32,7 +33,7 @@ export default function PostsPage() {
           <Link href={post.sourceUrl}>{post.sourceName}</Link>
         </div>
       ))}
-      {postsQuery.data.pages[postsQuery.data.pages.length - 1].nextCursor && (
+      {postsQuery.data.pages[postsQuery.data.pages.length - 1]?.nextCursor && (
         <Button onClick={() => postsQuery.fetchNextPage()}>Load More</Button>
       )}
     </div>

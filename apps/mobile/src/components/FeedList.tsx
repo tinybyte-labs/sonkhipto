@@ -1,8 +1,6 @@
-import {
-  FlashList,
-  FlashListProps,
-  ListRenderItemInfo,
-} from "@shopify/flash-list";
+import type { PublicPost } from "@acme/trpc/types";
+import type { FlashListProps, ListRenderItemInfo } from "@shopify/flash-list";
+import { FlashList } from "@shopify/flash-list";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
@@ -10,35 +8,21 @@ import { forwardRef, useCallback, useState } from "react";
 import { Alert, Share, Text, View } from "react-native";
 import Snackbar from "react-native-snackbar";
 
-import FeedPostItemView from "./FeedPostItemView";
-
 import { useColors } from "@/hooks/useColors";
 import { useLanguage } from "@/providers/LanguageProvider";
 import { trpc } from "@/utils/trpc";
 
-export type FeedNewsItem = {
+import FeedPostItemView from "./FeedPostItemView";
+
+export interface FeedNewsItem {
   type: "post";
   key: string;
-  data: {
-    id: string;
-    createdAt: Date;
-    publishedAt: Date | null;
-    title: string;
-    content: string;
-    imageUrl?: string | null;
-    sourceName: string;
-    sourceUrl: string;
-    authorName?: string | null;
-    favoriteCount?: number | null;
-    bookmarkCount?: number | null;
-    isFavorite?: boolean | null;
-    isBookmarked?: boolean | null;
-  };
-};
-export type FeedAdItem = {
+  data: PublicPost;
+}
+export interface FeedAdItem {
   type: "ad";
   key: string;
-};
+}
 export type FeedItem = FeedNewsItem | FeedAdItem;
 export type ExtraData = Record<
   string,
@@ -71,12 +55,14 @@ const FeedList = forwardRef<FlashList<FeedItem>, FeedListProps>(
         const item = extraData[data.id];
         const _data = { ...extraData };
         _data[data.id] = {
-          ...(item ?? {}),
-          favoriteCount: (item?.favoriteCount ?? 0) + 1,
+          ...item,
+          favoriteCount: (item.favoriteCount ?? 0) + 1,
           isFavorite: true,
         };
         setExtraData(_data);
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        void Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Success,
+        );
       },
     });
 
@@ -85,8 +71,8 @@ const FeedList = forwardRef<FlashList<FeedItem>, FeedListProps>(
         const item = extraData[data.id];
         const _data = { ...extraData };
         _data[data.id] = {
-          ...(item ?? {}),
-          favoriteCount: (item?.favoriteCount ?? 0) - 1,
+          ...item,
+          favoriteCount: (item.favoriteCount ?? 0) - 1,
           isFavorite: false,
         };
         setExtraData(_data);
@@ -98,15 +84,17 @@ const FeedList = forwardRef<FlashList<FeedItem>, FeedListProps>(
         const item = extraData[data.id];
         const _data = { ...extraData };
         _data[data.id] = {
-          ...(item ?? {}),
-          bookmarkCount: (item?.bookmarkCount ?? 0) + 1,
+          ...item,
+          bookmarkCount: (item.bookmarkCount ?? 0) + 1,
           isBookmarked: true,
         };
         setExtraData(_data);
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        void Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Success,
+        );
       },
       onSuccess: () => {
-        utils.post.getBookmarksWithPost.invalidate();
+        void utils.post.getBookmarksWithPost.invalidate();
         Snackbar.show({
           backgroundColor: colors.card,
           textColor: colors.secondaryForeground,
@@ -127,14 +115,14 @@ const FeedList = forwardRef<FlashList<FeedItem>, FeedListProps>(
         const item = extraData[data.id];
         const _data = { ...extraData };
         _data[data.id] = {
-          ...(item ?? {}),
-          bookmarkCount: (item?.bookmarkCount ?? 0) - 1,
+          ...item,
+          bookmarkCount: (item.bookmarkCount ?? 0) - 1,
           isBookmarked: false,
         };
         setExtraData(_data);
       },
       onSuccess: () => {
-        utils.post.getBookmarksWithPost.invalidate();
+        void utils.post.getBookmarksWithPost.invalidate();
       },
     });
 
@@ -150,8 +138,11 @@ const FeedList = forwardRef<FlashList<FeedItem>, FeedListProps>(
           title: post.data.title,
           message: post.data.sourceUrl,
         });
-      } catch (error: any) {
-        Alert.alert("Faild to share", error.message);
+      } catch (error: unknown) {
+        Alert.alert(
+          "Faild to share",
+          error instanceof Error ? error.message : String(error),
+        );
       }
     }, []);
 
@@ -159,25 +150,27 @@ const FeedList = forwardRef<FlashList<FeedItem>, FeedListProps>(
       ({ item, extraData }: ListRenderItemInfo<FeedItem>) => {
         switch (item.type) {
           case "post": {
-            const extraDataItem = extraData?.[item.data.id];
+            const extraDataItem = (extraData as ExtraData | null)?.[
+              item.data.id
+            ];
             const isFavorite =
               typeof extraDataItem?.isFavorite === "boolean"
                 ? extraDataItem.isFavorite
-                : item.data.isFavorite;
+                : item.data.viewer?.favorite;
             const isBookmarked =
               typeof extraDataItem?.isBookmarked === "boolean"
                 ? extraDataItem.isBookmarked
-                : item.data.isBookmarked;
+                : item.data.viewer?.bookmarked;
             const bookmarkCount =
-              typeof item.data.bookmarkCount === "number"
-                ? item.data.bookmarkCount +
+              typeof item.data._count.bookmarks === "number"
+                ? item.data._count.bookmarks +
                   (typeof extraDataItem?.bookmarkCount === "number"
                     ? extraDataItem.bookmarkCount
                     : 0)
                 : undefined;
             const favoriteCount =
-              typeof item.data.favoriteCount === "number"
-                ? item.data.favoriteCount +
+              typeof item.data._count.favorites === "number"
+                ? item.data._count.favorites +
                   (typeof extraDataItem?.favoriteCount === "number"
                     ? extraDataItem.favoriteCount
                     : 0)

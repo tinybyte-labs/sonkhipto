@@ -1,11 +1,14 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/providers/auth-provider";
 import type { UserRole } from "@acme/db";
 import { Loader2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, type ReactNode } from "react";
+import type { ReactNode } from "react";
+import { useEffect } from "react";
+
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/providers/auth-provider";
+
 import SideBar from "./side-bar";
 
 const allowedRoles: UserRole[] = ["ADMIN", "WRITER"];
@@ -20,7 +23,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       const params = new URLSearchParams({ redirect: pathname });
       router.push(`/login?${params.toString()}`);
     }
-  }, [state]);
+  }, [pathname, router, state]);
 
   if (state === "loading") {
     return (

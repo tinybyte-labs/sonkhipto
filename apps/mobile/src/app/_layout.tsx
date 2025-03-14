@@ -1,25 +1,24 @@
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import NetInfo from "@react-native-community/netinfo";
-import { DarkTheme, Theme, ThemeProvider } from "@react-navigation/native";
+import type { Theme } from "@react-navigation/native";
+import { DarkTheme, ThemeProvider } from "@react-navigation/native";
 import { onlineManager } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useFonts } from "expo-font";
-import { Stack, router } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { Provider as JotaiProvider } from "jotai";
-import { ArrowLeftIcon } from "lucide-react-native";
 import { useEffect, useMemo } from "react";
-import { View, useColorScheme } from "react-native";
+import { useColorScheme, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import Analytics from "@/components/Analytics";
-import { AppBar, AppBarIconButton, AppBarTitle } from "@/components/AppBar";
 import { colors } from "@/constants/colors";
 import { useColors } from "@/hooks/useColors";
 import AuthProvider from "@/providers/AuthProvider";
-import LanguageProvider, { useLanguage } from "@/providers/LanguageProvider";
+import LanguageProvider from "@/providers/LanguageProvider";
 import TRPcProvider from "@/providers/TRPcProvider";
 
 export { ErrorBoundary } from "expo-router";
@@ -30,7 +29,7 @@ export const unstable_settings = {
   initialRouteName: "(tabs)",
 };
 
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({});
@@ -101,45 +100,23 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { translate } = useLanguage();
   const colors = useColors();
 
   useEffect(() => {
     const hideSplashScreen = async () => {
       try {
         await SplashScreen.hideAsync();
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (error: any) {}
+      } catch (error: unknown) {
+        console.error(error);
+      }
     };
-    hideSplashScreen();
+    void hideSplashScreen();
   }, []);
 
   return (
     <View style={{ backgroundColor: colors.background, flex: 1 }}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="onboarding"
-          options={{
-            headerShown: false,
-            animation: "fade",
-          }}
-        />
-        <Stack.Screen
-          name="bookmarks/index"
-          options={{
-            title: translate("bookmarks"),
-            header: () => (
-              <AppBar>
-                <AppBarIconButton
-                  icon={<ArrowLeftIcon size={22} color={colors.tintColor} />}
-                  onPress={() => router.back()}
-                />
-                <AppBarTitle title={translate("bookmarks")} />
-              </AppBar>
-            ),
-          }}
-        />
+        <Stack.Screen name="(app)" options={{ headerShown: false }} />
       </Stack>
     </View>
   );

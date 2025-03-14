@@ -1,15 +1,17 @@
 "use client";
 
+import type { User } from "@acme/db";
+import type { ReactNode } from "react";
 import {
-  ReactNode,
   createContext,
   useCallback,
   useContext,
   useEffect,
   useState,
 } from "react";
-import type { User } from "@acme/db";
+
 import { trpc } from "@/utils/trpc";
+
 import { setToken } from "./trpc-provider";
 
 export type AuthContextType = (
@@ -40,14 +42,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const getCurrentUserMut = trpc.auth.getCurrentUser.useMutation();
 
   const onSignIn: AuthContextType["onSignIn"] = useCallback(
-    async (accessToken, user) => {
+    (accessToken, user) => {
       localStorage.setItem("access_token", accessToken);
       setUser(user);
     },
     [],
   );
 
-  const signOut: AuthContextType["signOut"] = useCallback(async () => {
+  const signOut: AuthContextType["signOut"] = useCallback(() => {
     localStorage.clear();
     setToken("");
     setUser(null);
@@ -71,7 +73,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     setIsLoadCalled(true);
-    load();
+    void load();
   }, [getCurrentUserMut, isLoadCalled]);
 
   return (

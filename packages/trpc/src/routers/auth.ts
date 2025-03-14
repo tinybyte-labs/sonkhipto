@@ -1,9 +1,11 @@
-import { TRPCError } from "@trpc/server";
-import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { signJwt } from "@acme/auth";
-import { z } from "zod";
+import type { User } from "@acme/db";
+import { TRPCError } from "@trpc/server";
 import { OAuth2Client } from "google-auth-library";
-import { User } from "@acme/db";
+import { z } from "zod";
+
+import { protectedProcedure, publicProcedure, router } from "../trpc";
+import type { PublicUser } from "../types";
 
 export const authRouter = router({
   signInAnonymously: publicProcedure.mutation(async ({ ctx }) => {
@@ -14,7 +16,7 @@ export const authRouter = router({
       });
     }
     const user = await ctx.db.user.create({ data: { isAnonymous: true } });
-    const accessToken = await signJwt(user);
+    const accessToken = signJwt(user);
     return { user, accessToken };
   }),
   signInWithGoogle: publicProcedure
@@ -88,20 +90,44 @@ export const authRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "No User" });
       }
 
-      const accessToken = await signJwt(user);
+      const accessToken = signJwt(user);
 
       return { isNewUser, user, accessToken };
     }),
   currentUser: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.db.user.findUnique({
-      where: { id: ctx.session?.id },
+      where: { id: ctx.session.id },
+      include: {
+        CategoryFollow: {
+          select: { category: true },
+        },
+      },
     });
-    return user;
+    if (!user) {
+      return null;
+    }
+    const { CategoryFollow, ...rest } = user;
+    return {
+      ...rest,
+      categories: CategoryFollow.map((c) => c.category),
+    } satisfies PublicUser;
   }),
   getCurrentUser: protectedProcedure.mutation(async ({ ctx }) => {
     const user = await ctx.db.user.findUnique({
-      where: { id: ctx.session?.id },
+      where: { id: ctx.session.id },
+      include: {
+        CategoryFollow: {
+          select: { category: true },
+        },
+      },
     });
-    return user;
+    if (!user) {
+      return null;
+    }
+    const { CategoryFollow, ...rest } = user;
+    return {
+      ...rest,
+      categories: CategoryFollow.map((c) => c.category),
+    } satisfies PublicUser;
   }),
 });
