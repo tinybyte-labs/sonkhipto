@@ -19,7 +19,7 @@ export const feedRouter = router({
         take: opts.input.limit,
         skip: opts.input.cursor ? 1 : 0,
         orderBy: [
-          { publishedAt: "desc" },
+          { publishedAt: { sort: "desc", nulls: "last" } },
           { createdAt: "desc" },
           { id: "asc" },
         ],
@@ -81,7 +81,7 @@ export const feedRouter = router({
           { FavoritePost: { _count: "desc" } },
           { PostBookmark: { _count: "desc" } },
           { PostView: { _count: "desc" } },
-          { publishedAt: "desc" },
+          { publishedAt: { sort: "desc", nulls: "last" } },
           { createdAt: "desc" },
           { id: "asc" },
         ],
@@ -148,7 +148,7 @@ export const feedRouter = router({
         take: opts.input.limit,
         skip: opts.input.cursor ? 1 : 0,
         orderBy: [
-          { publishedAt: "desc" },
+          { publishedAt: { sort: "desc", nulls: "last" } },
           { createdAt: "desc" },
           { id: "asc" },
         ],
@@ -246,7 +246,7 @@ export const feedRouter = router({
             { FavoritePost: { _count: "desc" } },
             { PostBookmark: { _count: "desc" } },
             { PostView: { _count: "desc" } },
-            { publishedAt: "desc" },
+            { publishedAt: { sort: "desc", nulls: "last" } },
             { createdAt: "desc" },
             { id: "asc" },
           ];
