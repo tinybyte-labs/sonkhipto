@@ -1,4 +1,5 @@
 import type { Prisma } from "@acme/db";
+import dayjs from "dayjs";
 import { z } from "zod";
 
 import { protectedProcedure, router } from "../trpc";
@@ -72,7 +73,7 @@ export const feedRouter = router({
       }),
     )
     .query(async (opts) => {
-      const last3Day = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+      const last3Day = dayjs().subtract(3, "days");
 
       const posts = await opts.ctx.db.post.findMany({
         take: opts.input.limit,
@@ -102,7 +103,7 @@ export const feedRouter = router({
         where: {
           language: opts.input.language,
           createdAt: {
-            gte: last3Day,
+            gte: last3Day.toDate(),
           },
         },
       });

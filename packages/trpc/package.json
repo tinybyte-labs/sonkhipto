@@ -11,10 +11,11 @@
     "clean": "git clean -xdf dist .turbo node_modules"
   },
   "dependencies": {
-    "@acme/core": "workspace:*",
     "@acme/auth": "workspace:*",
+    "@acme/core": "workspace:*",
     "@acme/db": "workspace:*",
     "@trpc/server": "^11.0.0-next-beta.251",
+    "dayjs": "^1.11.10",
     "google-auth-library": "^9.6.3",
     "next": "14.1.0",
     "superjson": "^2.2.1",
