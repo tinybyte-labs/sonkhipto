@@ -88,10 +88,11 @@ export const getArticleMetadataFromTheDailyStartEnglish: GetArticleMetadataFn =
 
     const $ = await getPage(articleUrl);
 
-    const title = $("#inner-wrap .container .detailed-content h1")
-      .first()
-      .text()
-      .trim();
+    const container = $(
+      "#inner-wrap .container.long-format-story .detailed-centerbar.hide-for-print",
+    ).first();
+
+    const title = $(container).find("h1").first().text().trim();
     const pubDate = $("#inner-wrap .byline-wrapper .date")
       .first()
       .text()
@@ -100,10 +101,13 @@ export const getArticleMetadataFromTheDailyStartEnglish: GetArticleMetadataFn =
     const thumbnailUrl = $("meta[property='og:image']").attr()?.content;
 
     const paragraphArr: string[] = [];
-    $(".article-section .clearfix p").each((_, el) => {
-      paragraphArr.push($(el).text().trim());
-    });
-    const content = paragraphArr.join().trim();
+    $(container)
+      .find(".article-section p")
+      .each((_, el) => {
+        paragraphArr.push($(el).text().trim());
+      });
+
+    const content = paragraphArr.join("\n").trim();
 
     return {
       thumbnailUrl,

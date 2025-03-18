@@ -3,8 +3,6 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { summerizeDescription } from "@/utils/ai-helper";
-
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
   const { link, publisherId } = await z
@@ -29,12 +27,20 @@ export const POST = async (req: NextRequest) => {
       !metadata.title?.trim() ||
       !metadata.thumbnailUrl?.trim()
     ) {
-      throw new Error("Invalid metadata");
+      return NextResponse.json(
+        {
+          message: `Invalid metadata`,
+          metadata,
+        },
+        {
+          status: 400,
+        },
+      );
     }
 
-    const { category, content } = await summerizeDescription(metadata.content);
+    // const { category, content } = await summerizeDescription(metadata.content);
 
-    return NextResponse.json({ ...metadata, content, category });
+    return NextResponse.json({ metadata });
   } catch (error) {
     console.error(`Failed to scrape posts`, error);
     return NextResponse.json(

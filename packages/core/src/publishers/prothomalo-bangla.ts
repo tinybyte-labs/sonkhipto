@@ -195,7 +195,7 @@ export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
     $(".story-element .story-element-text").each((_, el) => {
       paragraphArr.push($(el).text().trim());
     });
-    const content = paragraphArr.join().trim();
+    const content = paragraphArr.join("\n").trim();
 
     return {
       thumbnailUrl,

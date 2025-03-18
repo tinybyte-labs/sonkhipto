@@ -20,10 +20,6 @@ import {
   getMetadataFromIttefaqEnglish,
 } from "./ittefaq-english";
 import {
-  getLatestArticleLinksFromKalerKanthoBangla,
-  getMetadataFromKalerKanthoBangla,
-} from "./kalerkantho-bangla";
-import {
   getArticleMetadataFromPrathamAloBangla,
   getLatestArticleLinksFromPrathamAloBangla,
 } from "./prothomalo-bangla";
@@ -76,15 +72,15 @@ export const publishers: Publisher[] = [
     getArticleMetadata: getMetadataFromIttefaqEnglish,
   },
   // NEED TO FIX: Not working on production
-  {
-    id: "kalerkantho-bangla",
-    name: "কালের কণ্ঠ",
-    websiteUrl: "https://www.kalerkantho.com",
-    countryCode: "BD",
-    language: "bn",
-    getLatestArticleLinks: getLatestArticleLinksFromKalerKanthoBangla,
-    getArticleMetadata: getMetadataFromKalerKanthoBangla,
-  },
+  // {
+  //   id: "kalerkantho-bangla",
+  //   name: "কালের কণ্ঠ",
+  //   websiteUrl: "https://www.kalerkantho.com",
+  //   countryCode: "BD",
+  //   language: "bn",
+  //   getLatestArticleLinks: getLatestArticleLinksFromKalerKanthoBangla,
+  //   getArticleMetadata: getMetadataFromKalerKanthoBangla,
+  // },
   {
     id: "thedailystar-english",
     name: "The Daily Star",
