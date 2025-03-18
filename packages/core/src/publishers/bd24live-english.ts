@@ -55,7 +55,7 @@ export const getArticleMetadataFromBD24LiveEnglish: GetArticleMetadataFn =
     $("#penci-post-entry-inner p").each((_, el) => {
       paragraphArr.push($(el).text().trim());
     });
-    const content = paragraphArr.join();
+    const content = paragraphArr.join().trim();
 
     return {
       thumbnailUrl,

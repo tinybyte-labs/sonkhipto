@@ -103,7 +103,7 @@ export const getArticleMetadataFromTheDailyStartEnglish: GetArticleMetadataFn =
     $(".article-section .clearfix p").each((_, el) => {
       paragraphArr.push($(el).text().trim());
     });
-    const content = paragraphArr.join();
+    const content = paragraphArr.join().trim();
 
     return {
       thumbnailUrl,

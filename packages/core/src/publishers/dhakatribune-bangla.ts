@@ -73,7 +73,7 @@ export const getArticleMetadataFromDhakatribuneBangla: GetArticleMetadataFn =
     $(".jw_article_body p").each((_, el) => {
       paragraphArr.push($(el).text().trim());
     });
-    const content = paragraphArr.join();
+    const content = paragraphArr.join().trim();
 
     return {
       thumbnailUrl,

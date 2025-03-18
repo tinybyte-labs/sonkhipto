@@ -189,13 +189,13 @@ export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
       .first()
       .attr()?.datetime;
 
+    const thumbnailUrl = $("meta[property='og:image']").attr()?.content;
+
     const paragraphArr: string[] = [];
     $(".story-element .story-element-text").each((_, el) => {
       paragraphArr.push($(el).text().trim());
     });
-    const content = paragraphArr.join();
-
-    const thumbnailUrl = $("meta[property='og:image']").attr()?.content;
+    const content = paragraphArr.join().trim();
 
     return {
       thumbnailUrl,

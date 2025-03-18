@@ -45,7 +45,7 @@ export const summerizeDescription = async (
     bengali: string;
   } | null = null;
 
-  const c = categories[summeryGen.object.category];
+  const c = categories[summeryGen.object.category.trim()];
   if (c) {
     category = {
       slug: summeryGen.object.category,

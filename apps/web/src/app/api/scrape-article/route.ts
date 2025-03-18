@@ -24,7 +24,11 @@ export const POST = async (req: NextRequest) => {
 
   try {
     const metadata = await publisher.getArticleMetadata(link);
-    if (!metadata?.content || !metadata.title || !metadata.thumbnailUrl) {
+    if (
+      !metadata?.content?.trim() ||
+      !metadata.title?.trim() ||
+      !metadata.thumbnailUrl?.trim()
+    ) {
       throw new Error("Invalid metadata");
     }
 

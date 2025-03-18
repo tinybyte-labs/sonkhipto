@@ -82,7 +82,7 @@ export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (
     paragraphArr.push($(el).text().trim());
   });
 
-  const content = paragraphArr.join();
+  const content = paragraphArr.join().trim();
 
   return {
     thumbnailUrl,

@@ -1,7 +1,7 @@
 import { publishers } from "@acme/core/publishers";
 import { db } from "@acme/db";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
-import type { NextRequest} from "next/server";
+import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -40,16 +40,16 @@ export const POST = verifySignatureAppRouter(async (req: NextRequest) => {
 
     const metadata = await publisher.getArticleMetadata(link);
 
-    if (metadata?.title && metadata.content) {
+    if (metadata?.title?.trim() && metadata.content?.trim()) {
       const { content, category } = await summerizeDescription(
-        metadata.content,
+        metadata.content.trim(),
       );
 
       await db.post.create({
         data: {
-          sourceUrl: link,
+          sourceUrl: link.trim(),
           imageUrl: metadata.thumbnailUrl,
-          title: metadata.title,
+          title: metadata.title.trim(),
           content,
           publishedAt: metadata.publishedAt ?? new Date(),
           language: publisher.language,
