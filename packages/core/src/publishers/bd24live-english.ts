@@ -1,4 +1,4 @@
-import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
+import type { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
 import { getPage } from "../utils/server/helpers";
 
 const baseUrl = "https://www.bd24live.com";
@@ -9,7 +9,7 @@ export const getLatestArticleLinksFromBD24LiveEnglish: GetLatestArticleLinksFn =
 
     const allLinks = $("a")
       .toArray()
-      .map((el) => $(el).attr()?.["href"])
+      .map((el) => $(el).attr()?.href)
       .filter((link) => !!link) as string[];
 
     const links: string[] = [];
@@ -41,12 +41,15 @@ export const getArticleMetadataFromBD24LiveEnglish: GetArticleMetadataFn =
     const $ = await getPage(articleUrl);
 
     const title = $(".header-standard.header-classic.single-header > h1")
+      .first()
       .text()
       .trim();
     const pubDate = $(".header-standard .post-box-meta-single time")
+      .first()
       .attr()
-      ?.["datetime"]?.trim();
-    const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
+      ?.datetime?.trim();
+
+    const thumbnailUrl = $("meta[property='og:image']").attr()?.content;
 
     const paragraphArr: string[] = [];
     $("#penci-post-entry-inner p").each((_, el) => {

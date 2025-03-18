@@ -138,7 +138,7 @@ export const getLatestArticleLinksFromPrathamAloBangla: GetLatestArticleLinksFn 
 
     const allLinks = $("a")
       .toArray()
-      .map((el) => $(el).attr()?.["href"])
+      .map((el) => $(el).attr()?.href)
       .filter((link) => !!link) as string[];
 
     const links: string[] = [];
@@ -179,10 +179,15 @@ export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
 
     const $ = await getPage(articleUrl);
 
-    const title = $(".story-content-wrapper .story-head h1").text().trim();
+    const title = $(".story-content-wrapper .story-head h1")
+      .first()
+      .text()
+      .trim();
     const pubDate = $(
       ".story-content-wrapper .story-head .story-metadata-wrapper time",
-    ).attr()?.["datetime"];
+    )
+      .first()
+      .attr()?.datetime;
 
     const paragraphArr: string[] = [];
     $(".story-element .story-element-text").each((_, el) => {
@@ -190,7 +195,7 @@ export const getArticleMetadataFromPrathamAloBangla: GetArticleMetadataFn =
     });
     const content = paragraphArr.join();
 
-    const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
+    const thumbnailUrl = $("meta[property='og:image']").attr()?.content;
 
     return {
       thumbnailUrl,

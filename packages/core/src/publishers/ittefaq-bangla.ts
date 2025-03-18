@@ -1,4 +1,4 @@
-import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
+import type { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
 import { getPage } from "../utils/server/helpers";
 
 const baseUrl = "https://www.ittefaq.com.bd";
@@ -33,7 +33,7 @@ export const getLatestArticleLinksFromIttefaqBangla: GetLatestArticleLinksFn =
 
     const allLinks = $("a")
       .toArray()
-      .map((el) => $(el).attr()?.["href"])
+      .map((el) => $(el).attr()?.href)
       .filter((link) => !!link) as string[];
 
     const links: string[] = [];
@@ -49,6 +49,7 @@ export const getLatestArticleLinksFromIttefaqBangla: GetLatestArticleLinksFn =
         !links.includes(url.href)
       ) {
         if (
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           /^-?[\d.]+(?:e-?\d+)?$/.test(url.pathname.slice(1).split("/")[0]!)
         ) {
           links.push(url.href);
@@ -69,11 +70,12 @@ export const getMetadataFromIttefaqBangla: GetArticleMetadataFn = async (
 
   const $ = await getPage(articleUrl);
 
-  const title = $(".content_detail h1.title").text().trim();
+  const title = $(".content_detail h1.title").first().text().trim();
   const pubDate = $(".content_detail .detail_holder .time .tts_time")
+    .first()
     .attr()
-    ?.["content"]?.trim();
-  const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
+    ?.content?.trim();
+  const thumbnailUrl = $("meta[property='og:image']").attr()?.content;
 
   const paragraphArr: string[] = [];
   $(".jw_article_body").each((_, el) => {

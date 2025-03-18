@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
+
+import type { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
 import { bengaliMonthMap, convertBengaliDigits } from "../utils/helpers";
 import { getPage } from "../utils/server/helpers";
 
@@ -42,7 +44,7 @@ export const getLatestArticleLinksFromKalerKanthoBangla: GetLatestArticleLinksFn
 
     const allLinks = $("a")
       .toArray()
-      .map((el) => $(el).attr()?.["href"])
+      .map((el) => $(el).attr()?.href)
       .filter((link) => !!link) as string[];
 
     const links: string[] = [];
@@ -82,10 +84,10 @@ export const getMetadataFromKalerKanthoBangla: GetArticleMetadataFn = async (
 
   const $ = await getPage(articleUrl);
 
-  const title = $(".container .single_news h1").text().trim();
-  const pubDate = $(".container .single_news time").text()?.trim();
+  const title = $(".container .single_news h1").first().text().trim();
+  const pubDate = $(".container .single_news time").first().text().trim();
 
-  const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
+  const thumbnailUrl = $("meta[property='og:image']").attr()?.content;
 
   const paragraphArr: string[] = [];
   $(".newsArticle article").each((_, el) => {
@@ -115,7 +117,7 @@ const getDateFromBanglaDateTime = (banglaDate: string) => {
   }
 
   // Construct final date string
-  const formattedDate: string = `${day} ${month} ${year} ${time}`;
+  const formattedDate = `${day} ${month} ${year} ${time}`;
 
   // Parse with dayjs
   const parsedDate = dayjs(formattedDate, "D MMMM YYYY HH:mm");

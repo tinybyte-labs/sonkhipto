@@ -6,7 +6,7 @@ const defineConfig = (): ExpoConfig => ({
   version: "1.4.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
-  scheme: "myapp",
+  scheme: "sonkhipto",
   userInterfaceStyle: "automatic",
   splash: {
     image: "./assets/images/splash.png",

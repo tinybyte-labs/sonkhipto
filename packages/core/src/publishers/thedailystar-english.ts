@@ -1,7 +1,9 @@
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+
 import type { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
 import { getPage } from "../utils/server/helpers";
+
 dayjs.extend(customParseFormat);
 
 const baseUrl = "https://www.thedailystar.net";
@@ -42,7 +44,7 @@ export const getLatestArticleLinksFromTheDailyStartEnglish: GetLatestArticleLink
 
     const allLinks = $("a")
       .toArray()
-      .map((el) => $(el).attr()?.["href"])
+      .map((el) => $(el).attr()?.href)
       .filter((link) => !!link) as string[];
 
     const links: string[] = [];
@@ -68,6 +70,7 @@ export const getLatestArticleLinksFromTheDailyStartEnglish: GetLatestArticleLink
         !links.includes(url.href)
       ) {
         const splitpath = url.pathname.slice(1).split("/");
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         if (/^[a-z0-9-]+-\d+$/.test(splitpath[splitpath.length - 1]!)) {
           links.push(url.href);
         }
@@ -86,12 +89,15 @@ export const getArticleMetadataFromTheDailyStartEnglish: GetArticleMetadataFn =
     const $ = await getPage(articleUrl);
 
     const title = $("#inner-wrap .container .detailed-content h1")
+      .first()
+      .text()
+      .trim();
+    const pubDate = $("#inner-wrap .byline-wrapper .date")
+      .first()
       .text()
       .trim();
 
-    const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
-
-    const pubDate = $("#inner-wrap .byline-wrapper .date").text()?.trim();
+    const thumbnailUrl = $("meta[property='og:image']").attr()?.content;
 
     const paragraphArr: string[] = [];
     $(".article-section .clearfix p").each((_, el) => {
@@ -104,7 +110,8 @@ export const getArticleMetadataFromTheDailyStartEnglish: GetArticleMetadataFn =
       title,
       content,
       publishedAt: pubDate
-        ? new Date(pubDate.trim().split("Last update on:")[0]!.trim())
+        ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          new Date(pubDate.trim().split("Last update on:")[0]!.trim())
         : null,
     };
   };

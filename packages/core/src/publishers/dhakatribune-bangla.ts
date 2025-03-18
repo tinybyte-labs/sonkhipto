@@ -1,4 +1,4 @@
-import { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
+import type { GetArticleMetadataFn, GetLatestArticleLinksFn } from "../types";
 import { getPage } from "../utils/server/helpers";
 
 const baseUrl = "https://bangla.dhakatribune.com";
@@ -23,7 +23,7 @@ export const getLatestArticleLinksFromDhakatribuneBangla: GetLatestArticleLinksF
 
     const allLinks = $("a")
       .toArray()
-      .map((el) => $(el).attr()?.["href"])
+      .map((el) => $(el).attr()?.href)
       .filter((link) => !!link) as string[];
 
     const links: string[] = [];
@@ -61,12 +61,13 @@ export const getArticleMetadataFromDhakatribuneBangla: GetArticleMetadataFn =
 
     const $ = await getPage(articleUrl);
 
-    const title = $(".content_detail h1.title").text().trim();
+    const title = $(".content_detail h1.title").first().text().trim();
     const pubDate = $(".content_detail .time span.published_time")
+      .first()
       .attr()
-      ?.["content"]?.trim();
+      ?.content?.trim();
 
-    const thumbnailUrl = $("meta[property='og:image']").attr()?.["content"];
+    const thumbnailUrl = $("meta[property='og:image']").attr()?.content;
 
     const paragraphArr: string[] = [];
     $(".jw_article_body p").each((_, el) => {
