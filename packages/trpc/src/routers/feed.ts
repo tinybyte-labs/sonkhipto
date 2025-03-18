@@ -171,6 +171,11 @@ export const feedRouter = router({
           categoryId: {
             in: followingCategories.map((c) => c.categoryId),
           },
+          PostView: {
+            none: {
+              userId: opts.ctx.user.id,
+            },
+          },
         },
       });
 
